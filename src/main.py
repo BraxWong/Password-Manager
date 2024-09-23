@@ -1,9 +1,15 @@
 from kivy.app import App
+from kivy.uix.screenmanager import ScreenManager, Screen
 from menu import *
+from passwordGeneration import *
 
 class Main(App):
     def build(self):
-        return Menu()
+        self.screenManager = ScreenManager()
+        self.screenManager.add_widget(Menu(name='Menu Screen'))
+        self.screenManager.add_widget(PasswordGeneration(name='Password Generation Screen'))
+        self.screenManager.current = 'Menu Screen' 
+        return self.screenManager
 
 if __name__ == '__main__':
     Main().run()
