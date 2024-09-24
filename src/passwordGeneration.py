@@ -5,6 +5,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
+import random
 
 class PasswordGeneration(Screen):
 
@@ -35,7 +36,33 @@ class PasswordGeneration(Screen):
         self.mainLayout.add_widget(self.generatePasswordButton)
         self.add_widget(self.mainLayout)
         
-    #TODO: implement the following function to generate a password
     def generatePassword(self,widget):
-        pass
+        numbers=['0','1','2','3','4','5','6','7','8','9']
+        numberExistsInPassword=False
+        letters=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+        lettersExistsInPassword=False
+        upperLetters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+        upperLettersExistsInPassword=False
+        symbols=['!','@','#','$','^','&','*','?']
+        symbolExistsInPassword=False
+        password=''
+        for i in range(14):
+            num=random.randrange(0,4)
+            if num==0:
+                password+=random.choice(numbers)
+                numberExistsInPassword=True
+            elif num==1:
+                password+=random.choice(letters)
+                lettersExistsInPassword=True
+            elif num==2:
+                password+=random.choice(upperLetters)
+                upperLettersExistsInPassword=True
+            else:
+                password+=random.choice(symbols)
+                symbolExistsInPassword=True
+        if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
+            return password
+        return self.generatePassword(widget)
+
+
         
