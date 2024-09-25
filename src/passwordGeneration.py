@@ -6,6 +6,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.slider import Slider
+from kivy.uix.checkbox import CheckBox
 import random
 
 class PasswordGeneration(Screen):
@@ -19,7 +20,7 @@ class PasswordGeneration(Screen):
         self.applicationNameLayout.add_widget(Label(text='Name of applcation/website',
                                                     font_size='15sp',
                                                     pos_hint={'x':0.2,'y':0},))
-        self.applicationNameTextInput = TextInput(text='Name of the applcation or website', 
+        self.applicationNameTextInput = TextInput(text='', 
                                                   multiline=False, 
                                                   size_hint=(None,None), 
                                                   height=30, 
@@ -28,17 +29,28 @@ class PasswordGeneration(Screen):
         self.applicationNameLayout.add_widget(self.applicationNameTextInput)
         self.mainLayout.add_widget(self.applicationNameLayout)
 
-        self.passwordCriteriaLayout = BoxLayout(orientation='horizontal')
-        self.passwordCriteriaLayout.add_widget(Label(text='Length of password',
+        self.passwordLengthLayout = BoxLayout(orientation='horizontal')
+        self.passwordLengthLayout.add_widget(Label(text='Length of password',
                                                      font_size='15sp'))
+        self.passwordSliderLayout = BoxLayout(orientation='vertical')
+        self.passwordLengthLabel = Label(text='14', font_size='20sp')
+        self.passwordSliderLayout.add_widget(self.passwordLengthLabel)
         self.passwordLengthSlider = Slider(min=1, 
                                            max=64, 
                                            value=14,
                                            value_track=True,
                                            value_track_color=[1,0,0,1])
         self.passwordLengthSlider.bind(value=self.onSliderValueChange)
-        self.passwordCriteriaLayout.add_widget(self.passwordLengthSlider)
-        self.mainLayout.add_widget(self.passwordCriteriaLayout)
+        self.passwordSliderLayout.add_widget(self.passwordLengthSlider)
+        self.passwordLengthLayout.add_widget(self.passwordSliderLayout)
+        self.mainLayout.add_widget(self.passwordLengthLayout)
+
+        self.symbolLayout = BoxLayout(orientation='horizontal')
+        self.symbolLayout.add_widget(Label(text='Include special symbol',
+                                           font_size='15sp'))
+        self.symbolEnabledCheckBox = CheckBox()
+        self.symbolLayout.add_widget(self.symbolEnabledCheckBox)
+        self.mainLayout.add_widget(self.symbolLayout)
 
         self.generatePasswordButton = Button(text='Generate a password',
                                              size_hint=(None,None),
@@ -49,9 +61,8 @@ class PasswordGeneration(Screen):
         self.mainLayout.add_widget(self.generatePasswordButton)
         self.add_widget(self.mainLayout)
        
-    #TODO: Needs to create a label, preferrably on top to show the value of the slider
     def onSliderValueChange(self,widget,val):
-        pass
+        self.passwordLengthLabel.text=str(int(val))
 
     def generatePassword(self,widget):
         numbers=['0','1','2','3','4','5','6','7','8','9']
@@ -63,23 +74,31 @@ class PasswordGeneration(Screen):
         symbols=['!','@','#','$','^','&','*','?']
         symbolExistsInPassword=False
         password=''
-        for i in range(14):
-            num=random.randrange(0,4)
-            if num==0:
-                password+=random.choice(numbers)
-                numberExistsInPassword=True
-            elif num==1:
-                password+=random.choice(letters)
-                lettersExistsInPassword=True
-            elif num==2:
-                password+=random.choice(upperLetters)
-                upperLettersExistsInPassword=True
+        for i in range(int(self.passwordLengthLabel.text)):
+            if self.symbolEnabledCheckBox.active:
+                num=random.randrange(0,4)
             else:
-                password+=random.choice(symbols)
+                num=random.randrange(0,3)
                 symbolExistsInPassword=True
+
+            match num:
+                case 0:
+                    password+=random.choice(numbers)
+                    numberExistsInPassword=True
+                case 1:
+                    password+=random.choice(letters)
+                    lettersExistsInPassword=True
+                case 2:
+                    password+=random.choice(upperLetters)
+                    upperLettersExistsInPassword=True
+                case 3:
+                    password+=random.choice(symbols)
+                    symbolExistsInPassword=True
+
         if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
+            print(password)
             return password
-        return generatePassword()
+        return self.generatePassword(widget)
 
 
         
