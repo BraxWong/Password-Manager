@@ -1,10 +1,5 @@
-import mysql.connector
+import sqlite3
 
 class LoginDetailsDB:
     def __init__(self):
-        self.mydb = mysql.connector.connect(
-            host="localhost",
-            user="username",
-            password="password"
-        )
-        print(self.mydb)
+        con=sqlite3.connect("Database/SQLFiles/LoginDetails.db")
