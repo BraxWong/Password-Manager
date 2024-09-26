@@ -6,9 +6,9 @@ class LoginDetailsDB:
         self.PATHTOSQLDIR='Database/SQLFiles'
         if not os.path.isdir(self.PATHTOSQLDIR):
             os.makedirs(self.PATHTOSQLDIR)
-        con=sqlite3.connect(self.PATHTOSQLDIR+'/LoginDetails.db')
+        self.con=sqlite3.connect(self.PATHTOSQLDIR+'/LoginDetails.db')
         #Creates a cursor to the database
-        self.cur=con.cursor()
+        self.cur=self.con.cursor()
         self.createLoginDetailsTable()
 
     def createLoginDetailsTable(self):
@@ -17,13 +17,38 @@ class LoginDetailsDB:
         )
 
     def addEntryToDB(self,websiteName,password):
+        if self.websitePasswordSet(websiteName):
+            self.updateEntryToDB(websiteName,password)
+        else:
+            self.cur.execute(
+                f'INSERT INTO login_details VALUES ("{websiteName}", "{password}")'
+            )
+            self.con.commit()
+
+    def updateEntryToDB(self,websiteName,password):
         self.cur.execute(
-            f'INSERT INTO login_details VALUES ("{websiteName}", "{password}")'
+            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\''
         )
+        self.con.commit()
+    
+    #WARNING: The following function is only used for testing purposes for now. DO NOT USE
+    def removeEntryFromDB(self,websiteName):
+        self.cur.execute(
+            f'DELETE FROM login_details WHERE website_name = \'{websiteName}\''
+        )
+        self.con.commit()
 
     def fetchAllFromDB(self):
         self.cur.execute(
             "SELECT * FROM login_details"
         )
-        print(self.cur.fetchall())
+
+    def websitePasswordSet(self,websiteName):
+        passwordSet=False
+        self.cur.execute(
+            f'SELECT * FROM login_details WHERE website_name=\'{websiteName}\''
+        )
+        if len(self.cur.fetchall()) >= 1:
+            passwordSet=True
+        return passwordSet
 
