@@ -42,6 +42,13 @@ class LoginDetailsDB:
         self.cur.execute(
             "SELECT * FROM login_details"
         )
+        return self.cur.fetchall()
+
+    def fetchWebsitePassword(self,websiteName):
+        self.cur.execute(
+            f'SELECT password FROM login_details WHERE website_name = \'{websiteName}\''
+        )
+        return self.cur.fetchone()
 
     def websitePasswordSet(self,websiteName):
         passwordSet=False
