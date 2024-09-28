@@ -7,12 +7,15 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
+from kivy.uix.popup import Popup
 import random
+from Database.LoginDetailsDB import LoginDetailsDB  
 
 class PasswordGeneration(Screen):
 
     def __init__(self, **kwargs):
         super(PasswordGeneration,self).__init__(**kwargs)
+        self.db = LoginDetailsDB()
         self.mainLayout = BoxLayout(orientation='vertical')
         self.mainLayout.add_widget(Label(text='Create a Password',font_size='20sp'))
 
@@ -21,7 +24,7 @@ class PasswordGeneration(Screen):
                                                     font_size='15sp',
                                                     pos_hint={'x':0.2,'y':0},))
         self.applicationNameTextInput = TextInput(text='', 
-                                                  multiline=False, 
+                                                  multiline=False,
                                                   size_hint=(None,None), 
                                                   height=30, 
                                                   width=250,
@@ -56,7 +59,7 @@ class PasswordGeneration(Screen):
                                              size_hint=(None,None),
                                              height=20,
                                              width=200,
-                                             pos_hint={'x':0.379,'y':0.5})
+                                             pos_hint={'x':0.379,'y':0.2})
         self.generatePasswordButton.bind(on_press=self.generatePassword)
         self.mainLayout.add_widget(self.generatePasswordButton)
         self.add_widget(self.mainLayout)
@@ -96,7 +99,12 @@ class PasswordGeneration(Screen):
                     symbolExistsInPassword=True
 
         if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
-            print(password)
+            self.db.addEntryToDB(self.applicationNameTextInput.text, password)
+            popup = Popup(title='Password Generated',
+                          content=Label(text=f'Website:{self.applicationNameTextInput.text}\nPassword:{password}\nSaved in Database'),
+                          size_hint=(None,None),
+                          size=(400,400))
+            popup.open()
             return password
         return self.generatePassword(widget)
 
