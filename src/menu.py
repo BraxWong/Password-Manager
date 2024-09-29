@@ -45,9 +45,9 @@ class Menu(Screen):
 
     def exportPassword(self,widget):
         #TODO: Need to use kivy to generate a file picker to specify the file name and where to store the file
-        ExportPassword("SOMEWHERE")
+        self.exportPassword = ExportPassword()
         popup = Popup(title='Password Exported',
-                      content=Label(text='All your password have been exported to {}'),
+                      content=Label(text=f'All your password have been exported to \n{self.exportPassword.path}'),
                       size_hint=(None,None),
                       size=(400,400))
         popup.open()
