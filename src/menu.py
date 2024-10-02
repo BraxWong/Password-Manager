@@ -20,7 +20,7 @@ class Menu(Screen):
         self.layout.add_widget(Label(text='Password Manager',font_size='20sp'))
 
         self.searchPassword = Button(text='Find your password')
-        self.searchPassword.bind(on_press=self.startDatabase)
+        self.searchPassword.bind(on_press=self.startPasswordSearch)
         self.layout.add_widget(self.searchPassword)
 
         self.storePassword = Button(text='Store a password')
@@ -36,9 +36,8 @@ class Menu(Screen):
         
         self.add_widget(self.layout)
 
-    #TODO: The database does not work yet as mySQL will be needed to installed on the local machine
-    def startDatabase(self,widget):
-        LoginDetailsDB()
+    def startPasswordSearch(self,widget):
+        self.manager.current = 'Password Search Screen'
 
     def startPasswordGeneration(self,widget):
         self.manager.current = 'Password Generation Screen'
