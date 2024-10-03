@@ -9,7 +9,7 @@ class Main(App):
         self.screenManager = ScreenManager()
         self.screenManager.add_widget(Menu(name='Menu Screen'))
         self.screenManager.add_widget(PasswordGeneration(name='Password Generation Screen'))
-        self.screenmanager.add_widget(PasswordSearch(name='Password Search Screen'))
+        self.screenManager.add_widget(PasswordSearch(name='Password Search Screen'))
         self.screenManager.current = 'Menu Screen' 
         return self.screenManager
 
