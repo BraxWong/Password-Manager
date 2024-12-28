@@ -3,6 +3,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen
 from menu import *
 from passwordGeneration import *
 from passwordSearch import *
+from WebsiteMonitor import *
 
 class Main(App):
     def build(self):
@@ -14,4 +15,5 @@ class Main(App):
         return self.screenManager
 
 if __name__ == '__main__':
-    Main().run()
+    website_monitor = WebsiteMonitor()
+    # Main().run()
