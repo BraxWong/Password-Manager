@@ -13,21 +13,21 @@ class LoginDetailsDB:
 
     def createLoginDetailsTable(self):
         self.cur.execute(
-            "CREATE TABLE if not exists login_details(website_name, password)"
+            "CREATE TABLE if not exists login_details(website_name, username, password)"
         )
 
-    def addEntryToDB(self,websiteName,password):
+    def addEntryToDB(self,websiteName,username,password):
         if self.websitePasswordSet(websiteName):
-            self.updateEntryToDB(websiteName,password)
+            self.updateEntryToDB(websiteName,username,password)
         else:
             self.cur.execute(
-                f'INSERT INTO login_details VALUES ("{websiteName}", "{password}")'
+                f'INSERT INTO login_details VALUES ("{websiteName}","{username}","{password}")'
             )
             self.con.commit()
 
-    def updateEntryToDB(self,websiteName,password):
+    def updateEntryToDB(self,websiteName,username,password):
         self.cur.execute(
-            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\''
+            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\' AND username = \'{username}\''
         )
         self.con.commit()
     

@@ -15,5 +15,5 @@ class Main(App):
         return self.screenManager
 
 if __name__ == '__main__':
-    website_monitor = WebsiteMonitor()
-    # Main().run()
+    # website_monitor = WebsiteMonitor()
+    Main().run()

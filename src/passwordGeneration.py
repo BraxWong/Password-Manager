@@ -32,6 +32,19 @@ class PasswordGeneration(Screen):
         self.applicationNameLayout.add_widget(self.applicationNameTextInput)
         self.mainLayout.add_widget(self.applicationNameLayout)
 
+        self.usernameLayout = BoxLayout(orientation='horizontal')
+        self.usernameLayout.add_widget(Label(text='Username',
+                                                    font_size='15sp',
+                                                    pos_hint={'x':0.2,'y':0},))
+        self.usernameTextInput = TextInput(text='', 
+                                                  multiline=False,
+                                                  size_hint=(None,None), 
+                                                  height=30, 
+                                                  width=250,
+                                                  pos_hint={'x':0.5,'y':0.45})
+        self.usernameLayout.add_widget(self.usernameTextInput)
+        self.mainLayout.add_widget(self.usernameLayout)
+
         self.passwordLengthLayout = BoxLayout(orientation='horizontal')
         self.passwordLengthLayout.add_widget(Label(text='Length of password',
                                                      font_size='15sp'))
@@ -99,9 +112,9 @@ class PasswordGeneration(Screen):
                     symbolExistsInPassword=True
 
         if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
-            self.db.addEntryToDB(self.applicationNameTextInput.text, password)
+            self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
             popup = Popup(title='Password Generated',
-                          content=Label(text=f'Website:{self.applicationNameTextInput.text}\nPassword:{password}\nSaved in Database'),
+                          content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
                           size_hint=(None,None),
                           size=(400,400))
             popup.open()
