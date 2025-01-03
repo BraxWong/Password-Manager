@@ -1,3 +1,4 @@
+from kivy.core import text
 from kivy.uix.widget import Widget
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.textinput import TextInput
@@ -8,6 +9,7 @@ from kivy.uix.popup import Popup
 from Database.LoginDetailsDB import *
 from exportPassword import ExportPassword
 from passwordGeneration import *
+from loginDetailsStorage import * 
 
 class Menu(Screen):
     #Establishes the UI of the Menu Screen
@@ -23,8 +25,9 @@ class Menu(Screen):
         self.searchPassword.bind(on_press=self.startPasswordSearch)
         self.layout.add_widget(self.searchPassword)
 
-        self.storePassword = Button(text='Store a password')
-        self.layout.add_widget(self.storePassword)
+        self.storeUserDetails = Button(text='Store Login Details')
+        self.storeUserDetails.bind(on_press=self.storeLoginDetails)
+        self.layout.add_widget(self.storeUserDetails)
 
         self.generatePassword = Button(text='Generate a password')
         self.generatePassword.bind(on_press=self.startPasswordGeneration)
@@ -43,10 +46,12 @@ class Menu(Screen):
         self.manager.current = 'Password Generation Screen'
 
     def exportPassword(self,widget):
-        #TODO: Need to use kivy to generate a file picker to specify the file name and where to store the file
         self.exportPassword = ExportPassword()
         popup = Popup(title='Password Exported',
                       content=Label(text=f'All your password have been exported to \n{self.exportPassword.path}'),
                       size_hint=(None,None),
                       size=(400,400))
         popup.open()
+
+    def storeLoginDetails(self,widget):
+        self.manager.current = 'Login Details Storage Screen'
