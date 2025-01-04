@@ -1,4 +1,5 @@
 kivy[base]
+kivymd
 plyer
 pyobjus
 selenium

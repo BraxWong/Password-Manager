@@ -1,4 +1,5 @@
 from kivy.app import App
+from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager, Screen
 from loginDetailsStorage import LoginDetailsStorage
 from menu import *
@@ -6,8 +7,9 @@ from passwordGeneration import *
 from passwordSearch import *
 from WebsiteMonitor import *
 
-class Main(App):
+class Main(MDApp):
     def build(self):
+        self.theme_cls.theme_style = "Dark"
         self.screenManager = ScreenManager()
         self.screenManager.add_widget(Menu(name='Menu Screen'))
         self.screenManager.add_widget(LoginDetailsStorage(name="Login Details Storage Screen"))

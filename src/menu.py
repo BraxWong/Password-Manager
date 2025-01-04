@@ -1,3 +1,4 @@
+from kivy.lang import Builder
 from kivy.core import text
 from kivy.uix.widget import Widget
 from kivy.uix.gridlayout import GridLayout
@@ -18,7 +19,6 @@ class Menu(Screen):
         super(Menu,self).__init__(**kwargs)
         self.layout = GridLayout(cols=1)
         self.cols=1
-
         self.layout.add_widget(Label(text='Password Manager',font_size='20sp'))
 
         self.searchPassword = Button(text='Find your password')
