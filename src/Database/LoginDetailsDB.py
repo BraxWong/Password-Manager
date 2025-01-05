@@ -31,7 +31,6 @@ class LoginDetailsDB:
         )
         self.con.commit()
     
-    #WARNING: The following function is only used for testing purposes for now. DO NOT USE
     def removeEntryFromDB(self,websiteName):
         self.cur.execute(
             f'DELETE FROM login_details WHERE website_name = \'{websiteName}\''

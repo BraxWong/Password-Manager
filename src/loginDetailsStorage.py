@@ -66,11 +66,14 @@ class LoginDetailsStorage(Screen):
     def storeLoginDetails(self,widget): 
         if len(self.applicationNameTextInput.text) > 0 and len(self.usernameTextInput.text) > 0 and len(self.passwordTextInput.text) > 0:
             self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,self.passwordTextInput.text) 
-            popup = Popup(title='Password Generated',
+            popup = Popup(title='Password Stored',
                                     content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{self.passwordTextInput.text}\nSaved in Database'),
                                     size_hint=(None,None),
                                     size=(400,400))
             popup.open()
+            self.applicationNameTextInput.text = ""
+            self.usernameTextInput.text = ""
+            self.passwordTextInput.text = ""
         else:
             errorMessage = "The following information is missing:"
             if len(self.applicationNameTextInput.text) <= 0:
