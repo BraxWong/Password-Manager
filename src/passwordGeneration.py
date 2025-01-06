@@ -8,6 +8,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.popup import Popup
+from kivymd.uix.button import MDRaisedButton
 import random
 from Database.LoginDetailsDB import LoginDetailsDB  
 
@@ -17,7 +18,12 @@ class PasswordGeneration(Screen):
         super(PasswordGeneration,self).__init__(**kwargs)
         self.db = LoginDetailsDB()
         self.mainLayout = BoxLayout(orientation='vertical')
-        self.mainLayout.add_widget(Label(text='Create a Password',font_size='20sp'))
+        self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
+        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.topRowLayout.add_widget(self.backButton)
+        self.topRowLayout.add_widget(Label(text='Create a Password', font_size='20sp', halign='center'))
+        self.mainLayout.add_widget(self.topRowLayout)
+
 
         self.applicationNameLayout = BoxLayout(orientation='horizontal')
         self.applicationNameLayout.add_widget(Label(text='Name of applcation/website',
@@ -80,6 +86,9 @@ class PasswordGeneration(Screen):
     def onSliderValueChange(self,widget,val):
         self.passwordLengthLabel.text=str(int(val))
 
+    def on_button_press(self, instance_button: MDRaisedButton):
+        self.manager.current = 'Menu Screen'
+
     def generatePassword(self,widget):
         numbers=['0','1','2','3','4','5','6','7','8','9']
         numberExistsInPassword=False
@@ -120,6 +129,3 @@ class PasswordGeneration(Screen):
             popup.open()
             return password
         return self.generatePassword(widget)
-
-
-        

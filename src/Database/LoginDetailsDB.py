@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 
 class LoginDetailsDB:
     def __init__(self):
@@ -9,11 +10,12 @@ class LoginDetailsDB:
         self.con=sqlite3.connect(self.PATHTOSQLDIR+'/LoginDetails.db')
         #Creates a cursor to the database
         self.cur=self.con.cursor()
+        self.todays_date = datetime.now().date()
         self.createLoginDetailsTable()
 
     def createLoginDetailsTable(self):
         self.cur.execute(
-            "CREATE TABLE if not exists login_details(website_name, username, password)"
+            "CREATE TABLE if not exists login_details(website_name, username, password, date_created)"
         )
 
     def addEntryToDB(self,websiteName,username,password):
@@ -21,13 +23,13 @@ class LoginDetailsDB:
             self.updateEntryToDB(websiteName,username,password)
         else:
             self.cur.execute(
-                f'INSERT INTO login_details VALUES ("{websiteName}","{username}","{password}")'
+                f'INSERT INTO login_details VALUES ("{websiteName}","{username}","{password}","{self.todays_date}")'
             )
             self.con.commit()
 
     def updateEntryToDB(self,websiteName,username,password):
         self.cur.execute(
-            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\' AND username = \'{username}\''
+            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\' AND username = \'{username}\' AND date_created = \'{self.todays_date}\''
         )
         self.con.commit()
     

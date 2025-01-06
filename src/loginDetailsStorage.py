@@ -5,6 +5,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
+from kivymd.uix.button import MDRaisedButton
 from Database.LoginDetailsDB import LoginDetailsDB  
 
 class LoginDetailsStorage(Screen):
@@ -13,18 +14,24 @@ class LoginDetailsStorage(Screen):
         super(LoginDetailsStorage,self).__init__(**kwargs)
         self.db = LoginDetailsDB()
         self.mainLayout = BoxLayout(orientation='vertical')
-        self.mainLayout.add_widget(Label(text='Store Login Details',font_size='20sp'))
+        self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
+        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.topRowLayout.add_widget(self.backButton)
+        self.topRowLayout.add_widget(Label(text='Store Login Details', font_size='20sp', halign='center'))
+        self.mainLayout.add_widget(self.topRowLayout)
 
-        self.applicationNameLayout = BoxLayout(orientation='horizontal')
+        self.applicationNameLayout = BoxLayout(orientation='horizontal',size_hint=(None,None),width=500,height=50,pos_hint={'center_x':0.5})
         self.applicationNameLayout.add_widget(Label(text='Name of applcation/website',
                                                     font_size='15sp',
-                                                    pos_hint={'x':0.2,'y':0},))
+                                                    size_hint_x=None,
+                                                    width=200))
         self.applicationNameTextInput = TextInput(text='', 
                                                   multiline=False,
                                                   size_hint=(None,None), 
                                                   height=30, 
-                                                  width=250,
-                                                  pos_hint={'x':0.5,'y':0.45})
+                                                  width=250)
+
+        self.applicationNameLayout.add_widget(Widget(size_hint_x=None, width=200))
         self.applicationNameLayout.add_widget(self.applicationNameTextInput)
         self.mainLayout.add_widget(self.applicationNameLayout)
 
@@ -63,6 +70,9 @@ class LoginDetailsStorage(Screen):
         self.mainLayout.add_widget(self.storeLoginDetailsButton)
         self.add_widget(self.mainLayout)
        
+    def on_button_press(self, instance_button: MDRaisedButton):
+        self.manager.current = 'Menu Screen'
+
     def storeLoginDetails(self,widget): 
         if len(self.applicationNameTextInput.text) > 0 and len(self.usernameTextInput.text) > 0 and len(self.passwordTextInput.text) > 0:
             self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,self.passwordTextInput.text) 

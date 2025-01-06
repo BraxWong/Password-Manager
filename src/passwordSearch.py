@@ -13,8 +13,12 @@ class PasswordSearch(Screen):
     def __init__(self, **kwargs):
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB()
-        self.mainLayout = BoxLayout(orientation='vertical')
-        self.mainLayout.add_widget(Label(text='Password Searching', font_size='20sp', size_hint_y=None, height=50))
+        self.mainLayout = BoxLayout(orientation='vertical',padding=20, spacing=10)
+        self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
+        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.topRowLayout.add_widget(self.backButton)
+        self.topRowLayout.add_widget(Label(text='Password Searching', font_size='20sp', halign='center'))        
+        self.mainLayout.add_widget(self.topRowLayout)
         self.allPassword = self.db.fetchAllFromDB()
 
         button_box = MDBoxLayout(
@@ -30,13 +34,14 @@ class PasswordSearch(Screen):
                     text=button_text, on_release=self.on_button_press
                 )
             )
-        self.data = [(i, *password[:3]) for i,password in enumerate(self.allPassword)]
+        self.data = [(i, *password[:4]) for i,password in enumerate(self.allPassword)]
         self.table = MDDataTable(
             column_data = [
                 ("Index",dp(30)),
-                ("Application Name",dp(50)),
-                ("Username",dp(50)),
-                ("Password",dp(50))
+                ("Application Name",dp(30)),
+                ("Username",dp(30)),
+                ("Password",dp(30)),
+                ("Date Created",dp(30))
             ],
             row_data = self.data,
             size_hint = (None,None),
@@ -58,9 +63,13 @@ class PasswordSearch(Screen):
             {
                 "Update": self.updateLoginDetails,
                 "Delete": self.deleteLoginDetails,
+                "Back": self.returnToMenu
             }[instance_button.text]()
         except KeyError:
             pass
+
+    def returnToMenu(self):
+        self.manager.current = 'Menu Screen'
 
     def updateLoginDetails(self):
         if len(self.table.get_row_checks()) > 1:
