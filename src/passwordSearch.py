@@ -68,6 +68,14 @@ class PasswordSearch(Screen):
         except KeyError:
             pass
 
+    def on_pre_enter(self, *args):
+        self.refresh_table_data()
+
+    def refresh_table_data(self):
+        self.allPassword = self.db.fetchAllFromDB()
+        self.data = [(i, *password[:4]) for i, password in enumerate(self.allPassword)]
+        self.table.update_row_data(self.table.row_data, self.data)
+
     def returnToMenu(self):
         self.manager.current = 'Menu Screen'
 

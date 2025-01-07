@@ -28,8 +28,8 @@ class LoginDetailsDB:
             self.con.commit()
 
     def updateEntryToDB(self,websiteName,username,password):
-        self.cur.execute(
-            f'UPDATE login_details SET password = \'{password}\' WHERE website_name = \'{websiteName}\' AND username = \'{username}\' AND date_created = \'{self.todays_date}\''
+        self.cur.execute('UPDATE login_details SET password = ?, username = ?, date_created = ? WHERE website_name = ?',
+            (password, username, self.todays_date, websiteName)
         )
         self.con.commit()
     

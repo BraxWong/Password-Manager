@@ -8,6 +8,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.popup import Popup
 from Database.LoginDetailsDB import *
+from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
 from loginDetailsStorage import * 
@@ -33,8 +34,12 @@ class Menu(Screen):
         self.generatePassword.bind(on_press=self.startPasswordGeneration)
         self.layout.add_widget(self.generatePassword)
 
+        self.importPassword = Button(text='Import password to system')
+        self.importPassword.bind(on_press=self.importPasswordToSystem)
+        self.layout.add_widget(self.importPassword)
+
         self.outputPassword = Button(text='Output password to file')
-        self.outputPassword.bind(on_press=self.exportPassword)
+        self.outputPassword.bind(on_press=self.exportPasswordToTXT)
         self.layout.add_widget(self.outputPassword)
         
         self.add_widget(self.layout)
@@ -45,13 +50,17 @@ class Menu(Screen):
     def startPasswordGeneration(self,widget):
         self.manager.current = 'Password Generation Screen'
 
-    def exportPassword(self,widget):
+    def importPasswordToSystem(self,widget):
+        self.importPassword = ImportPassword()
+
+    def exportPasswordToTXT(self,widget):
         self.exportPassword = ExportPassword()
         popup = Popup(title='Password Exported',
                       content=Label(text=f'All your password have been exported to \n{self.exportPassword.path}'),
                       size_hint=(None,None),
                       size=(400,400))
         popup.open()
+
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
