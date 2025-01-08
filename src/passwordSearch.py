@@ -8,6 +8,7 @@ from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
+from datetime import datetime
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
@@ -34,10 +35,14 @@ class PasswordSearch(Screen):
                     text=button_text, on_release=self.on_button_press
                 )
             )
-        self.data = [(i, *password[:4]) for i,password in enumerate(self.allPassword)]
+
+        self.data = [(i,self.dateComparison(password[3]),*password[:4]) for i,password in enumerate(self.allPassword)]
+        print(self.data)
+        self.dateComparison(self.allPassword[0][3])
         self.table = MDDataTable(
             column_data = [
                 ("Index",dp(30)),
+                ("Password Safety",dp(30)),
                 ("Application Name",dp(30)),
                 ("Username",dp(30)),
                 ("Password",dp(30)),
@@ -73,7 +78,7 @@ class PasswordSearch(Screen):
 
     def refresh_table_data(self):
         self.allPassword = self.db.fetchAllFromDB()
-        self.data = [(i, *password[:4]) for i, password in enumerate(self.allPassword)]
+        self.data = [(i, self.dateComparison(password[3]), *password[:4]) for i, password in enumerate(self.allPassword)]
         self.table.update_row_data(self.table.row_data, self.data)
 
     def returnToMenu(self):
@@ -109,3 +114,15 @@ class PasswordSearch(Screen):
                     size_hint=(None,None),
                     size=(600,600))
         popUp.open() 
+
+    def dateComparison(self,date):
+        self.todays_date = datetime.now().date()         
+        date_format = '%Y-%m-%d'
+        date = datetime.strptime(date,date_format).date()
+        difference = (self.todays_date - date).days
+        if difference < 15:
+            return ("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe")
+        elif difference > 15 and difference < 30:
+            return ("alert",[39/256,174/256,96/256,1],"Caution")
+        else:
+            return ("alert-circle",[39/256,174/256,96/256,1],"Danger")
