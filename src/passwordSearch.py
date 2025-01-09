@@ -13,14 +13,14 @@ from datetime import datetime
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
         super(PasswordSearch,self).__init__(**kwargs)
-        self.db = LoginDetailsDB()
+        self.db = LoginDetailsDB() 
         self.mainLayout = BoxLayout(orientation='vertical',padding=20, spacing=10)
         self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
         self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
         self.topRowLayout.add_widget(self.backButton)
         self.topRowLayout.add_widget(Label(text='Password Searching', font_size='20sp', halign='center'))        
         self.mainLayout.add_widget(self.topRowLayout)
-        self.allPassword = self.db.fetchAllFromDB()
+        self.allLoginDetails = self.db.fetchAllFromDB()
 
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
@@ -29,7 +29,7 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        for button_text in ["Delete", "Update"]:
+        for button_text in ["Delete", "Update", "Reveal Password"]:
             button_box.add_widget(
                 MDRaisedButton(
                     text=button_text, on_release=self.on_button_press
@@ -37,8 +37,7 @@ class PasswordSearch(Screen):
             )
 
         self.data = []
-        if len(self.allPassword) > 0:
-            self.data = [(i,self.dateComparison(password[3]),*password[:4]) for i,password in enumerate(self.allPassword)]
+        self.allPassword = []
         self.table = MDDataTable(
             column_data = [
                 ("Index",dp(30)),
@@ -68,7 +67,8 @@ class PasswordSearch(Screen):
             {
                 "Update": self.updateLoginDetails,
                 "Delete": self.deleteLoginDetails,
-                "Back": self.returnToMenu
+                "Back": self.returnToMenu,
+                "Reveal Password": self.revealPassword
             }[instance_button.text]()
         except KeyError:
             pass
@@ -77,10 +77,14 @@ class PasswordSearch(Screen):
         self.refresh_table_data()
 
     def refresh_table_data(self):
-        self.allPassword = self.db.fetchAllFromDB()
-        self.date = []
-        if len(self.allPassword) > 0:
-            self.data = [(i, self.dateComparison(password[3]), *password[:4]) for i, password in enumerate(self.allPassword)]
+        self.allLoginDetails = self.db.fetchAllFromDB()
+        self.data = []
+        self.allPassword = []
+        if len(self.allLoginDetails) > 0:
+            for i,password in enumerate(self.allLoginDetails):
+                self.allPassword.append(password[2])
+                self.password = "*" * len(password[2])
+                self.data.append((i,self.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
         self.table.update_row_data(self.table.row_data, self.data)
 
     def returnToMenu(self):
@@ -94,6 +98,13 @@ class PasswordSearch(Screen):
                           size=(600,600))
             popUp.open()
 
+    def revealPassword(self):
+        checkedRows = self.table.get_row_checks()
+        for row in checkedRows:
+            currentIndex = int(row[0])
+            newRow = list(self.table.row_data[currentIndex])
+            newRow[4] = self.allPassword[currentIndex]
+            self.table.update_row(self.table.row_data[currentIndex],newRow)
 # ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 # ┃                                                                              ┃
 # ┃      TODO: Might want to ask for confirmation before deleting the login      ┃
