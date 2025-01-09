@@ -36,9 +36,9 @@ class PasswordSearch(Screen):
                 )
             )
 
-        self.data = [(i,self.dateComparison(password[3]),*password[:4]) for i,password in enumerate(self.allPassword)]
-        print(self.data)
-        self.dateComparison(self.allPassword[0][3])
+        self.data = []
+        if len(self.allPassword) > 0:
+            self.data = [(i,self.dateComparison(password[3]),*password[:4]) for i,password in enumerate(self.allPassword)]
         self.table = MDDataTable(
             column_data = [
                 ("Index",dp(30)),
@@ -78,7 +78,9 @@ class PasswordSearch(Screen):
 
     def refresh_table_data(self):
         self.allPassword = self.db.fetchAllFromDB()
-        self.data = [(i, self.dateComparison(password[3]), *password[:4]) for i, password in enumerate(self.allPassword)]
+        self.date = []
+        if len(self.allPassword) > 0:
+            self.data = [(i, self.dateComparison(password[3]), *password[:4]) for i, password in enumerate(self.allPassword)]
         self.table.update_row_data(self.table.row_data, self.data)
 
     def returnToMenu(self):
