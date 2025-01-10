@@ -29,13 +29,14 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        for button_text in ["Delete", "Update", "Reveal Password"]:
+        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password"]:
             button_box.add_widget(
                 MDRaisedButton(
                     text=button_text, on_release=self.on_button_press
                 )
             )
 
+        self.rowChecked = []
         self.data = []
         self.allPassword = []
         self.table = MDDataTable(
@@ -56,11 +57,18 @@ class PasswordSearch(Screen):
             use_pagination = True,
             check = True
         )
+        self.table.bind(on_check_press=self.on_check_press)
         self.table_layout = AnchorLayout()
         self.table_layout.add_widget(self.table)
         self.mainLayout.add_widget(button_box)
         self.mainLayout.add_widget(self.table_layout)
         self.add_widget(self.mainLayout)
+
+    def on_check_press(self, instance_table, current_row):
+        if current_row[0] not in self.rowChecked:
+            self.rowChecked.append(current_row[0])
+        else:
+            self.rowChecked.remove(current_row[0])
 
     def on_button_press(self, instance_button: MDRaisedButton):
         try:
@@ -68,7 +76,8 @@ class PasswordSearch(Screen):
                 "Update": self.updateLoginDetails,
                 "Delete": self.deleteLoginDetails,
                 "Back": self.returnToMenu,
-                "Reveal Password": self.revealPassword
+                "Reveal Password": self.revealPassword,
+                "Hide Password": self.hidePassword
             }[instance_button.text]()
         except KeyError:
             pass
@@ -99,12 +108,19 @@ class PasswordSearch(Screen):
             popUp.open()
 
     def revealPassword(self):
-        checkedRows = self.table.get_row_checks()
-        for row in checkedRows:
-            currentIndex = int(row[0])
+        for row in self.rowChecked: 
+            currentIndex = int(row)
             newRow = list(self.table.row_data[currentIndex])
             newRow[4] = self.allPassword[currentIndex]
             self.table.update_row(self.table.row_data[currentIndex],newRow)
+
+    def hidePassword(self):
+        for row in self.rowChecked:
+            currentIndex = int(row)
+            newRow = list(self.table.row_data[currentIndex])
+            newRow[4] = "*" * len(self.allPassword[currentIndex])
+            self.table.update_row(self.table.row_data[currentIndex],newRow)
+
 # ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 # ┃                                                                              ┃
 # ┃      TODO: Might want to ask for confirmation before deleting the login      ┃
