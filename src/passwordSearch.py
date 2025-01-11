@@ -1,11 +1,13 @@
 from kivy.uix.modalview import AnchorLayout
+from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.metrics import dp
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
+from kivy.uix.textinput import TextInput
 from kivymd.uix.datatables import MDDataTable
-from kivymd.uix.button import MDRaisedButton, button
+from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from datetime import datetime
@@ -106,6 +108,83 @@ class PasswordSearch(Screen):
                           size_hint=(None,None),
                           size=(600,600))
             popUp.open()
+        else:
+            currentIndex = int(self.rowChecked[0])
+            mainLayout = BoxLayout(orientation='vertical')
+            applicationNameLayout = BoxLayout(orientation='horizontal')
+            applicationNameLayout.add_widget(Label(text='Name of Application/Website',
+                                                   font_size='15sp',
+                                                   pos_hint={'x':0.2,'y':0})
+                                             )
+            applicationNameTextInput = TextInput(text='', 
+                                                    multiline=False,
+                                                    size_hint=(None,None), 
+                                                    height=30, 
+                                                    width=250,
+                                                    pos_hint={'x':0.5,'y':0.45})
+            applicationNameTextInput.text = self.table.row_data[currentIndex][2]
+
+            applicationNameLayout.add_widget(applicationNameTextInput)
+            mainLayout.add_widget(applicationNameLayout)
+
+            usernameLayout = BoxLayout(orientation='horizontal')
+            usernameLayout.add_widget(Label(text='Username',
+                                            font_size='15sp',
+                                            pos_hint={'x':0.2,'y':0},))
+            usernameTextInput = TextInput(text='', 
+                                          multiline=False,
+                                          size_hint=(None,None), 
+                                          height=30, 
+                                          width=250,
+                                          pos_hint={'x':0.5,'y':0.45})
+            usernameTextInput.text = self.table.row_data[currentIndex][3]
+            usernameLayout.add_widget(usernameTextInput)
+            mainLayout.add_widget(usernameLayout)
+
+            passwordLayout = BoxLayout(orientation='horizontal')
+            passwordLayout.add_widget(Label(text='Password',
+                                            font_size='15sp',
+                                            pos_hint={'x':0.2,'y':0},))
+            passwordTextInput = TextInput(text='', 
+                                          multiline=False,
+                                          size_hint=(None,None), 
+                                          height=30, 
+                                          width=250,
+                                          pos_hint={'x':0.5,'y':0.45})
+            passwordTextInput.text = self.allPassword[currentIndex]
+            passwordLayout.add_widget(passwordTextInput)
+            mainLayout.add_widget(passwordLayout)
+
+            button_box = MDBoxLayout(
+                pos_hint={"center_x": 0.5},
+                adaptive_size=True,
+                padding="24dp",
+                spacing="24dp",
+            )
+
+            confirmButton = MDRaisedButton(text='Confirm')
+            cancelButton = MDRaisedButton(text='Cancel')
+            button_box.add_widget(confirmButton)
+            button_box.add_widget(cancelButton)
+            mainLayout.add_widget(button_box)
+            editLoginDetailsPopup = Popup(title='Edit Login Details',
+                                          content=mainLayout,
+                                          size_hint=(None,None),
+                                          size=(600,600))
+
+            cancelButton.bind(on_release=editLoginDetailsPopup.dismiss)
+            confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,applicationNameTextInput.text,usernameTextInput.text,passwordTextInput.text))
+            editLoginDetailsPopup.open()
+
+    def updateLoginDetailsToDB(self,instance,popup,applicationName,username,password):
+        self.db.updateEntryToDB(applicationName,username,password)
+        self.refresh_table_data()
+        popup.dismiss()
+        updatePopup = Popup(title='Success',
+                            content=Label(text='Your details have been updated'),
+                            size_hint=(None,None),
+                            size=(600,600))
+        updatePopup.open()
 
     def revealPassword(self):
         for row in self.rowChecked: 
@@ -121,12 +200,6 @@ class PasswordSearch(Screen):
             newRow[4] = "*" * len(self.allPassword[currentIndex])
             self.table.update_row(self.table.row_data[currentIndex],newRow)
 
-# ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-# ┃                                                                              ┃
-# ┃      TODO: Might want to ask for confirmation before deleting the login      ┃
-# ┃                              details for real.                               ┃
-# ┃                                                                              ┃
-# ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
     def deleteLoginDetailsConfirmation(self):
         confirmationLayout = BoxLayout(orientation='vertical',
                                                size_hint=(None,None),
