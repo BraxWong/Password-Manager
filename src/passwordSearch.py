@@ -5,7 +5,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivymd.uix.datatables import MDDataTable
-from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.button import MDRaisedButton, button
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from datetime import datetime
@@ -74,7 +74,7 @@ class PasswordSearch(Screen):
         try:
             {
                 "Update": self.updateLoginDetails,
-                "Delete": self.deleteLoginDetails,
+                "Delete": self.deleteLoginDetailsConfirmation,
                 "Back": self.returnToMenu,
                 "Reveal Password": self.revealPassword,
                 "Hide Password": self.hidePassword
@@ -127,21 +127,53 @@ class PasswordSearch(Screen):
 # ┃                              details for real.                               ┃
 # ┃                                                                              ┃
 # ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
-    def deleteLoginDetails(self):
-        message = "The following website login details have been removed:"
-        rows_to_delete = self.table.get_row_checks()
-    
-        rows_to_delete.sort(key=lambda x: int(x[0]), reverse=True)
+    def deleteLoginDetailsConfirmation(self):
+        confirmationLayout = BoxLayout(orientation='vertical',
+                                               size_hint=(None,None),
+                                               width=500,
+                                               pos_hint={'center_x':0.5})
+        button_box = MDBoxLayout(
+            pos_hint={"center_x": 0.5},
+            adaptive_size=True,
+            padding="24dp",
+            spacing="24dp",
+        )
+
+        confirmButton = MDRaisedButton(text='Confirm')
+        cancelButton = MDRaisedButton(text='Cancel')
+        confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
+        button_box.add_widget(confirmButton)
+        button_box.add_widget(cancelButton)
+        confirmationLayout.add_widget(button_box)
+        confirmationPopUp = Popup(title='Confirmation',
+                                  content=confirmationLayout,
+                                  size_hint=(None,None),
+                                  size=(600,200))
+
+        cancelButton.bind(on_release=confirmationPopUp.dismiss)
+        confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
+        confirmationPopUp.open()
+
         
+    def deleteLoginDetails(self, instance, popupWindow):
+        popupWindow.dismiss()
+        message = "The following website login details have been removed:"
+        rows_to_delete = [] 
+        for row in self.rowChecked:
+            rows_to_delete.append(self.table.row_data[int(row)])
+
+        rows_to_delete.sort(key=lambda x: int(x[0]), reverse=True)
+
         for row in rows_to_delete:
-            self.db.removeEntryFromDB(row[1])
+            self.db.removeEntryFromDB(row[2])
             self.table.remove_row(self.table.row_data[int(row[0])])
-            message += f"\n{row[1]}"
-            
+            message += f"\n{row[2]}"
+
         popUp = Popup(title='Success',
-                    content=Label(text=message),
-                    size_hint=(None,None),
-                    size=(600,600))
+                      content=Label(text=message),
+                      size_hint=(None,None),
+                      size=(600,600))
+
         popUp.open() 
 
     def dateComparison(self,date):

@@ -127,5 +127,14 @@ class PasswordGeneration(Screen):
                           size_hint=(None,None),
                           size=(400,400))
             popup.open()
+            self.resetInputWidgetValue()
             return password
         return self.generatePassword(widget)
+
+    def resetInputWidgetValue(self):
+        self.applicationNameTextInput.text = ''
+        self.usernameTextInput.text = ''
+        self.passwordLengthLabel.text = '14'
+        self.symbolEnabledCheckBox.active = False
+        self.passwordLengthSlider.value = 14
+
