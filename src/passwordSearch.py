@@ -1,5 +1,4 @@
 from kivy.uix.modalview import AnchorLayout
-from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.metrics import dp
 from kivy.uix.label import Label
@@ -53,10 +52,9 @@ class PasswordSearch(Screen):
             row_data = self.data,
             size_hint = (None,None),
             width = 800,
-            height = 400,
+            height = 300,
             background_color_cell="#451938",
             background_color_selected_cell="e4514f",
-            use_pagination = True,
             check = True
         )
         self.table.bind(on_check_press=self.on_check_press)

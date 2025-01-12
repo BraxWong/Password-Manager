@@ -20,20 +20,21 @@ class LoginDetailsStorage(Screen):
         self.topRowLayout.add_widget(Label(text='Store Login Details', font_size='20sp', halign='center'))
         self.mainLayout.add_widget(self.topRowLayout)
 
-        self.applicationNameLayout = BoxLayout(orientation='horizontal',size_hint=(None,None),width=500,height=50,pos_hint={'center_x':0.5})
-        self.applicationNameLayout.add_widget(Label(text='Name of applcation/website',
+        self.applicationNameLayout = BoxLayout(orientation='horizontal')
+        self.applicationNameLayout.add_widget(Label(text='Name of Application/Website',
                                                     font_size='15sp',
-                                                    size_hint_x=None,
-                                                    width=200))
+                                                    pos_hint={'x':0.2,'y':0})
+                                            )
         self.applicationNameTextInput = TextInput(text='', 
                                                   multiline=False,
                                                   size_hint=(None,None), 
                                                   height=30, 
-                                                  width=250)
+                                                  width=250,
+                                                  pos_hint={'x':0.5,'y':0.45})
 
-        self.applicationNameLayout.add_widget(Widget(size_hint_x=None, width=200))
         self.applicationNameLayout.add_widget(self.applicationNameTextInput)
         self.mainLayout.add_widget(self.applicationNameLayout)
+
 
         self.usernameLayout = BoxLayout(orientation='horizontal')
         self.usernameLayout.add_widget(Label(text='Username',

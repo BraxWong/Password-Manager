@@ -55,12 +55,6 @@ class Menu(Screen):
 
     def exportPasswordToTXT(self,widget):
         self.exportPassword = ExportPassword()
-        popup = Popup(title='Password Exported',
-                      content=Label(text=f'All your password have been exported to \n{self.exportPassword.path}'),
-                      size_hint=(None,None),
-                      size=(400,400))
-        popup.open()
-
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
