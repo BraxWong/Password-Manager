@@ -37,6 +37,7 @@ class PasswordSearch(Screen):
                 )
             )
 
+        table_and_buttons = BoxLayout(orientation='vertical', size_hint=(None, None), width=800)
         self.rowChecked = []
         self.data = []
         self.allPassword = []
@@ -52,15 +53,17 @@ class PasswordSearch(Screen):
             row_data = self.data,
             size_hint = (None,None),
             width = 800,
-            height = 300,
+            height = 400,
             background_color_cell="#451938",
             background_color_selected_cell="e4514f",
-            check = True
+            check = True,
+            use_pagination = True
         )
         self.table.bind(on_check_press=self.on_check_press)
+        table_and_buttons.add_widget(self.table)
+        table_and_buttons.add_widget(button_box)
         self.table_layout = AnchorLayout()
-        self.table_layout.add_widget(self.table)
-        self.mainLayout.add_widget(button_box)
+        self.table_layout.add_widget(table_and_buttons)
         self.mainLayout.add_widget(self.table_layout)
         self.add_widget(self.mainLayout)
 
