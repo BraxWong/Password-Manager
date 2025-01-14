@@ -9,12 +9,14 @@ from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
+from Database.VerifyUserDB import *
 from datetime import datetime
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
+        self.verifyUserDB = VerifyUserDB()
         self.mainLayout = BoxLayout(orientation='vertical',padding=20, spacing=10)
         self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
         self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
@@ -86,8 +88,62 @@ class PasswordSearch(Screen):
             pass
 
     def on_pre_enter(self, *args):
-        self.refresh_table_data()
+        if len(self.verifyUserDB.getUserPasswordAndHint()) > 0:
+            self.refresh_table_data()
+        else:
+            print("YOU DO NOT HAVE A PASSWORD")
+            self.createPasswordAndHint()
 
+    def createPasswordAndHint(self):
+        mainLayout = BoxLayout(orientation='vertical')
+        passwordLayout = BoxLayout(orientation='horizontal')
+        passwordLayout.add_widget(Label(text='Password',
+                                                font_size='15sp',
+                                                pos_hint={'x':0.2,'y':0})
+                                            )
+        passwordTextInput = TextInput(text='', 
+                                      multiline=False,
+                                      size_hint=(None,None), 
+                                      height=30, 
+                                      width=250,
+                                      pos_hint={'x':0.5,'y':0.45})
+
+        passwordLayout.add_widget(passwordTextInput)
+        mainLayout.add_widget(passwordLayout)
+
+        hintLayout = BoxLayout(orientation='horizontal')
+        hintLayout.add_widget(Label(text='Hint',
+                                        font_size='15sp',
+                                        pos_hint={'x':0.2,'y':0},))
+        hintTextInput = TextInput(text='', 
+                                  multiline=False,
+                                  size_hint=(None,None), 
+                                  height=30, 
+                                  width=250,
+                                  pos_hint={'x':0.5,'y':0.45})
+        hintLayout.add_widget(hintTextInput)
+        mainLayout.add_widget(hintLayout)
+
+        button_box = MDBoxLayout(
+            pos_hint={"center_x": 0.5},
+            adaptive_size=True,
+            padding="24dp",
+            spacing="24dp",
+        )
+
+        confirmButton = MDRaisedButton(text='Confirm')
+        cancelButton = MDRaisedButton(text='Cancel')
+        button_box.add_widget(confirmButton)
+        button_box.add_widget(cancelButton)
+        mainLayout.add_widget(button_box)
+        popUp = Popup(title='Create password & hint',
+                          content=mainLayout,
+                          size_hint=(None,None),
+                          size=(600,600))
+        cancelButton.bind(on_release=lambda x:self.cancelPasswordAndHint(x,popUp))
+        confirmButton.bind(on_release=lambda x:self.verifyUserDB.addPasswordAndHint(passwordTextInput.text,hintTextInput.text))
+        popUp.open()
+        
     def refresh_table_data(self):
         self.allLoginDetails = self.db.fetchAllFromDB()
         self.data = []
@@ -98,6 +154,10 @@ class PasswordSearch(Screen):
                 self.password = "*" * len(password[2])
                 self.data.append((i,self.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
         self.table.update_row_data(self.table.row_data, self.data)
+
+    def cancelPasswordAndHint(self,instance,popUp):
+        popUp.dismiss()
+        self.returnToMenu()
 
     def returnToMenu(self):
         self.manager.current = 'Menu Screen'
