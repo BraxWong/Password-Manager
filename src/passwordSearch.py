@@ -89,11 +89,79 @@ class PasswordSearch(Screen):
 
     def on_pre_enter(self, *args):
         if len(self.verifyUserDB.getUserPasswordAndHint()) > 0:
-            self.refresh_table_data()
+            self.passwordSearchLogin()
         else:
-            print("YOU DO NOT HAVE A PASSWORD")
             self.createPasswordAndHint()
 
+    def passwordSearchLogin(self):
+        mainLayout = BoxLayout(orientation='vertical')
+        passwordLayout = BoxLayout(orientation='horizontal')
+        passwordLayout.add_widget(Label(text='Password',
+                                                font_size='15sp',
+                                                pos_hint={'x':0.2,'y':0})
+                                            )
+        passwordTextInput = TextInput(text='', 
+                                      multiline=False,
+                                      size_hint=(None,None), 
+                                      height=30, 
+                                      width=250,
+                                      pos_hint={'x':0.5,'y':0.45})
+
+        passwordLayout.add_widget(passwordTextInput)
+        mainLayout.add_widget(passwordLayout)
+
+        hintLayout = BoxLayout(orientation='horizontal')
+        hintLayout.add_widget(Label(text='Hint',
+                                        font_size='15sp',
+                                        pos_hint={'x':0.2,'y':0},))
+        hintTextInput = TextInput(text='', 
+                                  multiline=False,
+                                  size_hint=(None,None), 
+                                  height=30, 
+                                  width=250,
+                                  pos_hint={'x':0.5,'y':0.45})
+        hintLayout.add_widget(hintTextInput)
+        mainLayout.add_widget(hintLayout)
+
+        button_box = MDBoxLayout(
+            pos_hint={"center_x": 0.5},
+            adaptive_size=True,
+            padding="24dp",
+            spacing="24dp",
+        )
+
+        confirmButton = MDRaisedButton(text='Confirm')
+        hintButton = MDRaisedButton(text='Hint')
+        button_box.add_widget(confirmButton)
+        button_box.add_widget(hintButton)
+        mainLayout.add_widget(button_box)
+        popUp = Popup(title='Password Search Login',
+                          content=mainLayout,
+                          size_hint=(None,None),
+                          size=(600,600))
+        hintButton.bind(on_release=lambda x:self.showHint(x,hintTextInput))
+        confirmButton.bind(on_release=lambda x:self.verifyPasswordSearchLogin(x,passwordTextInput.text,popUp))
+        popUp.open()
+    
+
+    def showHint(self, instance, textBox):
+        hint = self.verifyUserDB.getUserPasswordAndHint()[0][1]
+        textBox.text = hint
+
+    def verifyPasswordSearchLogin(self,instance,userInputPassword,passwordPopup):
+        password = self.verifyUserDB.getUserPasswordAndHint()[0][0]
+        if password == userInputPassword:
+            self.refresh_table_data()
+            passwordPopup.dismiss()
+        else:
+            incorrectPasswordPopUp = Popup(title='Incorrect Password',
+                                           content=Label(text='Incorrect Password'),
+                                           size_hint=(None,None),
+                                           size=(600,600))
+            incorrectPasswordPopUp.open()
+
+
+    
     def createPasswordAndHint(self):
         mainLayout = BoxLayout(orientation='vertical')
         passwordLayout = BoxLayout(orientation='horizontal')
@@ -141,9 +209,13 @@ class PasswordSearch(Screen):
                           size_hint=(None,None),
                           size=(600,600))
         cancelButton.bind(on_release=lambda x:self.cancelPasswordAndHint(x,popUp))
-        confirmButton.bind(on_release=lambda x:self.verifyUserDB.addPasswordAndHint(passwordTextInput.text,hintTextInput.text))
+        confirmButton.bind(on_release=lambda x:self.createPasswordSearchPassword(x,passwordTextInput.text,hintTextInput.text,popUp))
         popUp.open()
         
+    def createPasswordSearchPassword(self,instance,password,hint,popUp):
+        self.verifyUserDB.addPasswordAndHint(password,hint)
+        popUp.dismiss()
+
     def refresh_table_data(self):
         self.allLoginDetails = self.db.fetchAllFromDB()
         self.data = []
