@@ -24,6 +24,7 @@ class PasswordSearch(Screen):
         self.topRowLayout.add_widget(Label(text='Password Searching', font_size='20sp', halign='center'))        
         self.mainLayout.add_widget(self.topRowLayout)
         self.allLoginDetails = self.db.fetchAllFromDB()
+        self.loggedIn = False
 
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
@@ -78,19 +79,19 @@ class PasswordSearch(Screen):
     def on_button_press(self, instance_button: MDRaisedButton):
         try:
             {
-                "Update": self.updateLoginDetails,
-                "Delete": self.deleteLoginDetailsConfirmation,
-                "Back": self.returnToMenu,
-                "Reveal Password": self.revealPassword,
-                "Hide Password": self.hidePassword
+                "Update": lambda:self.updateLoginDetails(),
+                "Delete": lambda:self.deleteLoginDetailsConfirmation(),
+                "Back": lambda:self.returnToMenu(),
+                "Reveal Password": lambda:self.passwordCensor(False),
+                "Hide Password": lambda:self.passwordCensor()
             }[instance_button.text]()
         except KeyError:
             pass
 
     def on_pre_enter(self, *args):
-        if len(self.verifyUserDB.getUserPasswordAndHint()) > 0:
+        if len(self.verifyUserDB.getUserPasswordAndHint()) > 0 and not self.loggedIn:
             self.passwordSearchLogin()
-        else:
+        elif len(self.verifyUserDB.getUserPasswordAndHint()) == 0:
             self.createPasswordAndHint()
 
     def passwordSearchLogin(self):
@@ -153,15 +154,14 @@ class PasswordSearch(Screen):
         if password == userInputPassword:
             self.refresh_table_data()
             passwordPopup.dismiss()
+            self.loggedIn = True
         else:
             incorrectPasswordPopUp = Popup(title='Incorrect Password',
                                            content=Label(text='Incorrect Password'),
                                            size_hint=(None,None),
                                            size=(600,600))
             incorrectPasswordPopUp.open()
-
-
-    
+  
     def createPasswordAndHint(self):
         mainLayout = BoxLayout(orientation='vertical')
         passwordLayout = BoxLayout(orientation='horizontal')
@@ -319,18 +319,13 @@ class PasswordSearch(Screen):
                             size=(600,600))
         updatePopup.open()
 
-    def revealPassword(self):
+    def passwordCensor(self, hidePassword = True):
         for row in self.rowChecked: 
             currentIndex = int(row)
             newRow = list(self.table.row_data[currentIndex])
-            newRow[4] = self.allPassword[currentIndex]
-            self.table.update_row(self.table.row_data[currentIndex],newRow)
-
-    def hidePassword(self):
-        for row in self.rowChecked:
-            currentIndex = int(row)
-            newRow = list(self.table.row_data[currentIndex])
             newRow[4] = "*" * len(self.allPassword[currentIndex])
+            if not hidePassword:
+                 newRow[4] = self.allPassword[currentIndex]
             self.table.update_row(self.table.row_data[currentIndex],newRow)
 
     def deleteLoginDetailsConfirmation(self):
@@ -360,7 +355,6 @@ class PasswordSearch(Screen):
         confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
         confirmationPopUp.open()
 
-        
     def deleteLoginDetails(self, instance, popupWindow):
         popupWindow.dismiss()
         message = "The following website login details have been removed:"
@@ -382,6 +376,7 @@ class PasswordSearch(Screen):
 
         popUp.open() 
 
+    #TODO: Move this to a util file because it is not really UI related
     def dateComparison(self,date):
         self.todays_date = datetime.now().date()         
         date_format = '%Y-%m-%d'
