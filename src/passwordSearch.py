@@ -10,7 +10,7 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
-from datetime import datetime
+import Util.Util as util
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
@@ -224,7 +224,7 @@ class PasswordSearch(Screen):
             for i,password in enumerate(self.allLoginDetails):
                 self.allPassword.append(password[2])
                 self.password = "*" * len(password[2])
-                self.data.append((i,self.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
+                self.data.append((i,util.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
         self.table.update_row_data(self.table.row_data, self.data)
 
     def cancelPasswordAndHint(self,instance,popUp):
@@ -376,15 +376,3 @@ class PasswordSearch(Screen):
 
         popUp.open() 
 
-    #TODO: Move this to a util file because it is not really UI related
-    def dateComparison(self,date):
-        self.todays_date = datetime.now().date()         
-        date_format = '%Y-%m-%d'
-        date = datetime.strptime(date,date_format).date()
-        difference = (self.todays_date - date).days
-        if difference < 15:
-            return ("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe")
-        elif difference > 15 and difference < 30:
-            return ("alert",[39/256,174/256,96/256,1],"Caution")
-        else:
-            return ("alert-circle",[39/256,174/256,96/256,1],"Danger")
