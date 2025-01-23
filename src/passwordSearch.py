@@ -1,6 +1,7 @@
 from kivy.uix.modalview import AnchorLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.metrics import dp
+from kivy.core.clipboard import Clipboard 
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
@@ -17,11 +18,26 @@ class PasswordSearch(Screen):
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
         self.verifyUserDB = VerifyUserDB()
-        self.mainLayout = BoxLayout(orientation='vertical',padding=20, spacing=10)
-        self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
+        self.mainLayout = BoxLayout(
+            orientation='vertical',
+            size_hint=(1, 1),  
+            padding=0,
+            spacing=50  
+        )
+        self.topRowLayout = BoxLayout(orientation='horizontal', 
+                                      size_hint_y=None, 
+                                      height=50, 
+                                      padding=(10, 0))
         self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
         self.topRowLayout.add_widget(self.backButton)
-        self.topRowLayout.add_widget(Label(text='Password Searching', font_size='20sp', halign='center'))        
+        self.topRowLayout.add_widget(
+            Label(
+                text='Password Searching', 
+                font_size='20sp', 
+                halign='center',
+                size_hint_x=0.8
+            )
+        )        
         self.mainLayout.add_widget(self.topRowLayout)
         self.allLoginDetails = self.db.fetchAllFromDB()
         self.loggedIn = False
@@ -33,7 +49,7 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password"]:
+        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password", "Copy Password"]:
             button_box.add_widget(
                 MDRaisedButton(
                     text=button_text, on_release=self.on_button_press
@@ -83,7 +99,8 @@ class PasswordSearch(Screen):
                 "Delete": lambda:self.deleteLoginDetailsConfirmation(),
                 "Back": lambda:self.returnToMenu(),
                 "Reveal Password": lambda:self.passwordCensor(False),
-                "Hide Password": lambda:self.passwordCensor()
+                "Hide Password": lambda:self.passwordCensor(),
+                "Copy Password": lambda:self.copyPasswordToClipboard()
             }[instance_button.text]()
         except KeyError:
             pass
@@ -94,6 +111,7 @@ class PasswordSearch(Screen):
         elif len(self.verifyUserDB.getUserPasswordAndHint()) == 0:
             self.createPasswordAndHint()
 
+   
     def passwordSearchLogin(self):
         mainLayout = BoxLayout(orientation='vertical')
         passwordLayout = BoxLayout(orientation='horizontal')
@@ -327,6 +345,21 @@ class PasswordSearch(Screen):
             if not hidePassword:
                  newRow[4] = self.allPassword[currentIndex]
             self.table.update_row(self.table.row_data[currentIndex],newRow)
+
+    def copyPasswordToClipboard(self):
+        if len(self.rowChecked) > 1 or len(self.rowChecked) == 0:
+            popUp = Popup(title="Error",
+                          content=Label(text="Please select 1 password to be copied to the clipboard."),
+                          size_hint=(None,None),
+                          size=(600,600))
+            popUp.open()
+        else:
+            Clipboard.copy(self.allPassword[int(self.rowChecked[0])])
+            popUp = Popup(title="Success",
+                          content=Label(text="The password has been copied to the clipboard."),
+                          size_hint=(None,None),
+                          size=(600,600))
+            popUp.open()
 
     def deleteLoginDetailsConfirmation(self):
         confirmationLayout = BoxLayout(orientation='vertical',
