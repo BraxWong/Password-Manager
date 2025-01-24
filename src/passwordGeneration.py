@@ -9,14 +9,14 @@ from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
-import random
 from Database.LoginDetailsDB import LoginDetailsDB  
+import Util.Util
 
 class PasswordGeneration(Screen):
 
     def __init__(self, **kwargs):
         super(PasswordGeneration, self).__init__(**kwargs)
-
+        self.db = LoginDetailsDB() 
         self.mainLayout = BoxLayout(
             orientation='vertical',
             size_hint=(1, 1),  
@@ -101,7 +101,7 @@ class PasswordGeneration(Screen):
         self.generatePasswordButton = Button(
             text='Generate a password', size_hint=(None, None), height='40dp', width='200dp', pos_hint={'center_x': 0.5}
         )
-        self.generatePasswordButton.bind(on_press=self.generatePassword)
+        self.generatePasswordButton.bind(on_press=self.updateLoginDetailsToDB)
         self.mainLayout.add_widget(self.generatePasswordButton)
        
         self.mainLayout.add_widget(Widget(size_hint_y=1))
@@ -114,47 +114,16 @@ class PasswordGeneration(Screen):
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
 
-    def generatePassword(self,widget):
-        numbers=['0','1','2','3','4','5','6','7','8','9']
-        numberExistsInPassword=False
-        letters=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-        lettersExistsInPassword=False
-        upperLetters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-        upperLettersExistsInPassword=False
-        symbols=['!','@','#','$','^','&','*','?']
-        symbolExistsInPassword=False
-        password=''
-        for i in range(int(self.passwordLengthLabel.text)):
-            if self.symbolEnabledCheckBox.active:
-                num=random.randrange(0,4)
-            else:
-                num=random.randrange(0,3)
-                symbolExistsInPassword=True
-
-            match num:
-                case 0:
-                    password+=random.choice(numbers)
-                    numberExistsInPassword=True
-                case 1:
-                    password+=random.choice(letters)
-                    lettersExistsInPassword=True
-                case 2:
-                    password+=random.choice(upperLetters)
-                    upperLettersExistsInPassword=True
-                case 3:
-                    password+=random.choice(symbols)
-                    symbolExistsInPassword=True
-
-        if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
-            self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
-            popup = Popup(title='Password Generated',
-                          content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
-                          size_hint=(None,None),
-                          size=(400,400))
-            popup.open()
-            self.resetInputWidgetValue()
-            return password
-        return self.generatePassword(widget)
+    def updateLoginDetailsToDB(self,widget):
+        password = Util.Util.generatePassword(self.symbolEnabledCheckBox.active, int(self.passwordLengthLabel.text))
+        self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
+        popup = Popup(title='Password Generated',
+                        content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
+                        size_hint=(None,None),
+                        size=(400,400))
+        popup.open()
+        self.resetInputWidgetValue()
+        return password
 
     def resetInputWidgetValue(self):
         self.applicationNameTextInput.text = ''
