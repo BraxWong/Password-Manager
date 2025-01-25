@@ -263,33 +263,39 @@ class PasswordSearch(Screen):
             popUp.open()
         else:
             currentIndex = int(self.rowChecked[0])
-            mainLayout = BoxLayout(orientation='vertical')
-            applicationNameLayout = BoxLayout(orientation='horizontal')
-            applicationNameLayout.add_widget(Label(text='Name of Application/Website',
-                                                   font_size='15sp',
-                                                   pos_hint={'x':0.2,'y':0})
-                                             )
-            applicationNameTextInput = TextInput(text='', 
-                                                    multiline=False,
-                                                    size_hint=(None,None), 
-                                                    height=30, 
-                                                    width=250,
-                                                    pos_hint={'x':0.5,'y':0.45})
-            applicationNameTextInput.text = self.table.row_data[currentIndex][2]
-
+            mainLayout = BoxLayout(
+                orientation='vertical',
+                size_hint=(1, 1),  
+                padding=0,
+                spacing=50 
+            )
+            applicationNameLayout = BoxLayout(
+                orientation='horizontal',
+                size_hint_y=None,
+                height='50dp',
+                spacing='10dp'
+            )
+            applicationNameLayout.add_widget(
+                Label(
+                    text='Name of application/website',
+                    font_size='15sp',
+                    size_hint_x=0.4
+                )
+            )
+            applicationNameTextInput = TextInput(
+                text='', multiline=False, size_hint=(0.6, None), height='40dp'
+            )
             applicationNameLayout.add_widget(applicationNameTextInput)
             mainLayout.add_widget(applicationNameLayout)
 
-            usernameLayout = BoxLayout(orientation='horizontal')
-            usernameLayout.add_widget(Label(text='Username',
-                                            font_size='15sp',
-                                            pos_hint={'x':0.2,'y':0},))
-            usernameTextInput = TextInput(text='', 
-                                          multiline=False,
-                                          size_hint=(None,None), 
-                                          height=30, 
-                                          width=250,
-                                          pos_hint={'x':0.5,'y':0.45})
+                    
+            usernameLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
+            usernameLayout.add_widget(
+                Label(text='Username', font_size='15sp', size_hint_x=0.4)
+            )
+            usernameTextInput = TextInput(
+                text='', multiline=False, size_hint=(0.6, None), height='40dp'
+            )
             usernameTextInput.text = self.table.row_data[currentIndex][3]
             usernameLayout.add_widget(usernameTextInput)
             mainLayout.add_widget(usernameLayout)
