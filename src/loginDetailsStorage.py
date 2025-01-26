@@ -13,62 +13,72 @@ class LoginDetailsStorage(Screen):
     def __init__(self, **kwargs):
         super(LoginDetailsStorage,self).__init__(**kwargs)
         self.db = LoginDetailsDB()
-        self.mainLayout = BoxLayout(orientation='vertical')
-        self.topRowLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=(10, 0))
+        self.mainLayout = BoxLayout(
+            orientation='vertical',
+            size_hint=(1, 1),  
+            padding=0,
+            spacing=50  
+        )
+        self.topRowLayout = BoxLayout(orientation='horizontal', 
+                                      size_hint_y=None, 
+                                      height=50, 
+                                      padding=(10, 0))
         self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
         self.topRowLayout.add_widget(self.backButton)
-        self.topRowLayout.add_widget(Label(text='Store Login Details', font_size='20sp', halign='center'))
+        self.topRowLayout.add_widget(Label(text='Store Login Details', 
+                                           font_size='20sp', 
+                                           halign='center',
+                                           size_hint_x=0.8
+                                           )
+                                    )
         self.mainLayout.add_widget(self.topRowLayout)
 
-        self.applicationNameLayout = BoxLayout(orientation='horizontal')
+        self.applicationNameLayout = BoxLayout(
+                orientation='horizontal',
+                size_hint_y=None,
+                height='50dp',
+                spacing='10dp'
+            )
         self.applicationNameLayout.add_widget(Label(text='Name of Application/Website',
                                                     font_size='15sp',
-                                                    pos_hint={'x':0.2,'y':0})
+                                                    size_hint_x=0.4)
                                             )
         self.applicationNameTextInput = TextInput(text='', 
                                                   multiline=False,
-                                                  size_hint=(None,None), 
-                                                  height=30, 
-                                                  width=250,
-                                                  pos_hint={'x':0.5,'y':0.45})
-
+                                                  size_hint=(0.6,None), 
+                                                  height='40dp')
         self.applicationNameLayout.add_widget(self.applicationNameTextInput)
         self.mainLayout.add_widget(self.applicationNameLayout)
 
 
-        self.usernameLayout = BoxLayout(orientation='horizontal')
-        self.usernameLayout.add_widget(Label(text='Username',
-                                                    font_size='15sp',
-                                                    pos_hint={'x':0.2,'y':0},))
-        self.usernameTextInput = TextInput(text='', 
-                                                  multiline=False,
-                                                  size_hint=(None,None), 
-                                                  height=30, 
-                                                  width=250,
-                                                  pos_hint={'x':0.5,'y':0.45})
+        self.usernameLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
+        self.usernameLayout.add_widget(
+             Label(text='Username', font_size='15sp', size_hint_x=0.4)
+        )
+        self.usernameTextInput = TextInput(
+             text='', multiline=False, size_hint=(0.6, None), height='40dp'
+        )
         self.usernameLayout.add_widget(self.usernameTextInput)
         self.mainLayout.add_widget(self.usernameLayout)
 
-        self.passwordLayout = BoxLayout(orientation='horizontal')
-        self.passwordLayout.add_widget(Label(text='Password',
-                                                    font_size='15sp',
-                                                    pos_hint={'x':0.2,'y':0},))
-        self.passwordTextInput = TextInput(text='', 
-                                                  multiline=False,
-                                                  size_hint=(None,None), 
-                                                  height=30, 
-                                                  width=250,
-                                                  pos_hint={'x':0.5,'y':0.45})
+        self.passwordLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
+        self.passwordLayout.add_widget(
+             Label(text='Password', font_size='15sp', size_hint_x=0.4)
+        )
+        self.passwordTextInput = TextInput(
+             text='', multiline=False, size_hint=(0.6, None), height='40dp'
+        )
         self.passwordLayout.add_widget(self.passwordTextInput)
         self.mainLayout.add_widget(self.passwordLayout)
 
         self.storeLoginDetailsButton = Button(text='Store Login Details',
                                              size_hint=(None,None),
-                                             height=20,
-                                             width=200,
-                                             pos_hint={'x':0.379,'y':0.2})
+                                             height='40dp',
+                                             width='200dp',
+                                             pos_hint={'center_x':0.5})
         self.storeLoginDetailsButton.bind(on_press=self.storeLoginDetails)
         self.mainLayout.add_widget(self.storeLoginDetailsButton)
+        self.mainLayout.add_widget(Widget(size_hint_y=1))
         self.add_widget(self.mainLayout)
        
     def on_button_press(self, instance_button: MDRaisedButton):
