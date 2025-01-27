@@ -115,15 +115,33 @@ class PasswordGeneration(Screen):
         self.manager.current = 'Menu Screen'
 
     def updateLoginDetailsToDB(self,widget):
-        password = Util.Util.generatePassword(self.symbolEnabledCheckBox.active, int(self.passwordLengthLabel.text))
-        self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
-        popup = Popup(title='Password Generated',
-                        content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
+        if not self.checkLoginDetails():
+            password = Util.Util.generatePassword(self.symbolEnabledCheckBox.active, int(self.passwordLengthLabel.text))
+            self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
+            popup = Popup(title='Password Generated',
+                            content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
+                            size_hint=(None,None),
+                            size=(400,400))
+            popup.open()
+            self.resetInputWidgetValue()
+            return password
+
+    def checkLoginDetails(self):
+        missingInformation = False
+        errorMessage = "Please provide the following information:\n"
+        if self.applicationNameTextInput.text == "":
+            errorMessage += "Name of the Application\n"
+            missingInformation = True
+        if self.usernameTextInput.text == "":
+            errorMessage += "Your Username"
+            missingInformation = True
+        if missingInformation:
+            popup = Popup(title='Error',
+                        content=Label(text=errorMessage),
                         size_hint=(None,None),
                         size=(400,400))
-        popup.open()
-        self.resetInputWidgetValue()
-        return password
+            popup.open()
+        return missingInformation
 
     def resetInputWidgetValue(self):
         self.applicationNameTextInput.text = ''

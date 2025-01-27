@@ -1,4 +1,5 @@
 from datetime import datetime
+from Database.LoginDetailsDB import *
 import random
 def dateComparison(date):
     todays_date = datetime.now().date()         
@@ -43,6 +44,15 @@ def generatePassword(specialSymbolEnabled,passwordLength):
                     password+=random.choice(symbols)
                     symbolExistsInPassword=True
 
-        if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword:
+        if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword and not checkPasswordInDB(password):
             return password
         return generatePassword()
+
+def checkPasswordInDB(generatedPassword):
+    passwordFoundInDB = False
+    loginDetailsDB = LoginDetailsDB()
+    allPassword = loginDetailsDB.fetchAllFromDB()
+    for password in allPassword:
+        if generatedPassword == password[2]:
+            passwordFoundInDB = True
+    return passwordFoundInDB
