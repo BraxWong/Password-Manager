@@ -1,5 +1,5 @@
 from kivymd.app import MDApp
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager
 from kivy.clock import Clock
 from loginDetailsStorage import LoginDetailsStorage
 from menu import *
