@@ -17,13 +17,17 @@ class WebsiteMonitor:
 
     def checkCurrentURL(self, URL):
         if self.currentURL != URL and "login" in URL.lower():
+            loginDetailsFound = False
             self.currentURL = URL
             loginDB = LoginDetailsDB()
             details = loginDB.fetchAllFromDB()
             r = requests.get(URL)
             for detail in details:
                 if detail[0].lower() in URL.lower() or detail[0].lower() in r.text.lower():
+                    loginDetailsFound = True
                     self.openPopup()
+            if not loginDetailsFound:
+                self.popup.showCreateLoginDetailsPopup()
         else:
             print("SKIPPED checkCurrentURL()")
             
