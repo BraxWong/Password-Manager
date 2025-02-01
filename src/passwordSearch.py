@@ -114,6 +114,8 @@ class PasswordSearch(Screen):
             self.passwordSearchLogin()
         elif len(self.verifyUserDB.getUserPasswordAndHint()) == 0:
             self.createPasswordAndHint()
+        else:
+            self.refresh_table_data()
 
     def passwordSearchLogin(self):
         mainLayout = BoxLayout(orientation='vertical')
@@ -263,65 +265,7 @@ class PasswordSearch(Screen):
             popUp.open()
         else:
             currentIndex = int(self.rowChecked[0])
-            mainLayout = BoxLayout(
-                orientation='vertical',
-                size_hint=(1, 1),  
-                padding=0,
-                spacing=50 
-            )
-            applicationNameLayout = BoxLayout(
-                orientation='horizontal',
-                size_hint_y=None,
-                height='50dp',
-                spacing='10dp'
-            )
-            applicationNameLayout.add_widget(
-                Label(
-                    text='Name of application/website',
-                    font_size='15sp',
-                    size_hint_x=0.4
-                )
-            )
-            applicationNameTextInput = TextInput(
-                text='', multiline=False, size_hint=(0.6, None), height='40dp'
-            )
-            applicationNameLayout.add_widget(applicationNameTextInput)
-            mainLayout.add_widget(applicationNameLayout)
-
-                    
-            usernameLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
-            usernameLayout.add_widget(
-                Label(text='Username', font_size='15sp', size_hint_x=0.4)
-            )
-            usernameTextInput = TextInput(
-                text='', multiline=False, size_hint=(0.6, None), height='40dp'
-            )
-            usernameTextInput.text = self.table.row_data[currentIndex][3]
-            usernameLayout.add_widget(usernameTextInput)
-            mainLayout.add_widget(usernameLayout)
-
-            passwordLengthLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='70dp', spacing='10dp')
-            passwordLengthLayout.add_widget(
-                Label(text='Length of password', font_size='15sp', size_hint_x=0.4)
-            )
-            passwordSliderLayout = BoxLayout(orientation='vertical', size_hint_x=0.6)
-            self.passwordLengthLabel = Label(text='14', font_size='20sp', halign='center')
-            passwordSliderLayout.add_widget(self.passwordLengthLabel)
-            passwordLengthSlider = Slider(
-                min=1, max=64, value=14, value_track=True, value_track_color=[1, 0, 0, 1]
-            )
-            passwordLengthSlider.bind(value=self.onSliderValueChange)
-            passwordSliderLayout.add_widget(passwordLengthSlider)
-            passwordLengthLayout.add_widget(passwordSliderLayout)
-            mainLayout.add_widget(passwordLengthLayout)
-
-            symbolLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
-            symbolLayout.add_widget(
-                Label(text='Include special symbol', font_size='15sp', size_hint_x=0.135)
-            )
-            symbolEnabledCheckBox = CheckBox(size_hint_x=0.2)
-            symbolLayout.add_widget(symbolEnabledCheckBox)
-            mainLayout.add_widget(symbolLayout)
+            infoMap = util.createLoginDetailPopupLayout() 
 
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},
@@ -329,23 +273,20 @@ class PasswordSearch(Screen):
                 padding="24dp",
                 spacing="24dp",
             )
-
+            infoMap["Username"].text = self.table.row_data[currentIndex][3]
             confirmButton = MDRaisedButton(text='Confirm')
             cancelButton = MDRaisedButton(text='Cancel')
             button_box.add_widget(confirmButton)
             button_box.add_widget(cancelButton)
-            mainLayout.add_widget(button_box)
+            infoMap["Layout"].add_widget(button_box)
             editLoginDetailsPopup = Popup(title='Edit Login Details',
-                                          content=mainLayout,
+                                          content=infoMap["Layout"],
                                           size_hint=(None,None),
                                           size=(600,600))
 
             cancelButton.bind(on_release=editLoginDetailsPopup.dismiss)
-            confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,applicationNameTextInput.text,usernameTextInput.text,util.generatePassword(symbolEnabledCheckBox.active,int(passwordLengthSlider.value))))
+            confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,infoMap["ApplicationName"].text,infoMap["Username"].text,util.generatePassword(infoMap["SymbolEnabledCheckBox"].active,int(infoMap["PasswordLength"].value))))
             editLoginDetailsPopup.open()
-
-    def onSliderValueChange(self,widget,val):
-       self.passwordLengthLabel.text=str(int(val)) 
 
     def updateLoginDetailsToDB(self,instance,popup,applicationName,username,password):
         self.db.updateEntryToDB(applicationName,username,password)

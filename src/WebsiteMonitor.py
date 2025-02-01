@@ -25,12 +25,9 @@ class WebsiteMonitor:
             for detail in details:
                 if detail[0].lower() in URL.lower() or detail[0].lower() in r.text.lower():
                     loginDetailsFound = True
-                    self.openPopup()
+                    self.openPopup(detail[0],detail[1],detail[2])
             if not loginDetailsFound:
                 self.popup.showCreateLoginDetailsPopup()
-        else:
-            print("SKIPPED checkCurrentURL()")
             
-    #DANGER: NOT WORKING YET AS THE PROGRAM IS UNABLE TO CREATE A POPUP OUTSIDE OF KIVY UI THREAD
-    def openPopup(self):
-        self.popup.showPopup("TESTING TITLE","TESTING CONTENT")
+    def openPopup(self,websiteName,username,password):
+        self.popup.showPopup(f"{websiteName}'s login details",f"Username: {username}\nPassword: {password}")
