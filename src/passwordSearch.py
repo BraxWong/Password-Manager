@@ -349,6 +349,7 @@ class PasswordSearch(Screen):
         confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
         confirmationPopUp.open()
 
+    #TODO: For some reason it is going out of index when deleting things one at a time.
     def deleteLoginDetails(self, instance, popupWindow):
         popupWindow.dismiss()
         message = "The following website login details have been removed:"

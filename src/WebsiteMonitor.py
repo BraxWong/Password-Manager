@@ -8,13 +8,23 @@ class WebsiteMonitor:
     def __init__(self):
         self.popup = WebsiteMonitorPopup.instance()
         self.currentURL = ""
+        self.driver = None
 
     def run(self): 
-        driver = webdriver.Chrome()
-        while True:
-            time.sleep(5)
-            self.checkCurrentURL(driver.current_url)
+        try:
+            self.driver = webdriver.Chrome()
+            while True:
+                if self.driver != None:
+                    time.sleep(5)
+                    self.checkCurrentURL(self.driver.current_url)
+        except Exception as e:
+            pass
 
+    def stop(self):
+        self.driver.quit()
+        self.driver = None
+
+    #TODO: Something weird is going on here with the database race condition. It would not run showCreateLoginDetailsPopup() even if the record of the website has been removed from the database.
     def checkCurrentURL(self, URL):
         if self.currentURL != URL and "login" in URL.lower():
             loginDetailsFound = False

@@ -12,12 +12,15 @@ from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
 from loginDetailsStorage import * 
+from WebsiteMonitor import *
+import threading
 
 class Menu(Screen):
-    #Establishes the UI of the Menu Screen
-    #TODO: Have to create a callback functions for all the buttons to transition to a different screen
     def __init__(self, **kwargs):
         super(Menu,self).__init__(**kwargs)
+        self.websiteMonitor = WebsiteMonitor()
+        self.websiteMonitorThread = threading.Thread(target=self.websiteMonitor.run, daemon=True)
+
         self.layout = GridLayout(cols=1)
         self.cols=1
         self.layout.add_widget(Label(text='Password Manager',font_size='20sp'))
@@ -41,7 +44,11 @@ class Menu(Screen):
         self.outputPassword = Button(text='Output password to file')
         self.outputPassword.bind(on_press=self.exportPasswordToTXT)
         self.layout.add_widget(self.outputPassword)
-        
+
+        self.startStopWebsiteMonitor = Button(text='Start website monitor')
+        self.startStopWebsiteMonitor.bind(on_press=self.startStopMonitorThread)
+        self.layout.add_widget(self.startStopWebsiteMonitor)
+
         self.add_widget(self.layout)
 
     def startPasswordSearch(self,widget):
@@ -58,3 +65,16 @@ class Menu(Screen):
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
+
+    #TODO: Kinda works but it does not allow the thread to restart. Have to think of a work around
+    def startStopMonitorThread(self,widget):
+        if self.websiteMonitor.driver is None:
+            def initializeMonitorThread(dt):
+                self.websiteMonitorThread.start()
+                self.websiteMonitorThread.run 
+            Clock.schedule_once(initializeMonitorThread,0)
+            self.startStopWebsiteMonitor.text = 'Stop website monitor'
+        else:
+            self.websiteMonitor.stop()
+            self.websiteMonitorThread.join(timeout=1)            
+            self.startStopWebsiteMonitor.text = 'Start website monitor'
