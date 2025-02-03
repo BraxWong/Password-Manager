@@ -13,4 +13,4 @@ Introducing a password management solution designed to simplify and secure your 
 
 ### Login Details Storage
 
-![alt text](Resources\LoginDetailsStorageImage.png "Login Storage Image")
+![alt text](src\Resources\LoginDetailsStorageImage.png "Login Storage Image")
