@@ -29,6 +29,7 @@ class WebsiteMonitorPopup(object):
             if cls._popupOpened:
                 cls._popup.dismiss()
                 cls._popupOpened = False
+            #TODO: Enable users to copy both users and passwords to their clipboard when the popup is opened.
             cls._popup = Popup(title=title,
                             content=Label(text=content),
                             size_hint=(None,None),

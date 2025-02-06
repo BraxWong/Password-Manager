@@ -60,3 +60,5 @@ Website: WEBSITENAME2 Username: USERNAME2 Password: Password2
 Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
 
 ## TODO
+- [ ] Enable users to restart website monitor if it was terminated
+- [ ] Enable users to copy login details to the clipboard when login details popup is opened.
