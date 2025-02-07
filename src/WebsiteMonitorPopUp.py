@@ -1,6 +1,8 @@
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
+from kivy.core.clipboard import Clipboard 
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDRaisedButton
 from Database.LoginDetailsDB import LoginDetailsDB
@@ -24,14 +26,34 @@ class WebsiteMonitorPopup(object):
         return cls._instance
     
     @classmethod
-    def showPopup(cls,title,content):
+    def showPopup(cls,title,username,password):
         def create_popup(dt):
             if cls._popupOpened:
                 cls._popup.dismiss()
                 cls._popupOpened = False
-            #TODO: Enable users to copy both users and passwords to their clipboard when the popup is opened.
+            mainLayout = BoxLayout(
+                orientation='vertical',
+                size_hint=(1,1),
+                padding=0,
+                spacing=50
+            )
+            mainLayout.add_widget(Label(text=f'Username:{username}\nPassword:{password}'))
+            button_box = MDBoxLayout(
+                pos_hint={"center_x": 0.5},
+                adaptive_size=True,
+                padding="24dp",
+                spacing="24dp",
+            )
+
+            copyUsernameButton = MDRaisedButton(text='Copy Username')
+            copyUsernameButton.bind(on_release=lambda x:Clipboard.copy(username))
+            copyPasswordButton = MDRaisedButton(text='Copy Password')
+            copyPasswordButton.bind(on_release=lambda x:Clipboard.copy(password))
+            button_box.add_widget(copyUsernameButton)
+            button_box.add_widget(copyPasswordButton)
+            mainLayout.add_widget(button_box)
             cls._popup = Popup(title=title,
-                            content=Label(text=content),
+                            content=mainLayout,
                             size_hint=(None,None),
                             size=(400,400))
             cls._popup.open()

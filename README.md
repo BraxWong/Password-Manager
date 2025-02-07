@@ -61,4 +61,5 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
 
 ## TODO
 - [ ] Enable users to restart website monitor if it was terminated
-- [ ] Enable users to copy login details to the clipboard when login details popup is opened.
+- [✔️ 2/7/2025 ] Enable users to copy login details to the clipboard when login details popup is opened.
+- [ ] Use a hash function to encode stored passwords and when validating user logins

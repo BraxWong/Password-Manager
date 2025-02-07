@@ -40,4 +40,4 @@ class WebsiteMonitor:
                 self.popup.showCreateLoginDetailsPopup()
             
     def openPopup(self,websiteName,username,password):
-        self.popup.showPopup(f"{websiteName}'s login details",f"Username: {username}\nPassword: {password}")
+        self.popup.showPopup(f"{websiteName}'s login details",username,password)
