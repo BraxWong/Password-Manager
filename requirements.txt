@@ -3,3 +3,4 @@ kivymd
 plyer
 pyobjus
 selenium
+bcrypt

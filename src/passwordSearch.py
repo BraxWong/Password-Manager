@@ -15,6 +15,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 import Util.Util as util
+import Util.passwordHasing as passwordHasing
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
@@ -173,7 +174,7 @@ class PasswordSearch(Screen):
 
     def verifyPasswordSearchLogin(self,instance,userInputPassword,passwordPopup):
         password = self.verifyUserDB.getUserPasswordAndHint()[0][0]
-        if password == userInputPassword:
+        if passwordHasing.checkPassword(userInputPassword,password):
             self.refresh_table_data()
             passwordPopup.dismiss()
             self.loggedIn = True
@@ -235,7 +236,7 @@ class PasswordSearch(Screen):
         popUp.open()
         
     def createPasswordSearchPassword(self,instance,password,hint,popUp):
-        self.verifyUserDB.addPasswordAndHint(password,hint)
+        self.verifyUserDB.addPasswordAndHint(passwordHasing.encodePassword(password),hint)
         popUp.dismiss()
 
     def refresh_table_data(self):

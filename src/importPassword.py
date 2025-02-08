@@ -24,6 +24,7 @@ class ImportPassword:
         f = open(self.path,"r")
         lineList = f.readlines()
         for line in lineList:
+            #FIXME: The following parsing method does not work if the website, username, or the password involves spaces.
             line = line.replace("Website: ", '')
             line = line.replace("Username: ",'')
             line = line.replace("Password: ",'')
