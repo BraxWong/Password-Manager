@@ -53,7 +53,7 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password", "Copy Password"]:
+        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password", "Copy Username", "Copy Password"]:
             button_box.add_widget(
                 MDRaisedButton(
                     text=button_text, on_release=self.on_button_press
@@ -105,7 +105,8 @@ class PasswordSearch(Screen):
                 "Back": lambda:self.returnToMenu(),
                 "Reveal Password": lambda:self.passwordCensor(False),
                 "Hide Password": lambda:self.passwordCensor(),
-                "Copy Password": lambda:self.copyPasswordToClipboard()
+                "Copy Password": lambda:self.copyPasswordOrUsernameToClipboard(False),
+                "Copy Username": lambda:self.copyPasswordOrUsernameToClipboard(True)
             }[instance_button.text]()
         except KeyError:
             pass
@@ -258,9 +259,9 @@ class PasswordSearch(Screen):
         self.manager.current = 'Menu Screen'
 
     def updateLoginDetails(self):
-        if len(self.table.get_row_checks()) > 1:
+        if len(self.table.get_row_checks()) != 1:
             popUp = Popup(title='Error',
-                          content=Label(text="Please only select 1 row at a time when updating your login details"),
+                          content=Label(text="Please select 1 row at a time when updating your login details"),
                           size_hint=(None,None),
                           size=(600,600))
             popUp.open()
@@ -308,47 +309,50 @@ class PasswordSearch(Screen):
                  newRow[4] = self.allPassword[currentIndex]
             self.table.update_row(self.table.row_data[currentIndex],newRow)
 
-    def copyPasswordToClipboard(self):
-        if len(self.rowChecked) > 1 or len(self.rowChecked) == 0:
+    def copyPasswordOrUsernameToClipboard(self, copyUsername):
+        popupText = "username" if copyUsername else "password"
+        if len(self.rowChecked) != 1:
             popUp = Popup(title="Error",
-                          content=Label(text="Please select 1 password to be copied to the clipboard."),
+                          content=Label(text=f"Please select 1 {popupText} to be copied to the clipboard."),
                           size_hint=(None,None),
                           size=(600,600))
             popUp.open()
         else:
-            Clipboard.copy(self.allPassword[int(self.rowChecked[0])])
+            contentToCopy = self.table.row_data[int(self.rowChecked[0])][3] if copyUsername else self.allPassword[int(self.rowChecked[0])]
+            Clipboard.copy(contentToCopy)
             popUp = Popup(title="Success",
-                          content=Label(text="The password has been copied to the clipboard."),
+                          content=Label(text=f"The {popupText} has been copied to the clipboard."),
                           size_hint=(None,None),
                           size=(600,600))
             popUp.open()
 
     def deleteLoginDetailsConfirmation(self):
-        confirmationLayout = BoxLayout(orientation='vertical',
-                                               size_hint=(None,None),
-                                               width=500,
-                                               pos_hint={'center_x':0.5})
-        button_box = MDBoxLayout(
-            pos_hint={"center_x": 0.5},
-            adaptive_size=True,
-            padding="24dp",
-            spacing="24dp",
-        )
+        if len(self.rowChecked) == 1:
+            confirmationLayout = BoxLayout(orientation='vertical',
+                                                size_hint=(None,None),
+                                                width=500,
+                                                pos_hint={'center_x':0.5})
+            button_box = MDBoxLayout(
+                pos_hint={"center_x": 0.5},
+                adaptive_size=True,
+                padding="24dp",
+                spacing="24dp",
+            )
 
-        confirmButton = MDRaisedButton(text='Confirm')
-        cancelButton = MDRaisedButton(text='Cancel')
-        confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
-        button_box.add_widget(confirmButton)
-        button_box.add_widget(cancelButton)
-        confirmationLayout.add_widget(button_box)
-        confirmationPopUp = Popup(title='Confirmation',
-                                  content=confirmationLayout,
-                                  size_hint=(None,None),
-                                  size=(600,200))
+            confirmButton = MDRaisedButton(text='Confirm')
+            cancelButton = MDRaisedButton(text='Cancel')
+            confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
+            button_box.add_widget(confirmButton)
+            button_box.add_widget(cancelButton)
+            confirmationLayout.add_widget(button_box)
+            confirmationPopUp = Popup(title='Confirmation',
+                                    content=confirmationLayout,
+                                    size_hint=(None,None),
+                                    size=(600,200))
 
-        cancelButton.bind(on_release=confirmationPopUp.dismiss)
-        confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
-        confirmationPopUp.open()
+            cancelButton.bind(on_release=confirmationPopUp.dismiss)
+            confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
+            confirmationPopUp.open()
 
     #TODO: For some reason it is going out of index when deleting things one at a time.
     def deleteLoginDetails(self, instance, popupWindow):
