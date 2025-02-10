@@ -2,6 +2,7 @@ from plyer import filechooser
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from Database.LoginDetailsDB import LoginDetailsDB
+import re
 
 class ImportPassword:
     def __init__(self):
@@ -24,13 +25,17 @@ class ImportPassword:
         f = open(self.path,"r")
         lineList = f.readlines()
         for line in lineList:
-            #FIXME: The following parsing method does not work if the website, username, or the password involves spaces.
             line = line.replace("Website: ", '')
+            usernameIndex = [match.start() for match in re.finditer("Username: ",line)] 
+            website = line[0:usernameIndex[0]-2]
+            line = line.replace(website+"  ",'')
             line = line.replace("Username: ",'')
+            passwordIndex = [match.start() for match in re.finditer("Password: ",line)]
+            username = line[0:passwordIndex[0]-2]
+            line = line.replace(username+"  ",'')
             line = line.replace("Password: ",'')
-            line = line.strip()
-            loginDetails = line.split()
-            self.loginDetails.addEntryToDB(loginDetails[0],loginDetails[1],loginDetails[2])
+            password = line
+            self.loginDetails.addEntryToDB(website,username,password)
         self.selectedFile = True
         popUp = Popup(title='Updated',
                       content=Label(text="Your user details have been updated."),

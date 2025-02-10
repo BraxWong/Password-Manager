@@ -7,8 +7,6 @@ from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-from kivy.uix.slider import Slider
-from kivy.uix.checkbox import CheckBox
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
