@@ -325,7 +325,7 @@ class PasswordSearch(Screen):
             popUp.open()
 
     def deleteLoginDetailsConfirmation(self):
-        if len(self.rowChecked) == 1:
+        if len(self.rowChecked) >= 1:
             confirmationLayout = BoxLayout(orientation='vertical',
                                                 size_hint=(None,None),
                                                 width=500,
@@ -352,7 +352,6 @@ class PasswordSearch(Screen):
             confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
             confirmationPopUp.open()
 
-    #TODO: For some reason it is going out of index when deleting things one at a time.
     def deleteLoginDetails(self, instance, popupWindow):
         popupWindow.dismiss()
         message = "The following website login details have been removed:"
@@ -365,6 +364,7 @@ class PasswordSearch(Screen):
         for row in rows_to_delete:
             self.db.removeEntryFromDB(row[2])
             self.table.remove_row(self.table.row_data[int(row[0])])
+            self.refresh_table_data()
             message += f"\n{row[2]}"
 
         popUp = Popup(title='Success',
