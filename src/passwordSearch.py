@@ -237,6 +237,7 @@ class PasswordSearch(Screen):
     def createPasswordSearchPassword(self,instance,password,hint,popUp):
         self.verifyUserDB.addPasswordAndHint(passwordHasing.encodePassword(password),hint)
         popUp.dismiss()
+        self.refresh_table_data()
 
     def refresh_table_data(self):
         self.allLoginDetails = self.db.fetchAllFromDB()
