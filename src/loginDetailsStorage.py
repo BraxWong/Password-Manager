@@ -7,6 +7,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
 from Database.LoginDetailsDB import LoginDetailsDB  
+import requests
+import hashlib
 
 class LoginDetailsStorage(Screen):
 
@@ -71,6 +73,19 @@ class LoginDetailsStorage(Screen):
         self.passwordLayout.add_widget(self.passwordTextInput)
         self.mainLayout.add_widget(self.passwordLayout)
 
+        self.checkPasswordPwnedLayout = BoxLayout(orientation='horizontal',size_hint_y=None, height='50dp', spacing='10dp')
+        self.checkPasswordPwnedLayout.add_widget(
+             Label(text='Check Password Leakage', font_size='15sp',size_hint_x=0.4)
+        )
+        self.checkPasswordButton = Button(text='Confirm',
+                                          size_hint=(0.6, None), 
+                                          height='40dp')
+
+        self.checkPasswordButton.bind(on_press=self.checkPasswordPwned)
+        self.checkPasswordPwnedLayout.add_widget(self.checkPasswordButton)
+
+        self.mainLayout.add_widget(self.checkPasswordPwnedLayout)
+
         self.storeLoginDetailsButton = Button(text='Store Login Details',
                                              size_hint=(None,None),
                                              height='40dp',
@@ -83,6 +98,35 @@ class LoginDetailsStorage(Screen):
        
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
+
+    def checkPasswordPwned(self,widget):
+        if len(self.passwordTextInput.text) > 0:
+            passwordPwned = False
+            passwordHash = hashlib.sha1(self.passwordTextInput.text.encode()).hexdigest().upper()
+            passSha = passwordHash[:5]
+            apiKey = f'https://api.pwnedpasswords.com/range/{passSha}' 
+            r = requests.get(apiKey)
+            hashes = (line.split(":") for line in r.text.splitlines())
+            for h, count in hashes:
+                if h == passwordHash[5:]:
+                    passwordPwned = True
+                    popup = Popup(title="WARNING",
+                                  content=Label(text=f"WARNING!!!\nYOUR PASSWORD HAS BEEN FOUND {count} TIMES!!!\nCHANGE YOUR PASSWORD NOW!!!!"),
+                                  size_hint=(None,None),
+                                  size=(600,600))
+                    popup.open()
+            if not passwordPwned:
+                popup = Popup(title="Safe",
+                              content=Label(text="Your password is safe."),
+                              size_hint=(None,None),
+                              size=(600,600))
+                popup.open()
+        else:
+            popup = Popup(title="Error",
+                          content=Label(text="Please provide a password before checking for leaks."),
+                          size_hint=(None,None),
+                          size=(600,600))
+            popup.open()
 
     def storeLoginDetails(self,widget): 
         if len(self.applicationNameTextInput.text) > 0 and len(self.usernameTextInput.text) > 0 and len(self.passwordTextInput.text) > 0:
