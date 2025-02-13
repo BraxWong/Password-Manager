@@ -31,6 +31,8 @@ python src/main.py
 2. Username
 3. Password
 
+<p>Users can also check their passwords against the pwned API to find out if their passwords have been compromised.</p>
+
 ### Password Generation
 
 ![Password Generation Image](src/Resources/PasswordGenerationImage.PNG "Password Generation Image")
