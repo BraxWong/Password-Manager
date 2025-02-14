@@ -14,6 +14,7 @@ class LoginDetailsStorage(Screen):
 
     def __init__(self, **kwargs):
         super(LoginDetailsStorage,self).__init__(**kwargs)
+
         self.db = LoginDetailsDB()
         self.mainLayout = BoxLayout(
             orientation='vertical',
@@ -99,9 +100,9 @@ class LoginDetailsStorage(Screen):
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
 
-    def checkPasswordPwned(self,widget):
+    def checkPasswordPwned(self,widget,showPopup=True):
+        passwordPwned = False
         if len(self.passwordTextInput.text) > 0:
-            passwordPwned = False
             passwordHash = hashlib.sha1(self.passwordTextInput.text.encode()).hexdigest().upper()
             passSha = passwordHash[:5]
             apiKey = f'https://api.pwnedpasswords.com/range/{passSha}' 
@@ -115,30 +116,33 @@ class LoginDetailsStorage(Screen):
                                   size_hint=(None,None),
                                   size=(600,600))
                     popup.open()
-            if not passwordPwned:
+            if not passwordPwned and showPopup:
                 popup = Popup(title="Safe",
-                              content=Label(text="Your password is safe."),
-                              size_hint=(None,None),
-                              size=(600,600))
+                            content=Label(text="Your password is safe."),
+                            size_hint=(None,None),
+                            size=(600,600))
                 popup.open()
         else:
+            passwordPwned = True
             popup = Popup(title="Error",
                           content=Label(text="Please provide a password before checking for leaks."),
                           size_hint=(None,None),
                           size=(600,600))
             popup.open()
+        return passwordPwned
 
     def storeLoginDetails(self,widget): 
         if len(self.applicationNameTextInput.text) > 0 and len(self.usernameTextInput.text) > 0 and len(self.passwordTextInput.text) > 0:
-            self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,self.passwordTextInput.text) 
-            popup = Popup(title='Password Stored',
-                                    content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{self.passwordTextInput.text}\nSaved in Database'),
-                                    size_hint=(None,None),
-                                    size=(400,400))
-            popup.open()
-            self.applicationNameTextInput.text = ""
-            self.usernameTextInput.text = ""
-            self.passwordTextInput.text = ""
+            if not self.checkPasswordPwned(None,False):
+                self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,self.passwordTextInput.text) 
+                popup = Popup(title='Password Stored',
+                                        content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{self.passwordTextInput.text}\nSaved in Database'),
+                                        size_hint=(None,None),
+                                        size=(400,400))
+                popup.open()
+                self.applicationNameTextInput.text = ""
+                self.usernameTextInput.text = ""
+                self.passwordTextInput.text = ""
         else:
             errorMessage = "The following information is missing:"
             if len(self.applicationNameTextInput.text) <= 0:
