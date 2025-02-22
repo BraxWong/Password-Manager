@@ -43,6 +43,25 @@ class PasswordSearch(Screen):
         self.mainLayout.add_widget(self.topRowLayout)
         self.allLoginDetails = self.db.fetchAllFromDB()
         self.loggedIn = False
+        
+        self.searchBarLayout = AnchorLayout(
+            anchor_x='center',
+            size_hint_y=None,
+            height=50,
+            padding=(10, 0)
+        )
+
+        self.searchBar = TextInput(
+            text='', 
+            multiline=False, 
+            halign='center', 
+            size_hint_x=None,  
+            width=800,
+            hint_text='Search Login Details By Website Name'
+        )
+        self.searchBar.bind(text=self.onSearch)
+        self.searchBarLayout.add_widget(self.searchBar)
+        self.mainLayout.add_widget(self.searchBarLayout)
 
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
@@ -116,6 +135,12 @@ class PasswordSearch(Screen):
             self.createPasswordAndHint()
         else:
             self.refresh_table_data()
+
+    def onSearch(self,instance,value):
+        if len(value) == 0:
+            self.refresh_table_data()
+        else:
+            print(value)
 
     def passwordSearchLogin(self):
         mainLayout = BoxLayout(orientation='vertical')
