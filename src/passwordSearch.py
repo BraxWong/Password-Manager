@@ -14,6 +14,7 @@ from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 import Util.Util as util
 import Util.passwordHasing as passwordHasing
+import Util.wordSearchAlgorithm as wordSearch
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
