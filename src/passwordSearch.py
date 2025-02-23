@@ -137,11 +137,28 @@ class PasswordSearch(Screen):
         else:
             self.refresh_table_data()
 
+    def refresh_table_data(self):
+        self.allLoginDetails = self.db.fetchAllFromDB()
+        self.data = []
+        self.allPassword = []
+        if len(self.allLoginDetails) > 0:
+            for i,password in enumerate(self.allLoginDetails):
+                self.allPassword.append(password[2])
+                self.password = "*" * len(password[2])
+                self.data.append((i,util.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
+        self.table.update_row_data(self.table.row_data, self.data)
+
     def onSearch(self,instance,value):
         if len(value) == 0:
             self.refresh_table_data()
-        else:
-            print(value)
+        elif len(self.allLoginDetails)>0:
+            self.data = []
+            scores = wordSearch.searchWebsite(self.allLoginDetails,value)
+            for i in range(len(scores)):
+                print(f"Current Score: {scores[i]} | User Input Length: {len(value)}")
+                if scores[i]>=len(value)/2:
+                    self.data.append((i,util.dateComparison(self.allLoginDetails[i][3]),self.allLoginDetails[i][0],self.allLoginDetails[i][1],self.allLoginDetails[i][2],self.allLoginDetails[i][3]))
+            self.table.update_row_data(self.table.row_data,self.data)
 
     def passwordSearchLogin(self):
         mainLayout = BoxLayout(orientation='vertical')
@@ -265,16 +282,7 @@ class PasswordSearch(Screen):
         popUp.dismiss()
         self.refresh_table_data()
 
-    def refresh_table_data(self):
-        self.allLoginDetails = self.db.fetchAllFromDB()
-        self.data = []
-        self.allPassword = []
-        if len(self.allLoginDetails) > 0:
-            for i,password in enumerate(self.allLoginDetails):
-                self.allPassword.append(password[2])
-                self.password = "*" * len(password[2])
-                self.data.append((i,util.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
-        self.table.update_row_data(self.table.row_data, self.data)
+    
 
     def cancelPasswordAndHint(self,instance,popUp):
         popUp.dismiss()
