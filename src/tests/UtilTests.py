@@ -5,6 +5,7 @@ class UtilTestMethods(unittest.TestCase):
 
     def run_all_tests(self):
         self.test_dateComparison()
+        self.test_generatePassword()
 
 
 # ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
@@ -33,3 +34,39 @@ class UtilTestMethods(unittest.TestCase):
             print("test_dateComparison TEST 3: PASSED")
         except AssertionError as e:
             print(f"FAILED: {e}")
+
+    def test_generatePassword(self):
+        try:
+            passwordOne = util.generatePassword(True,14)
+            self.assertEqual(True,self.test_passwordValidity(True,14,passwordOne))
+            print("test_generatePassword TEST 1: PASSED")
+        except AssertionError as e:
+            print(f"FAILED: {e}")
+
+        try:
+            passwordTwo = util.generatePassword(False,10)
+            self.assertEqual(True,self.test_passwordValidity(False,10,passwordTwo))
+            print("test_generatePassword TEST 2: PASSED")
+        except AssertionError as e:
+            print(f"FAILED: {e}")
+
+        try:
+            passwordThree = util.generatePassword(False,8)
+            self.assertEqual(True,self.test_passwordValidity(False,8,passwordThree))
+            print("test_generatePassword TEST 3: PASSED")
+        except AssertionError as e:
+            print(f"FAILED: {e}")
+
+
+    def test_passwordValidity(self,specialSymbolEnabled,passwordLength,password):
+        validPasswordLength = len(password)==passwordLength
+        if specialSymbolEnabled:
+            symbols=['!','@','#','$','^','&','*','?']
+            foundSymbol = False
+            for symbol in symbols:
+                if symbol in password:
+                    foundSymbol = True
+            return (foundSymbol == True) and (validPasswordLength == True) 
+        return validPasswordLength 
+
+
