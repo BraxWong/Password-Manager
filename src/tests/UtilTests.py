@@ -1,6 +1,7 @@
 import unittest
 import Util.Util as util
 import Database.LoginDetailsDB as loginDetailsDB
+import time
 class UtilTestMethods(unittest.TestCase):
 
     def run_all_tests(self):
@@ -8,10 +9,12 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan = 0
         self.testsPassed = 0
         self.testsFailed = 0
+        testStartTime = time.perf_counter()
         self.test_dateComparison()
         self.test_generatePassword()
         self.test_checkPasswordInDB()
-        print(f"\n\nTESTS RAN: {self.testsRan}\nTESTS PASSED: {self.testsPassed}\nTESTS FAILED: {self.testsFailed}\n\n")
+        testEndTime = time.perf_counter()
+        print(f"\n\nTESTS RAN: {self.testsRan}\nTESTS PASSED: {self.testsPassed}\nTESTS FAILED: {self.testsFailed}\nTESTS RUNTIME: {testEndTime-testStartTime:0.4f} seconds\n\n")
 
 
 # ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
