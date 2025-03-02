@@ -153,11 +153,14 @@ class PasswordSearch(Screen):
             self.refresh_table_data()
         elif len(self.allLoginDetails)>0:
             self.data = []
+            self.allPassword = []
             scores = wordSearch.searchWebsite(self.allLoginDetails,value)
+            tableIndex = 0
             for i in range(len(scores)):
-                print(f"Current Score: {scores[i]} | User Input Length: {len(value)}")
                 if scores[i]>=len(value)/2:
-                    self.data.append((i,util.dateComparison(self.allLoginDetails[i][3]),self.allLoginDetails[i][0],self.allLoginDetails[i][1],self.allLoginDetails[i][2],self.allLoginDetails[i][3]))
+                    self.allPassword.append(self.allLoginDetails[i][2])
+                    self.data.append((tableIndex,util.dateComparison(self.allLoginDetails[i][3]),self.allLoginDetails[i][0],self.allLoginDetails[i][1],self.allLoginDetails[i][2],self.allLoginDetails[i][3]))
+                    tableIndex+=1
             self.table.update_row_data(self.table.row_data,self.data)
 
     def passwordSearchLogin(self):
@@ -281,8 +284,6 @@ class PasswordSearch(Screen):
         self.verifyUserDB.addPasswordAndHint(passwordHasing.encodePassword(password),hint)
         popUp.dismiss()
         self.refresh_table_data()
-
-    
 
     def cancelPasswordAndHint(self,instance,popUp):
         popUp.dismiss()
