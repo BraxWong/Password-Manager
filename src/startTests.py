@@ -1,5 +1,6 @@
 import tests.UtilTests as utilTests
 import tests.passwordHashingTests as hashingTests
+import tests.wordSearchAlgorithmTests as wordSearchTests
 
 #     ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
 #     ┃                                                                    ┃
@@ -17,7 +18,8 @@ while True:
         test_instance = hashingTests.PasswordHashingTestMethods()
         test_instance.run_all_tests()
     elif userInput == "3":
-        pass
+        test_instance = wordSearchTests.WordSearchAlgorithmTestMethods()
+        test_instance.run_all_tests()
     elif userInput == "4":
         pass
     else:
