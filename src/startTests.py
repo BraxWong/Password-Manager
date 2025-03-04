@@ -9,7 +9,7 @@ import tests.wordSearchAlgorithmTests as wordSearchTests
 #     ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 
 while True:
-    print("Here is a list of tests you can run:\nPress 1: Util Tests\nPress 2: Password Hashing Tests\nPress 3: Word Search Algorithm Tests\nPress 4: UI Tests\nPress ANY key: Quit")
+    print("Here is a list of tests you can run:\nPress 1: Util Tests\nPress 2: Password Hashing Tests\nPress 3: Word Search Algorithm Tests\nPress 4: Run All Tests\nPress ANY key: Quit")
     userInput = input()
     if userInput == "1":
         test_instance = utilTests.UtilTestMethods()
@@ -21,6 +21,11 @@ while True:
         test_instance = wordSearchTests.WordSearchAlgorithmTestMethods()
         test_instance.run_all_tests()
     elif userInput == "4":
-        pass
+        test_instance = utilTests.UtilTestMethods()
+        test_instance.run_all_tests()
+        test_instance = hashingTests.PasswordHashingTestMethods()
+        test_instance.run_all_tests()
+        test_instance = wordSearchTests.WordSearchAlgorithmTestMethods()
+        test_instance.run_all_tests()
     else:
         break
