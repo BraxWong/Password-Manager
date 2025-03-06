@@ -1,6 +1,8 @@
 import unittest
 import Util.Util as util
 import Database.LoginDetailsDB as loginDetailsDB
+import time
+import datetime
 class UtilTestMethods(unittest.TestCase):
 
     def run_all_tests(self):
@@ -8,23 +10,18 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan = 0
         self.testsPassed = 0
         self.testsFailed = 0
+        testStartTime = time.perf_counter()
         self.test_dateComparison()
         self.test_generatePassword()
         self.test_checkPasswordInDB()
-        print(f"\n\nTESTS RAN: {self.testsRan}\nTESTS PASSED: {self.testsPassed}\nTESTS FAILED: {self.testsFailed}\n\n")
-
-
-# ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-# ┃                                                                              ┃
-# ┃      WARNING: This test case will pass for now but figure out a way to       ┃
-# ┃       convert today's date to string, then subtract 15 days to get the       ┃
-# ┃        caution result and more than 30 days to get the danger result.        ┃
-# ┃                                                                              ┃
-# ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
+        testEndTime = time.perf_counter()
+        print(f"\n\nTESTS RAN: {self.testsRan}\nTESTS PASSED: {self.testsPassed}\nTESTS FAILED: {self.testsFailed}\nTESTS RUNTIME: {testEndTime-testStartTime:0.4f} seconds\n\n")
 
     def test_dateComparison(self):
         try:
-            self.assertEqual(("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe"),util.dateComparison("2025-02-24"))
+            safeDate = datetime.datetime.today() + datetime.timedelta(days=-1)
+            safeDate = safeDate.strftime('%Y-%m-%d')
+            self.assertEqual(("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe"),util.dateComparison(safeDate))
             print("test_dateComparison TEST 1: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -33,7 +30,9 @@ class UtilTestMethods(unittest.TestCase):
 
         self.testsRan+=1
         try:
-            self.assertEqual(("alert",[255/256,165/256,0,1],"Caution"),util.dateComparison("2025-02-01"))
+            cautionDate = datetime.datetime.today() + datetime.timedelta(days=-16)
+            cautionDate = cautionDate.strftime('%Y-%m-%d')
+            self.assertEqual(("alert",[255/256,165/256,0,1],"Caution"),util.dateComparison(cautionDate))
             print("test_dateComparison TEST 2: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -42,7 +41,9 @@ class UtilTestMethods(unittest.TestCase):
 
         self.testsRan+=1
         try:
-            self.assertEqual(("alert-circle",[1,0,0,1],"Danger"),util.dateComparison("2025-01-01"))
+            dangerDate = datetime.datetime.today() + datetime.timedelta(days=-31)
+            dangerDate = dangerDate.strftime('%Y-%m-%d')
+            self.assertEqual(("alert-circle",[1,0,0,1],"Danger"),util.dateComparison(dangerDate))
             print("test_dateComparison TEST 3: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
