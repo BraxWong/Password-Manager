@@ -7,6 +7,7 @@ from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
 from loginDetailsStorage import * 
+from emailNotification import *
 from WebsiteMonitor import *
 import threading
 
@@ -32,6 +33,10 @@ class Menu(Screen):
         self.generatePassword.bind(on_press=self.startPasswordGeneration)
         self.layout.add_widget(self.generatePassword)
 
+        self.sendEmailNotification = Button(text='Email Notification Settings')
+        self.sendEmailNotification.bind(on_press=self.startSendEmailNotification)
+        self.layout.add_widget(self.sendEmailNotification)
+
         self.importPassword = Button(text='Import password to system')
         self.importPassword.bind(on_press=self.importPasswordToSystem)
         self.layout.add_widget(self.importPassword)
@@ -51,6 +56,9 @@ class Menu(Screen):
 
     def startPasswordGeneration(self,widget):
         self.manager.current = 'Password Generation Screen'
+
+    def startSendEmailNotification(self,widget):
+        self.manager.current = 'Email Notification Screen'
 
     def importPasswordToSystem(self,widget):
         self.importPassword = ImportPassword()
