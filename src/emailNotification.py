@@ -8,13 +8,13 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDRaisedButton
-from Database.LoginDetailsDB import *
-from Database.VerifyUserDB import *
+from Database.EmailSettings import *
+import re
 
 class EmailNotification(Screen):
     def __init__(self, **kwargs):
         super(EmailNotification, self).__init__(**kwargs)
-
+        self.emailSettingsDB = EmailSettingsDB()
         self.floatLayout = FloatLayout()
 
         self.mainLayout = BoxLayout(
@@ -76,6 +76,12 @@ class EmailNotification(Screen):
         )
         self.enableEmailNotificationCheckbox = CheckBox(size_hint_x=0.2)
         self.enableEmailNotificationLayout.add_widget(self.enableEmailNotificationCheckbox)
+
+        emailSettings = self.emailSettingsDB.fetchAllFromDB()
+        if len(emailSettings) != 0:
+            self.emailAddressTextInput.text = emailSettings[0][0]
+            self.enableEmailNotificationCheckbox.active = True if emailSettings[0][1] else False
+
         self.mainLayout.add_widget(self.enableEmailNotificationLayout)
 
         self.mainLayout.pos_hint = {'top': 1}  # Push to top of screen
@@ -97,4 +103,19 @@ class EmailNotification(Screen):
         self.manager.current = 'Menu Screen'
 
     def saveEmailNotificationSettings(self, widget):
-        pass
+        EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+        if EMAIL_REGEX.match(self.emailAddressTextInput.text):
+            self.emailSettingsDB.addEntryToDB(self.emailAddressTextInput.text, self.enableEmailNotificationCheckbox.active)
+            popUp = Popup(title='Success',
+                          content=Label(text="Your email notification settings have been saved."),
+                          size_hint=(None,None),
+                          size=(600,600))
+            popUp.open()
+
+        else:
+            popUp = Popup(title='Error',
+                          content=Label(text="Please provide a valid email address"),
+                          size_hint=(None,None),
+                          size=(600,600))
+            popUp.open()
+

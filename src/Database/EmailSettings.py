@@ -2,7 +2,7 @@ import sqlite3
 import os
 from datetime import datetime
 
-class LoginDetailsDB:
+class EmailSettingsDB:
 
     def __init__(self):
         self.PATHTOSQLDIR='Database/SQLFiles'
@@ -19,11 +19,11 @@ class LoginDetailsDB:
         )
 
     def addEntryToDB(self,emailAddress, enableNotifications):
-        if self.emailAddressSet(emailAddress):
-            self.updateEmailSettings(emailAddress,True)
+        if self.emailAddressSet():
+            self.updateEmailSettings(emailAddress,enableNotifications)
         else:
             self.cur.execute(
-                f'INSERT INTO email_settings VALUES ("{emailAddress}","{enableNotifications}","{datetime.now().date()}")'
+                f'INSERT INTO email_settings VALUES ("{emailAddress}",{enableNotifications},"{datetime.now().date()}")'
             )
             self.con.commit()
 
@@ -35,20 +35,18 @@ class LoginDetailsDB:
 
     def updateEmailSettings(self, email_address, enable_notifications):
         emailSettings = self.fetchAllFromDB()
-        self.cur.execute('UPDATE email_settings SET email_address = ?, enable_notifications = ? WHERE email_address = ?, enable_notifications = ?',
-            (email_address,enable_notifications,emailSettings[0],emailSettings[1])
+        self.cur.execute('UPDATE email_settings SET email_address = ?, enable_notifications = ? WHERE email_address = ? AND enable_notifications = ?',
+            (email_address,enable_notifications,emailSettings[0][0],emailSettings[0][1])
         )
         self.con.commit()
 
     def updateLastNotification(self, last_notification):
         emailSettings = self.fetchAllFromDB()
         self.cur.execute('UPDATE email_settings SET last_notification = ? WHERE last_notification = ?',
-                (last_notification, emailSettings[2])
+                (last_notification, emailSettings[0][2])
         )
         self.con.commit()
 
-    def emailAddressSet(self, email_address):
+    def emailAddressSet(self):
         emailSettings = self.fetchAllFromDB()
-        if len(emailSettings) == 1:
-            return emailSettings[0] == email_address
-        return False
+        return len(emailSettings) == 1
