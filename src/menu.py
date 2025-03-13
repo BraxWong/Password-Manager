@@ -2,7 +2,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
+from kivy.uix.popup import Popup
 from Database.LoginDetailsDB import *
+from Database.EmailSettings import *
 from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
@@ -10,6 +12,9 @@ from loginDetailsStorage import *
 from emailNotification import *
 from WebsiteMonitor import *
 import threading
+import subprocess 
+from datetime import datetime
+
 
 class Menu(Screen):
     def __init__(self, **kwargs):
@@ -51,6 +56,8 @@ class Menu(Screen):
 
         self.add_widget(self.layout)
 
+        self.checkSendEmailNotification()
+
     def startPasswordSearch(self,widget):
         self.manager.current = 'Password Search Screen'
 
@@ -68,6 +75,31 @@ class Menu(Screen):
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
+
+    TODO: Move this function to a different thread. It is stalling the UI
+    def checkSendEmailNotification(self):
+        emailSettingsDB = EmailSettingsDB()
+        emailSettings = emailSettingsDB.fetchAllFromDB()
+        if len(emailSettings) != 0:
+            dbDate = datetime.strptime(emailSettings[0][2], "%Y-%m-%d")
+            dateDifference = datetime.today() - dbDate
+            if int(str(dateDifference)[0]) >= 15 and emailSettings[0][1]:
+                emailHeader = "Password Manager Reminder"
+                emailBody = "Dear User,\nOne (or more) of your login details have not been changed in the past 15 days. Please generate a new password to ensure the security of your login details. Thanks, and have a wonderful day.\n\nKindest Regards,\nPassword Manager Team"
+                result = subprocess.run(f'cd Util && ./EmailSender "{emailSettings[0][0]}" "{emailHeader}" "{emailBody}"', 
+                            shell=True, capture_output=True, text=True)
+                if result == "Email has been sent successfully":
+                    popUp = Popup(title='Email notification sent',
+                                    content="Email regarding password update has been sent to your email address.",
+                                    size_hint=(None,None),
+                                    size=(600,600))
+                    popUp.open()
+                else:
+                    popUp = Popup(title='Email notification error',
+                                    content="Unable to send email regarding password update. Please update your email address.",
+                                    size_hint=(None,None),
+                                    size=(600,600))
+                    popUp.open()
 
     #TODO: Kinda works but it does not allow the thread to restart. Have to think of a work around
     def startStopMonitorThread(self,widget):
