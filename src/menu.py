@@ -4,7 +4,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from Database.LoginDetailsDB import *
-from Database.EmailSettings import *
+from EmailNotificationThread import EmailNotificationThread
 from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
@@ -12,8 +12,6 @@ from loginDetailsStorage import *
 from emailNotification import *
 from WebsiteMonitor import *
 import threading
-import subprocess 
-from datetime import datetime
 
 
 class Menu(Screen):
@@ -21,6 +19,9 @@ class Menu(Screen):
         super(Menu,self).__init__(**kwargs)
         self.websiteMonitor = WebsiteMonitor()
         self.websiteMonitorThread = threading.Thread(target=self.websiteMonitor.run, daemon=True)
+
+        self.emailNotification= EmailNotificationThread()
+        self.emailNotificationThread = threading.Thread(target=self.emailNotification.run, daemon=True)
 
         self.layout = GridLayout(cols=1)
         self.cols=1
@@ -56,7 +57,8 @@ class Menu(Screen):
 
         self.add_widget(self.layout)
 
-        self.checkSendEmailNotification()
+        self.startSendEmailNotificationThread()
+
 
     def startPasswordSearch(self,widget):
         self.manager.current = 'Password Search Screen'
@@ -76,30 +78,22 @@ class Menu(Screen):
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
 
-    TODO: Move this function to a different thread. It is stalling the UI
-    def checkSendEmailNotification(self):
-        emailSettingsDB = EmailSettingsDB()
-        emailSettings = emailSettingsDB.fetchAllFromDB()
-        if len(emailSettings) != 0:
-            dbDate = datetime.strptime(emailSettings[0][2], "%Y-%m-%d")
-            dateDifference = datetime.today() - dbDate
-            if int(str(dateDifference)[0]) >= 15 and emailSettings[0][1]:
-                emailHeader = "Password Manager Reminder"
-                emailBody = "Dear User,\nOne (or more) of your login details have not been changed in the past 15 days. Please generate a new password to ensure the security of your login details. Thanks, and have a wonderful day.\n\nKindest Regards,\nPassword Manager Team"
-                result = subprocess.run(f'cd Util && ./EmailSender "{emailSettings[0][0]}" "{emailHeader}" "{emailBody}"', 
-                            shell=True, capture_output=True, text=True)
-                if result == "Email has been sent successfully":
-                    popUp = Popup(title='Email notification sent',
-                                    content="Email regarding password update has been sent to your email address.",
-                                    size_hint=(None,None),
-                                    size=(600,600))
-                    popUp.open()
-                else:
-                    popUp = Popup(title='Email notification error',
-                                    content="Unable to send email regarding password update. Please update your email address.",
-                                    size_hint=(None,None),
-                                    size=(600,600))
-                    popUp.open()
+
+#    ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
+#    ┃                                                                       ┃
+#    ┃ TODO: Move this function to a different thread. It is stalling the UI ┃
+#    ┃                                                                       ┃
+#    ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
+
+    def startSendEmailNotificationThread(self):
+        if not self.emailNotification.running:
+            def initializeEmailNotificationThread(dt):
+                self.emailNotificationThread.start()
+                self.emailNotificationThread.run
+            Clock.schedule_once(initializeEmailNotificationThread,0)
+        else:
+            self.emailNotification.stop()
+            self.emailNotificationThread.join()
 
     #TODO: Kinda works but it does not allow the thread to restart. Have to think of a work around
     def startStopMonitorThread(self,widget):
