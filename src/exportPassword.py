@@ -33,5 +33,3 @@ class ExportPassword:
             file.write("Website: " + password[0] + "  " + "Username: " + password[1] + "  " + "Password: " + password[2] + "\n")
         file.close()
         self.selectedDir = True
-
-

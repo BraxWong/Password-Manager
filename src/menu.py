@@ -51,6 +51,10 @@ class Menu(Screen):
         self.outputPassword.bind(on_press=self.exportPasswordToTXT)
         self.layout.add_widget(self.outputPassword)
 
+        self.outputPasswordEmail = Button(text='Output password to email')
+        self.outputPasswordEmail.bind(on_press=self.exportPasswordToEmail)
+        self.layout.add_widget(self.outputPasswordEmail)
+
         self.startStopWebsiteMonitor = Button(text='Start website monitor')
         self.startStopWebsiteMonitor.bind(on_press=self.startStopMonitorThread)
         self.layout.add_widget(self.startStopWebsiteMonitor)
@@ -74,6 +78,18 @@ class Menu(Screen):
 
     def exportPasswordToTXT(self,widget):
         self.exportPassword = ExportPassword()
+
+
+#                        ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
+#                        ┃                               ┃
+#                        ┃ TODO: IMPLEMENT THIS FUNCTION ┃
+#                        ┃                               ┃
+#                        ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
+
+    def exportPasswordToEmail(self,widget):
+        self.loginDetails = LoginDetailsDB()
+        userLoginDetails = self.loginDetails.fetchAllFromDB()
+        
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
