@@ -1,11 +1,9 @@
 import sqlite3
-import os
+import Util.Util
 
 class VerifyUserDB:
     def __init__(self):
-        self.PATHTOSQLDIR='Database/SQLFiles'
-        if not os.path.isdir(self.PATHTOSQLDIR):
-            os.makedirs(self.PATHTOSQLDIR)
+        self.PATHTOSQLDIR=Util.Util.getOSDBPath()
         self.con=sqlite3.connect(self.PATHTOSQLDIR+'/VerifyUser.db')
         self.cur=self.con.cursor()
         self.createVerifyUserTable()

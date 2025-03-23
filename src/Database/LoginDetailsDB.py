@@ -1,12 +1,10 @@
 import sqlite3
-import os
 from datetime import datetime
+import Util.Util
 
 class LoginDetailsDB:
     def __init__(self):
-        self.PATHTOSQLDIR='Database/SQLFiles'
-        if not os.path.isdir(self.PATHTOSQLDIR):
-            os.makedirs(self.PATHTOSQLDIR)
+        self.PATHTOSQLDIR=Util.Util.getOSDBPath()
         self.con=sqlite3.connect(self.PATHTOSQLDIR+'/LoginDetails.db')
         #Creates a cursor to the database
         self.cur=self.con.cursor()

@@ -6,6 +6,22 @@ from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
 import random
+import platform
+import os
+
+def getOSDBPath():
+    OS = platform.system()
+    DBDirectory = "Database/SQLFiles"
+    if OS == "Darwin":
+        DBDirectory = f"/tmp/{DBDirectory}"
+    elif OS == "Windows":
+        DBDirectory = f"C:/{DBDirectory}"
+    else:
+        DBDirectory = f"/var/tmp/{DBDirectory}"
+    if not os.path.exists(DBDirectory):
+        os.makedirs(DBDirectory,exist_ok=True)
+    return DBDirectory
+
 def dateComparison(date):
     todays_date = datetime.now().date()         
     date_format = '%Y-%m-%d'
