@@ -12,7 +12,7 @@ from loginDetailsStorage import *
 from emailNotification import *
 from WebsiteMonitor import *
 import threading
-
+import os
 
 class Menu(Screen):
     def __init__(self, **kwargs):
@@ -79,27 +79,20 @@ class Menu(Screen):
     def exportPasswordToTXT(self,widget):
         self.exportPassword = ExportPassword()
 
-
-#                        ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-#                        ┃                               ┃
-#                        ┃ TODO: IMPLEMENT THIS FUNCTION ┃
-#                        ┃                               ┃
-#                        ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
-
     def exportPasswordToEmail(self,widget):
-        self.loginDetails = LoginDetailsDB()
-        userLoginDetails = self.loginDetails.fetchAllFromDB()
-        
+        self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
+        print(self.emailNotification.running)
+        if not self.emailNotification.running:
+            def initializeEmailNotificationThread(dt):
+                self.emailNotificationThread.start()
+                self.emailNotificationThread.run
+            Clock.schedule_once(initializeEmailNotificationThread,0)
+        else:
+            self.emailNotification.stop()
+            self.emailNotificationThread.join()
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
-
-
-#    ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-#    ┃                                                                       ┃
-#    ┃ TODO: Move this function to a different thread. It is stalling the UI ┃
-#    ┃                                                                       ┃
-#    ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 
     def startSendEmailNotificationThread(self):
         if not self.emailNotification.running:

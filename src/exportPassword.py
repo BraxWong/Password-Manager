@@ -30,6 +30,6 @@ class ExportPassword:
         userLoginDetails = self.loginDetails.fetchAllFromDB()
         file = open(self.path,"w")
         for password in userLoginDetails:
-            file.write("Website: " + password[0] + "  " + "Username: " + password[1] + "  " + "Password: " + password[2] + "\n")
+            file.write("Website: " + password[0] + "  Username: " + password[1] + "  Password: " + password[2].rstrip() + "\n")
         file.close()
         self.selectedDir = True
