@@ -1,28 +1,43 @@
-from plyer import filechooser
+from kivymd.uix.filemanager import MDFileManager
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from Database.LoginDetailsDB import LoginDetailsDB
 import re
+import os
 
 class ImportPassword:
     def __init__(self):
         self.loginDetails = LoginDetailsDB()
         self.selectedFile = False
-        try:
-            self.path = filechooser.open_file(title="Select your password file",
-                                           path="")[0]
-            self.readFile()
-        except Exception as e:
-            if not self.selectedFile:
-                popUp = Popup(title='Cancelled',
-                            content=Label(text="You did not select a file."),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popUp.open()
+        path = os.path.expanduser("~")
+        self.file_manager = MDFileManager(
+            exit_manager = self.exit_manager,
+            select_path = self.select_path,
+        )
+        self.file_manager.show(path)
 
+    def exit_manager(self, *args):
+        if self.selectedPath != "":
+            self.readFile()
+            popUp = Popup(title='Updated',
+                        content=Label(text="Your user details have been updated."),
+                        size_hint=(None,None),
+                        size=(600,600))
+            popUp.open()        
+        else:
+            popUp = Popup(title='Cancelled',
+                        content=Label(text="You did not select a file."),
+                        size_hint=(None,None),
+                        size=(600,600))
+            popUp.open()
+        self.file_manager.close()
+
+    def select_path(self,path):
+        self.selectedPath = path
+        self.exit_manager()
 
     def readFile(self):
-        f = open(self.path,"r")
+        f = open(self.selectedPath,"r")
         lineList = f.readlines()
         for line in lineList:
             line = line.replace("Website: ", '')
@@ -37,8 +52,4 @@ class ImportPassword:
             password = line
             self.loginDetails.addEntryToDB(website,username,password)
         self.selectedFile = True
-        popUp = Popup(title='Updated',
-                      content=Label(text="Your user details have been updated."),
-                      size_hint=(None,None),
-                      size=(600,600))
-        popUp.open()
+ 

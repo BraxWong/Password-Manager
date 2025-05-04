@@ -4,3 +4,4 @@ plyer
 pyobjus
 selenium
 bcrypt
+setuptools
