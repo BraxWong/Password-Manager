@@ -9,6 +9,7 @@ class ImportPassword:
     def __init__(self):
         self.loginDetails = LoginDetailsDB()
         self.selectedFile = False
+        self.selectedPath = ""
         path = os.path.expanduser("~")
         self.file_manager = MDFileManager(
             exit_manager = self.exit_manager,
