@@ -20,8 +20,10 @@ class ImportPassword:
     def exit_manager(self, *args):
         if self.selectedPath != "":
             self.readFile()
-            popUp = Popup(title='Updated',
-                        content=Label(text="Your user details have been updated."),
+            title = 'Updated' if self.selectedFile else 'Error'
+            content = "Your user details have been updated" if self.selectedFile else "The file you uploaded was invalid. Please try again"
+            popUp = Popup(title=title,
+                        content=Label(text=content),
                         size_hint=(None,None),
                         size=(600,600))
             popUp.open()        
@@ -43,10 +45,16 @@ class ImportPassword:
         for line in lineList:
             line = line.replace("Website: ", '')
             usernameIndex = [match.start() for match in re.finditer("Username: ",line)] 
+            if len(usernameIndex) == 0:
+                self.selectedFile = False
+                return
             website = line[0:usernameIndex[0]-2]
             line = line.replace(website+"  ",'')
             line = line.replace("Username: ",'')
             passwordIndex = [match.start() for match in re.finditer("Password: ",line)]
+            if len(passwordIndex) == 0:
+                self.selectedFile = False
+                return
             username = line[0:passwordIndex[0]-2]
             line = line.replace(username+"  ",'')
             line = line.replace("Password: ",'')
