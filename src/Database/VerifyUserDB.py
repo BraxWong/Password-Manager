@@ -3,7 +3,7 @@ import Util.Util
 
 class VerifyUserDB:
     def __init__(self):
-        self.PATHTOSQLDIR=Util.Util.getOSDBPath()
+        self.PATHTOSQLDIR=Util.OSUtil.getOSDBPath()
         self.con=sqlite3.connect(self.PATHTOSQLDIR+'/VerifyUser.db')
         self.cur=self.con.cursor()
         self.createVerifyUserTable()
