@@ -81,7 +81,6 @@ class Menu(Screen):
 
     def exportPasswordToEmail(self,widget):
         self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
-        print(self.emailNotification.running)
         if not self.emailNotification.running:
             def initializeEmailNotificationThread(dt):
                 self.emailNotificationThread.start()
