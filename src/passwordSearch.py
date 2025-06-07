@@ -301,7 +301,7 @@ class PasswordSearch(Screen):
             popUp.open()
         else:
             currentIndex = int(self.rowChecked[0])
-            infoMap = util.createLoginDetailPopupLayout() 
+            infoMap = UIUtil.createLoginDetailPopupLayout() 
 
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},

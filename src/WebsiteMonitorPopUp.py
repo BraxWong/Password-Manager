@@ -6,7 +6,7 @@ from kivy.core.clipboard import Clipboard
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDRaisedButton
 from Database.LoginDetailsDB import LoginDetailsDB
-import Util.Util as util
+import Util.UIUtil as UIUtil
 
 class WebsiteMonitorPopup(object):
     _instance = None
@@ -66,7 +66,7 @@ class WebsiteMonitorPopup(object):
                 cls._createLoginDetailsPopup.dismiss()
                 cls._createLoginDetailsPopupOpened = False
             
-            infoMap = util.createLoginDetailPopupLayout()
+            infoMap = UIUtil.createLoginDetailPopupLayout()
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},
                 adaptive_size=True,
