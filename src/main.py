@@ -1,4 +1,5 @@
 from kivymd.app import MDApp
+from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager
 from loginDetailsStorage import LoginDetailsStorage
 from menu import *
@@ -19,4 +20,5 @@ class Main(MDApp):
         return self.screenManager
 
 if __name__ == '__main__':
+    Window.size = (1200,900)
     Main().run()

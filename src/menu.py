@@ -2,7 +2,6 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
-from kivy.uix.popup import Popup
 from Database.LoginDetailsDB import *
 from EmailNotificationThread import EmailNotificationThread
 from importPassword import ImportPassword
@@ -12,11 +11,11 @@ from loginDetailsStorage import *
 from emailNotification import *
 from WebsiteMonitor import *
 import threading
-import os
 
 class Menu(Screen):
     def __init__(self, **kwargs):
         super(Menu,self).__init__(**kwargs)
+
         self.websiteMonitor = WebsiteMonitor()
         self.websiteMonitorThread = threading.Thread(target=self.websiteMonitor.run, daemon=True)
 

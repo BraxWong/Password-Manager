@@ -12,12 +12,16 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
+from LastActionTaken import last_action_taken
 import Util.Util as util
 import Util.passwordHasing as passwordHasing
 import Util.wordSearchAlgorithm as wordSearch
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
+        self.last_action_taken = last_action_taken()
+        self.invalid_login_attempt = 0
+
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
         self.verifyUserDB = VerifyUserDB()
@@ -222,13 +226,18 @@ class PasswordSearch(Screen):
         if passwordHasing.checkPassword(userInputPassword,password):
             self.refresh_table_data()
             passwordPopup.dismiss()
+            self.invalid_login_attempt = 0
             self.loggedIn = True
+            self.last_action_taken.update_time()
         else:
+            self.invalid_login_attempt += 1
             incorrectPasswordPopUp = Popup(title='Incorrect Password',
                                            content=Label(text='Incorrect Password'),
                                            size_hint=(None,None),
                                            size=(600,600))
             incorrectPasswordPopUp.open()
+            if self.invalid_login_attempt == 3:
+                self.returnToMenu()
   
     def createPasswordAndHint(self):
         mainLayout = BoxLayout(orientation='vertical')
@@ -293,36 +302,37 @@ class PasswordSearch(Screen):
         self.manager.current = 'Menu Screen'
 
     def updateLoginDetails(self):
-        if len(self.table.get_row_checks()) != 1:
-            popUp = Popup(title='Error',
-                          content=Label(text="Please select 1 row at a time when updating your login details"),
-                          size_hint=(None,None),
-                          size=(600,600))
-            popUp.open()
-        else:
-            currentIndex = int(self.rowChecked[0])
-            infoMap = util.createLoginDetailPopupLayout() 
+        if not self.check_timeout(): 
+            if len(self.table.get_row_checks()) != 1:
+                popUp = Popup(title='Error',
+                            content=Label(text="Please select 1 row at a time when updating your login details"),
+                            size_hint=(None,None),
+                            size=(600,600))
+                popUp.open()
+            else:
+                currentIndex = int(self.rowChecked[0])
+                infoMap = util.createLoginDetailPopupLayout() 
 
-            button_box = MDBoxLayout(
-                pos_hint={"center_x": 0.5},
-                adaptive_size=True,
-                padding="24dp",
-                spacing="24dp",
-            )
-            infoMap["Username"].text = self.table.row_data[currentIndex][3]
-            confirmButton = MDRaisedButton(text='Confirm')
-            cancelButton = MDRaisedButton(text='Cancel')
-            button_box.add_widget(confirmButton)
-            button_box.add_widget(cancelButton)
-            infoMap["Layout"].add_widget(button_box)
-            editLoginDetailsPopup = Popup(title='Edit Login Details',
-                                          content=infoMap["Layout"],
-                                          size_hint=(None,None),
-                                          size=(600,600))
+                button_box = MDBoxLayout(
+                    pos_hint={"center_x": 0.5},
+                    adaptive_size=True,
+                    padding="24dp",
+                    spacing="24dp",
+                )
+                infoMap["Username"].text = self.table.row_data[currentIndex][3]
+                confirmButton = MDRaisedButton(text='Confirm')
+                cancelButton = MDRaisedButton(text='Cancel')
+                button_box.add_widget(confirmButton)
+                button_box.add_widget(cancelButton)
+                infoMap["Layout"].add_widget(button_box)
+                editLoginDetailsPopup = Popup(title='Edit Login Details',
+                                            content=infoMap["Layout"],
+                                            size_hint=(None,None),
+                                            size=(600,600))
 
-            cancelButton.bind(on_release=editLoginDetailsPopup.dismiss)
-            confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,infoMap["ApplicationName"].text,infoMap["Username"].text,util.generatePassword(infoMap["SymbolEnabledCheckBox"].active,int(infoMap["PasswordLength"].value))))
-            editLoginDetailsPopup.open()
+                cancelButton.bind(on_release=editLoginDetailsPopup.dismiss)
+                confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,infoMap["ApplicationName"].text,infoMap["Username"].text,util.generatePassword(infoMap["SymbolEnabledCheckBox"].active,int(infoMap["PasswordLength"].value))))
+                editLoginDetailsPopup.open()
 
     def updateLoginDetailsToDB(self,instance,popup,applicationName,username,password):
         self.db.updateEntryToDB(applicationName,username,password)
@@ -335,58 +345,61 @@ class PasswordSearch(Screen):
         updatePopup.open()
 
     def passwordCensor(self, hidePassword = True):
-        for row in self.rowChecked: 
-            currentIndex = int(row)
-            newRow = list(self.table.row_data[currentIndex])
-            newRow[4] = "*" * len(self.allPassword[currentIndex])
-            if not hidePassword:
-                 newRow[4] = self.allPassword[currentIndex]
-            self.table.update_row(self.table.row_data[currentIndex],newRow)
+        if not self.check_timeout():
+            for row in self.rowChecked: 
+                currentIndex = int(row)
+                newRow = list(self.table.row_data[currentIndex])
+                newRow[4] = "*" * len(self.allPassword[currentIndex])
+                if not hidePassword:
+                    newRow[4] = self.allPassword[currentIndex]
+                self.table.update_row(self.table.row_data[currentIndex],newRow)
 
     def copyPasswordOrUsernameToClipboard(self, copyUsername):
-        popupText = "username" if copyUsername else "password"
-        if len(self.rowChecked) != 1:
-            popUp = Popup(title="Error",
-                          content=Label(text=f"Please select 1 {popupText} to be copied to the clipboard."),
-                          size_hint=(None,None),
-                          size=(600,600))
-            popUp.open()
-        else:
-            contentToCopy = self.table.row_data[int(self.rowChecked[0])][3] if copyUsername else self.allPassword[int(self.rowChecked[0])]
-            Clipboard.copy(contentToCopy)
-            popUp = Popup(title="Success",
-                          content=Label(text=f"The {popupText} has been copied to the clipboard."),
-                          size_hint=(None,None),
-                          size=(600,600))
-            popUp.open()
+        if not self.check_timeout():
+            popupText = "username" if copyUsername else "password"
+            if len(self.rowChecked) != 1:
+                popUp = Popup(title="Error",
+                            content=Label(text=f"Please select 1 {popupText} to be copied to the clipboard."),
+                            size_hint=(None,None),
+                            size=(600,600))
+                popUp.open()
+            else:
+                contentToCopy = self.table.row_data[int(self.rowChecked[0])][3] if copyUsername else self.allPassword[int(self.rowChecked[0])]
+                Clipboard.copy(contentToCopy)
+                popUp = Popup(title="Success",
+                            content=Label(text=f"The {popupText} has been copied to the clipboard."),
+                            size_hint=(None,None),
+                            size=(600,600))
+                popUp.open()
 
     def deleteLoginDetailsConfirmation(self):
-        if len(self.rowChecked) >= 1:
-            confirmationLayout = BoxLayout(orientation='vertical',
-                                                size_hint=(None,None),
-                                                width=500,
-                                                pos_hint={'center_x':0.5})
-            button_box = MDBoxLayout(
-                pos_hint={"center_x": 0.5},
-                adaptive_size=True,
-                padding="24dp",
-                spacing="24dp",
-            )
+        if not self.check_timeout():
+            if len(self.rowChecked) >= 1:
+                confirmationLayout = BoxLayout(orientation='vertical',
+                                                    size_hint=(None,None),
+                                                    width=500,
+                                                    pos_hint={'center_x':0.5})
+                button_box = MDBoxLayout(
+                    pos_hint={"center_x": 0.5},
+                    adaptive_size=True,
+                    padding="24dp",
+                    spacing="24dp",
+                )
 
-            confirmButton = MDRaisedButton(text='Confirm')
-            cancelButton = MDRaisedButton(text='Cancel')
-            confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
-            button_box.add_widget(confirmButton)
-            button_box.add_widget(cancelButton)
-            confirmationLayout.add_widget(button_box)
-            confirmationPopUp = Popup(title='Confirmation',
-                                    content=confirmationLayout,
-                                    size_hint=(None,None),
-                                    size=(600,200))
+                confirmButton = MDRaisedButton(text='Confirm')
+                cancelButton = MDRaisedButton(text='Cancel')
+                confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
+                button_box.add_widget(confirmButton)
+                button_box.add_widget(cancelButton)
+                confirmationLayout.add_widget(button_box)
+                confirmationPopUp = Popup(title='Confirmation',
+                                        content=confirmationLayout,
+                                        size_hint=(None,None),
+                                        size=(600,200))
 
-            cancelButton.bind(on_release=confirmationPopUp.dismiss)
-            confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
-            confirmationPopUp.open()
+                cancelButton.bind(on_release=confirmationPopUp.dismiss)
+                confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
+                confirmationPopUp.open()
 
     def deleteLoginDetails(self, instance, popupWindow):
         popupWindow.dismiss()
@@ -409,3 +422,13 @@ class PasswordSearch(Screen):
                       size=(600,600))
 
         popUp.open() 
+
+    #TODO: Use a variable to store what the action should be performed after the verification checks
+    #Probably use a switch statement
+    def check_timeout(self):
+        if self.last_action_taken.check_login_required():
+            self.passwordSearchLogin()
+            return True
+        else:
+            self.last_action_taken.update_time()
+            return False
