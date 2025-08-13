@@ -14,6 +14,7 @@ from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 from LastActionTaken import last_action_taken
 import Util.Util as util
+import Util.UIUtil as ui_util
 import Util.passwordHasing as passwordHasing
 import Util.wordSearchAlgorithm as wordSearch
 
@@ -311,7 +312,7 @@ class PasswordSearch(Screen):
                 popUp.open()
             else:
                 currentIndex = int(self.rowChecked[0])
-                infoMap = util.createLoginDetailPopupLayout() 
+                infoMap = ui_util.createLoginDetailPopupLayout() 
 
                 button_box = MDBoxLayout(
                     pos_hint={"center_x": 0.5},
