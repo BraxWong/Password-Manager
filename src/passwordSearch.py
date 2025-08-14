@@ -21,6 +21,7 @@ import Util.wordSearchAlgorithm as wordSearch
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
         self.last_action_taken = last_action_taken()
+        self.paused_action = ""
         self.invalid_login_attempt = 0
 
         super(PasswordSearch,self).__init__(**kwargs)
@@ -230,6 +231,7 @@ class PasswordSearch(Screen):
             self.invalid_login_attempt = 0
             self.loggedIn = True
             self.last_action_taken.update_time()
+            self.resume_paused_action()
         else:
             self.invalid_login_attempt += 1
             incorrectPasswordPopUp = Popup(title='Incorrect Password',
@@ -303,6 +305,7 @@ class PasswordSearch(Screen):
         self.manager.current = 'Menu Screen'
 
     def updateLoginDetails(self):
+        self.paused_action = "update"
         if not self.check_timeout(): 
             if len(self.table.get_row_checks()) != 1:
                 popUp = Popup(title='Error',
@@ -346,6 +349,7 @@ class PasswordSearch(Screen):
         updatePopup.open()
 
     def passwordCensor(self, hidePassword = True):
+        self.paused_action = "censor" if hidePassword else "reveal"
         if not self.check_timeout():
             for row in self.rowChecked: 
                 currentIndex = int(row)
@@ -356,6 +360,7 @@ class PasswordSearch(Screen):
                 self.table.update_row(self.table.row_data[currentIndex],newRow)
 
     def copyPasswordOrUsernameToClipboard(self, copyUsername):
+        self.paused_action = "copy username" if copyUsername else "copy password"
         if not self.check_timeout():
             popupText = "username" if copyUsername else "password"
             if len(self.rowChecked) != 1:
@@ -374,6 +379,7 @@ class PasswordSearch(Screen):
                 popUp.open()
 
     def deleteLoginDetailsConfirmation(self):
+        self.paused_action = "delete"
         if not self.check_timeout():
             if len(self.rowChecked) >= 1:
                 confirmationLayout = BoxLayout(orientation='vertical',
@@ -424,8 +430,6 @@ class PasswordSearch(Screen):
 
         popUp.open() 
 
-    #TODO: Use a variable to store what the action should be performed after the verification checks
-    #Probably use a switch statement
     def check_timeout(self):
         if self.last_action_taken.check_login_required():
             self.passwordSearchLogin()
@@ -433,3 +437,28 @@ class PasswordSearch(Screen):
         else:
             self.last_action_taken.update_time()
             return False
+
+    def resume_paused_action(self):
+        match self.paused_action:
+            case "update":
+                print("Update")
+                self.updateLoginDetails()
+            case "delete":
+                print("Delete")
+                self.deleteLoginDetailsConfirmation()
+            case "censor":
+                print("Censor")
+                self.passwordCensor()
+            case "reveal":
+                print("Reveal")
+                self.passwordCensor(False)
+            case "copy username":
+                print("Copy username")
+                self.copyPasswordOrUsernameToClipboard(True)
+            case "copy password":
+                print("Copy password")
+                self.copyPasswordOrUsernameToClipboard(False)
+            case _:
+                print("No Action")
+                pass
+        self.paused_action = ""
