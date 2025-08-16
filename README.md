@@ -8,6 +8,7 @@ Introducing a password management solution designed to simplify and secure your 
 - Seamless import functionality 📥
 - Export feature to backup credentials 📤
 - Display login details needed 🖥️
+- Automated logout after 15 minutes of inactivity to improve security ➜]
 
 ## Installation Guide
 
