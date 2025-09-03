@@ -5,7 +5,7 @@ from loginDetailsStorage import LoginDetailsStorage
 from menu import *
 from passwordGeneration import *
 from passwordSearch import *
-from emailNotification import *
+from TwoFactorAuthentication import *
 
 class Main(MDApp):
     def build(self):
@@ -15,7 +15,7 @@ class Main(MDApp):
         self.screenManager.add_widget(LoginDetailsStorage(name="Login Details Storage Screen"))
         self.screenManager.add_widget(PasswordGeneration(name='Password Generation Screen'))
         self.screenManager.add_widget(PasswordSearch(name='Password Search Screen'))
-        self.screenManager.add_widget(EmailNotification(name='Email Notification Screen'))
+        self.screenManager.add_widget(TwoFactorAuthentication(name='2FA Screen'))
         self.screenManager.current = 'Menu Screen' 
         return self.screenManager
 

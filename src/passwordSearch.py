@@ -12,6 +12,7 @@ from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
+from Database.EmailSettings import *
 from LastActionTaken import last_action_taken
 import Util.Util as util
 import Util.UIUtil as ui_util
@@ -27,6 +28,7 @@ class PasswordSearch(Screen):
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
         self.verifyUserDB = VerifyUserDB()
+        self.two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
         self.mainLayout = BoxLayout(
             orientation='vertical',
             size_hint=(1, 1),  

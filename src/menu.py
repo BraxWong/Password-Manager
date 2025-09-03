@@ -8,7 +8,7 @@ from importPassword import ImportPassword
 from exportPassword import ExportPassword
 from passwordGeneration import *
 from loginDetailsStorage import * 
-from emailNotification import *
+from TwoFactorAuthentication import *
 from WebsiteMonitor import *
 import threading
 
@@ -38,7 +38,7 @@ class Menu(Screen):
         self.generatePassword.bind(on_press=self.startPasswordGeneration)
         self.layout.add_widget(self.generatePassword)
 
-        self.sendEmailNotification = Button(text='Email Notification Settings')
+        self.sendEmailNotification = Button(text='2FA Settings')
         self.sendEmailNotification.bind(on_press=self.startSendEmailNotification)
         self.layout.add_widget(self.sendEmailNotification)
 
@@ -70,7 +70,7 @@ class Menu(Screen):
         self.manager.current = 'Password Generation Screen'
 
     def startSendEmailNotification(self,widget):
-        self.manager.current = 'Email Notification Screen'
+        self.manager.current = '2FA Screen'
 
     def importPasswordToSystem(self,widget):
         self.importPassword = ImportPassword()
