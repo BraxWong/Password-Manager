@@ -78,7 +78,7 @@ class TwoFactorAuthentication(Screen):
                 size_hint_x=0.4
             )
         )
-        two_factor_auth_info = self.two_factor_authentication_db.fetchAllFromDB()
+
 
         self.phoneTextInput = TextInput(
             text='', multiline=False, size_hint=(0.6, None), height='40dp'
@@ -99,7 +99,7 @@ class TwoFactorAuthentication(Screen):
         self.enableEmailNotificationCheckbox = CheckBox(size_hint_x=0.2)
         self.enableEmailNotificationLayout.add_widget(self.enableEmailNotificationCheckbox)
 
-        
+        two_factor_auth_info = self.two_factor_authentication_db.fetchAllFromDB()
         if len(two_factor_auth_info) != 0:
             self.emailAddressTextInput.text = two_factor_auth_info[0][0]
             self.phoneTextInput.text = two_factor_auth_info[0][1] 

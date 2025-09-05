@@ -1,19 +1,28 @@
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.uix.screenmanager import Screen
 from kivymd.uix.filemanager import MDFileManager
 from Database.LoginDetailsDB import LoginDetailsDB
+from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
+from Util.UIUtil import *
+from Util.two_factor_authentication import *
 import os
 
 class ExportPassword:
     def __init__(self):
-        self.loginDetails = LoginDetailsDB()
-        self.exportDir = ""
-        path = os.path.expanduser("~")
-        self.file_manager = MDFileManager(
-            exit_manager = self.exit_manager,
-            select_path = self.select_path,
-        )
-        self.file_manager.show(path)
+        self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
+        self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+            self.loginDetails = LoginDetailsDB()
+            self.exportDir = ""
+            path = os.path.expanduser("~")
+            self.file_manager = MDFileManager(
+                exit_manager = self.exit_manager,
+                select_path = self.select_path,
+            )
+            self.file_manager.show(path)
+        elif len(self.two_factor_auth_info) and self.two_factor_auth_info[0][2]:
+            create2FAPopupLayout()
 
     def writePasswordToFile(self):
         userLoginDetails = self.loginDetails.fetchAllFromDB()

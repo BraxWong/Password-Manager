@@ -3,6 +3,73 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivymd.uix.button import MDRaisedButton
+from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
+from Util.two_factor_authentication import *
+
+def create2FAPopupLayout():
+    two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
+    two_factor_auth_info = two_factor_auth_db.fetchAllFromDB()
+    send_by_email = True if two_factor_auth_info[0][0] != "" else False
+    contact_info = two_factor_auth_info[0][0] if send_by_email else two_factor_auth_info[0][1]
+    auth_system = twoFactorAuth(send_by_email, contact_info) 
+
+    main_layout = BoxLayout(
+                orientation='vertical',
+                size_hint=(1, 1),  
+                padding=0,
+                spacing=50 
+            )
+
+    top_row_layout = BoxLayout(orientation='horizontal', 
+                                      size_hint_y=None, 
+                                      height=50, 
+                                      padding=(10, 0))
+    top_row_layout.add_widget(
+        Label(
+            text='2FA', 
+            font_size='20sp', 
+            halign='center',
+            size_hint_x=0.8
+        )
+    )        
+    main_layout.add_widget(top_row_layout)
+
+    two_factor_auth_Layout = BoxLayout(
+        orientation='horizontal',
+        size_hint_y=None,
+        height='50dp',
+        spacing='10dp'
+    )
+    two_factor_auth_Layout.add_widget(
+        Label(
+            text='Please enter your 2FA code',
+            font_size='15sp',
+            size_hint_x=0.4
+        )
+    )
+    two_factor_auth_text_input= TextInput(
+        text='', multiline=False, size_hint=(0.6, None), height='40dp'
+    )
+    two_factor_auth_Layout.add_widget(two_factor_auth_text_input)
+    main_layout.add_widget(two_factor_auth_Layout)
+
+    submit_button = MDRaisedButton(text="Submit", on_release=lambda instance:check_2FA_code(two_factor_auth_text_input.text,auth_system))
+    main_layout.add_widget(submit_button)
+
+    popUp = Popup(title='2FA',
+                  content = main_layout,
+                  size_hint=(None,None),
+                  size=(600,600))
+    popUp.open()
+            
+
+def check_2FA_code(user_code, auth_system):
+    if not auth_system.auth_expired(): 
+        return user_code == auth_system.code 
+    else:
+        return False
 
 def createLoginDetailPopupLayout():
     mainLayout = BoxLayout(
