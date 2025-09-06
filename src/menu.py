@@ -3,6 +3,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from Database.LoginDetailsDB import *
+from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
 from EmailNotificationThread import EmailNotificationThread
 from importPassword import ImportPassword
 from exportPassword import ExportPassword
@@ -10,11 +11,15 @@ from passwordGeneration import *
 from loginDetailsStorage import * 
 from TwoFactorAuthentication import *
 from WebsiteMonitor import *
+from Util.UIUtil import *
 import threading
 
 class Menu(Screen):
     def __init__(self, **kwargs):
         super(Menu,self).__init__(**kwargs)
+
+        self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
+        self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
 
         self.websiteMonitor = WebsiteMonitor()
         self.websiteMonitorThread = threading.Thread(target=self.websiteMonitor.run, daemon=True)
@@ -79,15 +84,30 @@ class Menu(Screen):
         self.exportPassword = ExportPassword()
 
     def exportPasswordToEmail(self,widget):
-        self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
-        if not self.emailNotification.running:
-            def initializeEmailNotificationThread(dt):
-                self.emailNotificationThread.start()
-                self.emailNotificationThread.run
-            Clock.schedule_once(initializeEmailNotificationThread,0)
+        def send_credentials(result):
+            if result:
+                self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
+                if not self.emailNotification.running:
+                    def initializeEmailNotificationThread(dt):
+                        self.emailNotificationThread.start()
+                        self.emailNotificationThread.run
+                    Clock.schedule_once(initializeEmailNotificationThread,0)
+                    popUp = Popup(title='Success',
+                                  content=Label(text="Your user credentials have been sent to your email address."),
+                                  size_hint=(None,None),
+                                  size=(400,400))
+                    popUp.open()
+                else:
+                    self.emailNotification.stop()
+                    self.emailNotificationThread.join()
+            else:
+                show_incorrect_2FA_popup()
+
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+            send_credentials(True)
         else:
-            self.emailNotification.stop()
-            self.emailNotificationThread.join()
+            create2FAPopupLayout(send_credentials)
+        
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'
@@ -104,13 +124,22 @@ class Menu(Screen):
 
     #TODO: Kinda works but it does not allow the thread to restart. Have to think of a work around
     def startStopMonitorThread(self,widget):
-        if self.websiteMonitor.driver is None:
-            def initializeMonitorThread(dt):
-                self.websiteMonitorThread.start()
-                self.websiteMonitorThread.run 
-            Clock.schedule_once(initializeMonitorThread,0)
-            self.startStopWebsiteMonitor.text = 'Stop website monitor'
+        def run(result):
+            if result:
+                if self.websiteMonitor.driver is None:
+                    def initializeMonitorThread(dt):
+                        self.websiteMonitorThread.start()
+                        self.websiteMonitorThread.run 
+                    Clock.schedule_once(initializeMonitorThread,0)
+                    self.startStopWebsiteMonitor.text = 'Stop website monitor'
+                else:
+                    self.websiteMonitor.stop()
+                    self.websiteMonitorThread.join(timeout=1)            
+                    self.startStopWebsiteMonitor.text = 'Start website monitor'
+            else:
+                show_incorrect_2FA_popup()
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+            run(True)
         else:
-            self.websiteMonitor.stop()
-            self.websiteMonitorThread.join(timeout=1)            
-            self.startStopWebsiteMonitor.text = 'Start website monitor'
+            create2FAPopupLayout(run)
+

@@ -443,24 +443,17 @@ class PasswordSearch(Screen):
     def resume_paused_action(self):
         match self.paused_action:
             case "update":
-                print("Update")
                 self.updateLoginDetails()
             case "delete":
-                print("Delete")
                 self.deleteLoginDetailsConfirmation()
             case "censor":
-                print("Censor")
                 self.passwordCensor()
             case "reveal":
-                print("Reveal")
                 self.passwordCensor(False)
             case "copy username":
-                print("Copy username")
                 self.copyPasswordOrUsernameToClipboard(True)
             case "copy password":
-                print("Copy password")
                 self.copyPasswordOrUsernameToClipboard(False)
             case _:
-                print("No Action")
                 pass
         self.paused_action = ""

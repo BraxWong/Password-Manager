@@ -2,6 +2,13 @@ from datetime import datetime
 from Database.LoginDetailsDB import *
 import random
 
+def check_2FA_code(user_code, auth_system, popUp, callback):
+    if not auth_system.auth_expired() and user_code == auth_system.code: 
+        popUp.dismiss()
+        callback(True) 
+    else:
+        callback(False)
+
 def dateComparison(date):
     todays_date = datetime.now().date()         
     date_format = '%Y-%m-%d'

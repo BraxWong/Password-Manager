@@ -13,6 +13,12 @@ class ExportPassword:
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+            self.run(True)
+        else:
+            create2FAPopupLayout(self.run)
+
+    def run(self, result):
+        if result:
             self.loginDetails = LoginDetailsDB()
             self.exportDir = ""
             path = os.path.expanduser("~")
@@ -21,9 +27,8 @@ class ExportPassword:
                 select_path = self.select_path,
             )
             self.file_manager.show(path)
-        elif len(self.two_factor_auth_info) and self.two_factor_auth_info[0][2]:
-            create2FAPopupLayout()
-
+        else:
+            show_incorrect_2FA_popup()
     def writePasswordToFile(self):
         userLoginDetails = self.loginDetails.fetchAllFromDB()
         file = open(self.exportDir + "/password.txt","w")

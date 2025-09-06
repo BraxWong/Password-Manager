@@ -7,8 +7,9 @@ from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
 from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
 from Util.two_factor_authentication import *
+from Util.Util import *
 
-def create2FAPopupLayout():
+def create2FAPopupLayout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
     two_factor_auth_info = two_factor_auth_db.fetchAllFromDB()
     send_by_email = True if two_factor_auth_info[0][0] != "" else False
@@ -55,21 +56,24 @@ def create2FAPopupLayout():
     two_factor_auth_Layout.add_widget(two_factor_auth_text_input)
     main_layout.add_widget(two_factor_auth_Layout)
 
-    submit_button = MDRaisedButton(text="Submit", on_release=lambda instance:check_2FA_code(two_factor_auth_text_input.text,auth_system))
-    main_layout.add_widget(submit_button)
-
     popUp = Popup(title='2FA',
                   content = main_layout,
                   size_hint=(None,None),
                   size=(600,600))
+
+    submit_button = MDRaisedButton(text="Submit", on_release=lambda instance:check_2FA_code(two_factor_auth_text_input.text,auth_system,popUp,callback))
+    main_layout.add_widget(submit_button)
+
     popUp.open()
             
 
-def check_2FA_code(user_code, auth_system):
-    if not auth_system.auth_expired(): 
-        return user_code == auth_system.code 
-    else:
-        return False
+
+def show_incorrect_2FA_popup():
+    popUp = Popup(title='Error',
+                  content=Label(text="The 2FA code you provided is incorrect.Please try again."),
+                  size_hint=(None,None),
+                  size=(400,400))
+    popUp.open() 
 
 def createLoginDetailPopupLayout():
     mainLayout = BoxLayout(
