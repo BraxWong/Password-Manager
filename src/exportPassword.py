@@ -12,7 +12,7 @@ class ExportPassword:
     def __init__(self):
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
-        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             self.run(True)
         else:
             create2FAPopupLayout(self.run)

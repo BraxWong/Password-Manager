@@ -13,6 +13,7 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 from Database.EmailSettings import *
+from Util.two_factor_authentication import *
 from LastActionTaken import last_action_taken
 import Util.Util as util
 import Util.UIUtil as ui_util
@@ -139,7 +140,7 @@ class PasswordSearch(Screen):
 
     def on_pre_enter(self, *args):
         if len(self.verifyUserDB.getUserPasswordAndHint()) > 0 and not self.loggedIn:
-            self.passwordSearchLogin()
+            self.two_factor_auth()
         elif len(self.verifyUserDB.getUserPasswordAndHint()) == 0:
             self.createPasswordAndHint()
         else:
@@ -171,61 +172,73 @@ class PasswordSearch(Screen):
                     tableIndex+=1
             self.table.update_row_data(self.table.row_data,self.data)
 
-    def passwordSearchLogin(self):
-        mainLayout = BoxLayout(orientation='vertical')
-        passwordLayout = BoxLayout(orientation='horizontal')
-        passwordLayout.add_widget(Label(text='Password',
-                                                font_size='15sp',
-                                                pos_hint={'x':0.2,'y':0})
-                                            )
-        passwordTextInput = TextInput(text='', 
-                                      multiline=False,
-                                      size_hint=(None,None), 
-                                      height=30, 
-                                      width=250,
-                                      pos_hint={'x':0.5,'y':0.45})
+    def two_factor_auth(self):
+        self.two_factor_auth_info = self.two_factor_auth_db.fetchAllFromDB()
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
+            self.passwordSearchLogin(True)
+        else:
+            ui_util.create2FAPopupLayout(self.passwordSearchLogin)
+             
+    def passwordSearchLogin(self, result):
+        if result:
+            mainLayout = BoxLayout(orientation='vertical')
 
-        passwordLayout.add_widget(passwordTextInput)
-        mainLayout.add_widget(passwordLayout)
+            passwordLayout = BoxLayout(orientation='horizontal')
+            passwordLayout.add_widget(Label(text='Password',
+                                                    font_size='15sp',
+                                                    pos_hint={'x':0.2,'y':0})
+                                                )
+            passwordTextInput = TextInput(text='', 
+                                        multiline=False,
+                                        size_hint=(None,None), 
+                                        height=30, 
+                                        width=250,
+                                        pos_hint={'x':0.5,'y':0.45})
 
-        hintLayout = BoxLayout(orientation='horizontal')
-        hintLayout.add_widget(Label(text='Hint',
-                                        font_size='15sp',
-                                        pos_hint={'x':0.2,'y':0},))
-        hintTextInput = TextInput(text='', 
-                                  multiline=False,
-                                  size_hint=(None,None), 
-                                  height=30, 
-                                  width=250,
-                                  pos_hint={'x':0.5,'y':0.45})
-        hintLayout.add_widget(hintTextInput)
-        mainLayout.add_widget(hintLayout)
+            passwordLayout.add_widget(passwordTextInput)
+            mainLayout.add_widget(passwordLayout)
 
-        button_box = MDBoxLayout(
-            pos_hint={"center_x": 0.5},
-            adaptive_size=True,
-            padding="24dp",
-            spacing="24dp",
-        )
 
-        confirmButton = MDRaisedButton(text='Confirm')
-        hintButton = MDRaisedButton(text='Hint')
-        button_box.add_widget(confirmButton)
-        button_box.add_widget(hintButton)
-        mainLayout.add_widget(button_box)
-        popUp = Popup(title='Password Search Login',
-                          content=mainLayout,
-                          size_hint=(None,None),
-                          size=(600,600))
-        hintButton.bind(on_release=lambda x:self.showHint(x,hintTextInput))
-        confirmButton.bind(on_release=lambda x:self.verifyPasswordSearchLogin(x,passwordTextInput.text,popUp))
-        popUp.open()
+            hintLayout = BoxLayout(orientation='horizontal')
+            hintLayout.add_widget(Label(text='Hint',
+                                            font_size='15sp',
+                                            pos_hint={'x':0.2,'y':0},))
+            hintTextInput = TextInput(text='', 
+                                    multiline=False,
+                                    size_hint=(None,None), 
+                                    height=30, 
+                                    width=250,
+                                    pos_hint={'x':0.5,'y':0.45})
+            hintLayout.add_widget(hintTextInput)
+            mainLayout.add_widget(hintLayout)
+
+            button_box = MDBoxLayout(
+                pos_hint={"center_x": 0.5},
+                adaptive_size=True,
+                padding="24dp",
+                spacing="24dp",
+            )
+
+            confirmButton = MDRaisedButton(text='Confirm')
+            hintButton = MDRaisedButton(text='Hint')
+            button_box.add_widget(confirmButton)
+            button_box.add_widget(hintButton)
+            mainLayout.add_widget(button_box)
+            popUp = Popup(title='Password Search Login',
+                            content=mainLayout,
+                            size_hint=(None,None),
+                            size=(600,600))
+            hintButton.bind(on_release=lambda x:self.showHint(x,hintTextInput))
+            confirmButton.bind(on_release=lambda x:self.verifyPasswordSearchLogin(x,passwordTextInput.text,popUp))
+            popUp.open()
+        else:
+            show_incorrect_2FA_popup()
     
     def showHint(self, instance, textBox):
         hint = self.verifyUserDB.getUserPasswordAndHint()[0][1]
         textBox.text = hint
 
-    def verifyPasswordSearchLogin(self,instance,userInputPassword,passwordPopup):
+    def verifyPasswordSearchLogin(self,instance,userInputPassword, passwordPopup):
         password = self.verifyUserDB.getUserPasswordAndHint()[0][0]
         if passwordHasing.checkPassword(userInputPassword,password):
             self.refresh_table_data()

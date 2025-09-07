@@ -83,31 +83,35 @@ class Menu(Screen):
     def exportPasswordToTXT(self,widget):
         self.exportPassword = ExportPassword()
 
-    def exportPasswordToEmail(self,widget):
+
+#                              ╭━━━━━━━━━━━━━━━━━━━╮
+#                              ┃                   ┃
+#                              ┃ FIX:Does not work ┃
+#                              ┃                   ┃
+#                              ╰━━━━━━━━━━━━━━━━━━━╯
+
+    def exportPasswordToEmail(self, widget):
         def send_credentials(result):
             if result:
-                self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
                 if not self.emailNotification.running:
-                    def initializeEmailNotificationThread(dt):
-                        self.emailNotificationThread.start()
-                        self.emailNotificationThread.run
-                    Clock.schedule_once(initializeEmailNotificationThread,0)
+                    self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
+                    self.emailNotificationThread.start()                     
                     popUp = Popup(title='Success',
-                                  content=Label(text="Your user credentials have been sent to your email address."),
-                                  size_hint=(None,None),
-                                  size=(400,400))
+                                content=Label(text="Your user credentials have been sent to your email address."),
+                                size_hint=(None, None),
+                                size=(400, 400))
                     popUp.open()
                 else:
                     self.emailNotification.stop()
-                    self.emailNotificationThread.join()
+                    if self.emailNotificationThread.is_alive():
+                        self.emailNotificationThread.join()  
             else:
                 show_incorrect_2FA_popup()
 
-        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             send_credentials(True)
         else:
             create2FAPopupLayout(send_credentials)
-        
 
     def storeLoginDetails(self,widget):
         self.manager.current = 'Login Details Storage Screen'

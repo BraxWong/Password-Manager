@@ -13,16 +13,16 @@ class TwoFactorAuthenticationSettingsDB:
 
     def createLoginDetailsTable(self):
         self.cur.execute(
-            "CREATE TABLE if not exists two_factor_auth_settings(email_address, phone_number, enable_notifications, last_notification)"
+            "CREATE TABLE if not exists two_factor_auth_settings(email_address, enable_notifications, last_notification)"
         )
 
-    def addEntryToDB(self,email_address, phone_number, enable_notifications):
+    def addEntryToDB(self,email_address, enable_notifications):
         two_factor_auth = self.fetchAllFromDB()
         if len(two_factor_auth):
-            self.updateInfo(email_address, phone_number, enable_notifications)
+            self.updateInfo(email_address, enable_notifications)
         else:
             self.cur.execute(
-                f'INSERT INTO two_factor_auth_settings VALUES ("{email_address}", "{phone_number}", {enable_notifications},"{datetime.now().date()}")'
+                f'INSERT INTO two_factor_auth_settings VALUES ("{email_address}", {enable_notifications},"{datetime.now().date()}")'
             )
             self.con.commit()
 
@@ -32,10 +32,10 @@ class TwoFactorAuthenticationSettingsDB:
         )
         return self.cur.fetchall()
 
-    def updateInfo(self, email_address, phone_number, enable_notifications):
+    def updateInfo(self, email_address, enable_notifications):
         two_factor_auth = self.fetchAllFromDB()
-        self.cur.execute('UPDATE two_factor_auth_settings SET email_address = ?, phone_number = ?, enable_notifications = ? WHERE email_address = ?',
-            (email_address, phone_number, enable_notifications, two_factor_auth[0][0])
+        self.cur.execute('UPDATE two_factor_auth_settings SET email_address = ?, enable_notifications = ? WHERE email_address = ?',
+            (email_address, enable_notifications, two_factor_auth[0][0])
         )
         self.con.commit()
 

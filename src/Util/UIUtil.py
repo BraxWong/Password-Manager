@@ -8,25 +8,25 @@ from kivymd.uix.button import MDRaisedButton
 from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
 from Util.two_factor_authentication import *
 from Util.Util import *
+import threading
+from kivy.clock import Clock
 
 def create2FAPopupLayout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
     two_factor_auth_info = two_factor_auth_db.fetchAllFromDB()
-    send_by_email = True if two_factor_auth_info[0][0] != "" else False
-    contact_info = two_factor_auth_info[0][0] if send_by_email else two_factor_auth_info[0][1]
-    auth_system = twoFactorAuth(send_by_email, contact_info) 
+    contact_info = two_factor_auth_info[0][0] 
 
     main_layout = BoxLayout(
-                orientation='vertical',
-                size_hint=(1, 1),  
-                padding=0,
-                spacing=50 
-            )
+        orientation='vertical',
+        size_hint=(1, 1),  
+        padding=0,
+        spacing=50 
+    )
 
     top_row_layout = BoxLayout(orientation='horizontal', 
-                                      size_hint_y=None, 
-                                      height=50, 
-                                      padding=(10, 0))
+                                size_hint_y=None, 
+                                height=50, 
+                                padding=(10, 0))
     top_row_layout.add_widget(
         Label(
             text='2FA', 
@@ -37,36 +37,51 @@ def create2FAPopupLayout(callback):
     )        
     main_layout.add_widget(top_row_layout)
 
-    two_factor_auth_Layout = BoxLayout(
+    two_factor_auth_layout = BoxLayout(
         orientation='horizontal',
         size_hint_y=None,
         height='50dp',
         spacing='10dp'
     )
-    two_factor_auth_Layout.add_widget(
+    two_factor_auth_layout.add_widget(
         Label(
             text='Please enter your 2FA code',
             font_size='15sp',
             size_hint_x=0.4
         )
     )
-    two_factor_auth_text_input= TextInput(
+    two_factor_auth_text_input = TextInput(
         text='', multiline=False, size_hint=(0.6, None), height='40dp'
     )
-    two_factor_auth_Layout.add_widget(two_factor_auth_text_input)
-    main_layout.add_widget(two_factor_auth_Layout)
+    two_factor_auth_layout.add_widget(two_factor_auth_text_input)
+    main_layout.add_widget(two_factor_auth_layout)
 
     popUp = Popup(title='2FA',
-                  content = main_layout,
-                  size_hint=(None,None),
-                  size=(600,600))
+                  content=main_layout,
+                  size_hint=(None, None),
+                  size=(600, 600))
 
-    submit_button = MDRaisedButton(text="Submit", on_release=lambda instance:check_2FA_code(two_factor_auth_text_input.text,auth_system,popUp,callback))
+    auth_system = None
+
+    def send_2fa_code():
+        nonlocal auth_system  
+        auth_system = twoFactorAuth(contact_info)  
+        Clock.schedule_once(lambda dt: print("2FA code sent!"), 0)  
+
+    threading.Thread(target=send_2fa_code).start()
+
+    def on_submit(instance):
+        check_2FA_code(two_factor_auth_text_input.text, auth_system, popUp, callback)
+
+    submit_button = MDRaisedButton(
+        text="Submit",
+        size_hint=(None, None),  
+        size=(200, 50),          
+        on_release=on_submit,
+        pos_hint={'center_x': 0.5}
+    )
     main_layout.add_widget(submit_button)
-
     popUp.open()
-            
-
 
 def show_incorrect_2FA_popup():
     popUp = Popup(title='Error',

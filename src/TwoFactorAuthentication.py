@@ -64,28 +64,6 @@ class TwoFactorAuthentication(Screen):
         self.emailAddressLayout.add_widget(self.emailAddressTextInput)
         self.mainLayout.add_widget(self.emailAddressLayout)
 
-        self.phoneLayout = BoxLayout(
-            orientation='horizontal',
-            size_hint_y=None,
-            height='50dp',
-            spacing='10dp'
-        )
-
-        self.phoneLayout.add_widget(
-            Label(
-                text='Phone Number',
-                font_size='15sp',
-                size_hint_x=0.4
-            )
-        )
-
-
-        self.phoneTextInput = TextInput(
-            text='', multiline=False, size_hint=(0.6, None), height='40dp'
-        )
-        self.phoneLayout.add_widget(self.phoneTextInput)
-        self.mainLayout.add_widget(self.phoneLayout)
-
         self.enableEmailNotificationLayout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
@@ -102,7 +80,6 @@ class TwoFactorAuthentication(Screen):
         two_factor_auth_info = self.two_factor_authentication_db.fetchAllFromDB()
         if len(two_factor_auth_info) != 0:
             self.emailAddressTextInput.text = two_factor_auth_info[0][0]
-            self.phoneTextInput.text = two_factor_auth_info[0][1] 
             self.enableEmailNotificationCheckbox.active = True if two_factor_auth_info[0][1] else False
 
         self.mainLayout.add_widget(self.enableEmailNotificationLayout)
@@ -127,7 +104,7 @@ class TwoFactorAuthentication(Screen):
 
     def saveEmailNotificationSettings(self, widget):
         EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-        if  len(self.emailAddressTextInput.text) != 0 and not EMAIL_REGEX.match(self.emailAddressTextInput.text):
+        if len(self.emailAddressTextInput.text) != 0 and not EMAIL_REGEX.match(self.emailAddressTextInput.text):
             popUp = Popup(title='Error',
                         content=Label(text="Please provide a valid email address"),
                         size_hint=(None,None),
@@ -136,25 +113,16 @@ class TwoFactorAuthentication(Screen):
             return
         else:
             update_email_addr = True
-        if len(self.phoneTextInput.text) != 0 and not self.phoneTextInput.text.isdigit():
-            popUp = Popup(title='Error',
-                        content=Label(text="Please provide a valid phone number"),
-                        size_hint=(None,None),
-                        size=(600,600))
-            popUp.open()
-            return
-        else:
-            update_phone_number = True
 
-        if self.enableEmailNotificationCheckbox.active and (len(self.emailAddressTextInput.text) == 0 and len(self.phoneTextInput.text) == 0):
+        if self.enableEmailNotificationCheckbox.active and len(self.emailAddressTextInput.text) == 0:
             popUp = Popup(title='Error',
-                                content=Label(text="Please provide a valid phone number / email address"),
+                                content=Label(text="Please provide a valid email address"),
                                 size_hint=(None,None),
                                 size=(600,600))
             popUp.open()
             return
              
-        self.two_factor_authentication_db.addEntryToDB(self.emailAddressTextInput.text, self.phoneTextInput.text, self.enableEmailNotificationCheckbox.active)
+        self.two_factor_authentication_db.addEntryToDB(self.emailAddressTextInput.text, self.enableEmailNotificationCheckbox.active)
         popUp = Popup(title='Success',
                     content=Label(text="Your 2FA settings have been saved."),
                     size_hint=(None,None),

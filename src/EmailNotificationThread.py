@@ -12,9 +12,9 @@ class EmailNotificationThread:
         emailSettingsDB = TwoFactorAuthenticationSettingsDB()
         emailSettings = emailSettingsDB.fetchAllFromDB()
         if len(emailSettings) != 0:
-            dbDate = datetime.strptime(emailSettings[0][3], "%Y-%m-%d")
+            dbDate = datetime.strptime(emailSettings[0][2], "%Y-%m-%d")
             dateDifference = datetime.today() - dbDate
-            if int(str(dateDifference)[0]) >= 15 and emailSettings[0][2]:
+            if int(str(dateDifference)[0]) >= 15 and emailSettings[0][1]:
                 emailHeader = "Password Manager Reminder"
                 emailBody = "Dear User,\nOne (or more) of your login details have not been changed in the past 15 days. Please generate a new password to ensure the security of your login details. Thanks, and have a wonderful day.\n\nKindest Regards,\nPassword Manager Team"
                 subprocess.run(f'cd src/Util && ./EmailSender "{emailSettings[0][0]}" "{emailHeader}" "{emailBody}"', 

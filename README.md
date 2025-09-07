@@ -72,5 +72,5 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
 - [ ] Enable users to restart website monitor if it was terminated
 - [X] Enable users to copy login details to the clipboard when login details popup is opened. (Completed: 2/7/2025)
 - [X] Use a hash function to encode stored passwords and when validating user logins. (Completed: 2/8/2025)
-- [ ] Implement 2FA in forms of SMS / Emails (Work In Progress)
+- [X] Implement 2FA in forms Emails (Completed: 9/8/2025) 
 - [ ] Categorize user credentials (Work, Entertainment, Others...)
