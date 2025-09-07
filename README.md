@@ -9,7 +9,8 @@ Introducing a password management solution designed to simplify and secure your 
 - Export feature to backup credentials 📤
 - Display login details needed 🖥️
 - Automated logout after 15 minutes of inactivity to improve security ➜]
-
+- 2FA enabled to further strengthen the security of the system 🔐
+  
 ## Installation Guide
 
 1. Run install.bat(Windows) / install.sh(Unix)
