@@ -21,66 +21,66 @@ class Menu(Screen):
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
 
-        self.websiteMonitor = WebsiteMonitor()
-        self.websiteMonitorThread = threading.Thread(target=self.websiteMonitor.run, daemon=True)
+        self.website_monitor = WebsiteMonitor()
+        self.website_monitor_thread = threading.Thread(target=self.website_monitor.run, daemon=True)
 
-        self.emailNotification= EmailNotificationThread()
-        self.emailNotificationThread = threading.Thread(target=self.emailNotification.run, daemon=True)
+        self.email_notification= EmailNotificationThread()
+        self.email_notification_thread = threading.Thread(target=self.email_notification.run, daemon=True)
 
         self.layout = GridLayout(cols=1)
         self.cols=1
         self.layout.add_widget(Label(text='Password Manager',font_size='20sp'))
 
-        self.searchPassword = Button(text='Find your password')
-        self.searchPassword.bind(on_press=self.startPasswordSearch)
-        self.layout.add_widget(self.searchPassword)
+        self.search_password = Button(text='Find your password')
+        self.search_password.bind(on_press=self.start_password_search)
+        self.layout.add_widget(self.search_password)
 
-        self.storeUserDetails = Button(text='Store Login Details')
-        self.storeUserDetails.bind(on_press=self.storeLoginDetails)
-        self.layout.add_widget(self.storeUserDetails)
+        self.store_user_details = Button(text='Store Login Details')
+        self.store_user_details.bind(on_press=self.store_login_details)
+        self.layout.add_widget(self.store_user_details)
 
-        self.generatePassword = Button(text='Generate a password')
-        self.generatePassword.bind(on_press=self.startPasswordGeneration)
-        self.layout.add_widget(self.generatePassword)
+        self.generate_password = Button(text='Generate a password')
+        self.generate_password.bind(on_press=self.start_password_generation)
+        self.layout.add_widget(self.generate_password)
 
-        self.sendEmailNotification = Button(text='2FA Settings')
-        self.sendEmailNotification.bind(on_press=self.startSendEmailNotification)
-        self.layout.add_widget(self.sendEmailNotification)
+        self.send_email_notification = Button(text='2FA Settings')
+        self.send_email_notification.bind(on_press=self.start_send_email_notification)
+        self.layout.add_widget(self.send_email_notification)
 
-        self.importPassword = Button(text='Import password to system')
-        self.importPassword.bind(on_press=self.importPasswordToSystem)
-        self.layout.add_widget(self.importPassword)
+        self.import_password = Button(text='Import password to system')
+        self.import_password.bind(on_press=self.import_password_to_system)
+        self.layout.add_widget(self.import_password)
 
-        self.outputPassword = Button(text='Output password to file')
-        self.outputPassword.bind(on_press=self.exportPasswordToTXT)
-        self.layout.add_widget(self.outputPassword)
+        self.output_password = Button(text='Output password to file')
+        self.output_password.bind(on_press=self.export_password_to_txt)
+        self.layout.add_widget(self.output_password)
 
-        self.outputPasswordEmail = Button(text='Output password to email')
-        self.outputPasswordEmail.bind(on_press=self.exportPasswordToEmail)
-        self.layout.add_widget(self.outputPasswordEmail)
+        self.output_password_email = Button(text='Output password to email')
+        self.output_password_email.bind(on_press=self.export_password_to_email)
+        self.layout.add_widget(self.output_password_email)
 
-        self.startStopWebsiteMonitor = Button(text='Start website monitor')
-        self.startStopWebsiteMonitor.bind(on_press=self.startStopMonitorThread)
-        self.layout.add_widget(self.startStopWebsiteMonitor)
+        self.start_stop_website_monitor = Button(text='Start website monitor')
+        self.start_stop_website_monitor.bind(on_press=self.start_stop_monitor_thread)
+        self.layout.add_widget(self.start_stop_website_monitor)
 
         self.add_widget(self.layout)
 
-        self.startSendEmailNotificationThread()
+        self.start_send_email_notification_thread()
 
 
-    def startPasswordSearch(self,widget):
+    def start_password_search(self,widget):
         self.manager.current = 'Password Search Screen'
 
-    def startPasswordGeneration(self,widget):
+    def start_password_generation(self,widget):
         self.manager.current = 'Password Generation Screen'
 
-    def startSendEmailNotification(self,widget):
+    def start_send_email_notification(self,widget):
         self.manager.current = '2FA Screen'
 
-    def importPasswordToSystem(self,widget):
-        self.importPassword = ImportPassword()
+    def import_password_to_system(self,widget):
+        self.import_password = ImportPassword()
 
-    def exportPasswordToTXT(self,widget):
+    def export_password_to_txt(self,widget):
         self.exportPassword = ExportPassword()
 
 
@@ -90,60 +90,60 @@ class Menu(Screen):
 #                              ┃                   ┃
 #                              ╰━━━━━━━━━━━━━━━━━━━╯
 
-    def exportPasswordToEmail(self, widget):
+    def export_password_to_email(self, widget):
         def send_credentials(result):
             if result:
-                if not self.emailNotification.running:
-                    self.emailNotificationThread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
-                    self.emailNotificationThread.start()                     
+                if not self.email_notification.running:
+                    self.email_notification_thread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
+                    self.email_notification_thread.start()                     
                     popUp = Popup(title='Success',
                                 content=Label(text="Your user credentials have been sent to your email address."),
                                 size_hint=(None, None),
                                 size=(400, 400))
                     popUp.open()
                 else:
-                    self.emailNotification.stop()
-                    if self.emailNotificationThread.is_alive():
-                        self.emailNotificationThread.join()  
+                    self.email_notification.stop()
+                    if self.email_notification_thread.is_alive():
+                        self.email_notification_thread.join()  
             else:
                 show_incorrect_2FA_popup()
 
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             send_credentials(True)
         else:
-            create2FAPopupLayout(send_credentials)
+            create_2FA_popup_layout(send_credentials)
 
-    def storeLoginDetails(self,widget):
+    def store_login_details(self,widget):
         self.manager.current = 'Login Details Storage Screen'
 
-    def startSendEmailNotificationThread(self):
-        if not self.emailNotification.running:
+    def start_send_email_notification_thread(self):
+        if not self.email_notification.running:
             def initializeEmailNotificationThread(dt):
-                self.emailNotificationThread.start()
-                self.emailNotificationThread.run
+                self.email_notification_thread.start()
+                self.email_notification_thread.run
             Clock.schedule_once(initializeEmailNotificationThread,0)
         else:
-            self.emailNotification.stop()
-            self.emailNotificationThread.join()
+            self.email_notification.stop()
+            self.email_notification_thread.join()
 
     #TODO: Kinda works but it does not allow the thread to restart. Have to think of a work around
-    def startStopMonitorThread(self,widget):
+    def start_stop_monitor_thread(self,widget):
         def run(result):
             if result:
-                if self.websiteMonitor.driver is None:
+                if self.website_monitor.driver is None:
                     def initializeMonitorThread(dt):
-                        self.websiteMonitorThread.start()
-                        self.websiteMonitorThread.run 
+                        self.website_monitor_thread.start()
+                        self.website_monitor_thread.run 
                     Clock.schedule_once(initializeMonitorThread,0)
-                    self.startStopWebsiteMonitor.text = 'Stop website monitor'
+                    self.start_stop_website_monitor.text = 'Stop website monitor'
                 else:
-                    self.websiteMonitor.stop()
-                    self.websiteMonitorThread.join(timeout=1)            
-                    self.startStopWebsiteMonitor.text = 'Start website monitor'
+                    self.website_monitor.stop()
+                    self.website_monitor_thread.join(timeout=1)            
+                    self.start_stop_website_monitor.text = 'Start website monitor'
             else:
                 show_incorrect_2FA_popup()
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
             run(True)
         else:
-            create2FAPopupLayout(run)
+            create_2FA_popup_layout(run)
 

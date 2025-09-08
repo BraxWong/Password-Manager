@@ -10,14 +10,14 @@ from TwoFactorAuthentication import *
 class Main(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
-        self.screenManager = ScreenManager()
-        self.screenManager.add_widget(Menu(name='Menu Screen'))
-        self.screenManager.add_widget(LoginDetailsStorage(name="Login Details Storage Screen"))
-        self.screenManager.add_widget(PasswordGeneration(name='Password Generation Screen'))
-        self.screenManager.add_widget(PasswordSearch(name='Password Search Screen'))
-        self.screenManager.add_widget(TwoFactorAuthentication(name='2FA Screen'))
-        self.screenManager.current = 'Menu Screen' 
-        return self.screenManager
+        self.screen_manager = ScreenManager()
+        self.screen_manager.add_widget(Menu(name='Menu Screen'))
+        self.screen_manager.add_widget(LoginDetailsStorage(name="Login Details Storage Screen"))
+        self.screen_manager.add_widget(PasswordGeneration(name='Password Generation Screen'))
+        self.screen_manager.add_widget(PasswordSearch(name='Password Search Screen'))
+        self.screen_manager.add_widget(TwoFactorAuthentication(name='2FA Screen'))
+        self.screen_manager.current = 'Menu Screen' 
+        return self.screen_manager
 
 if __name__ == '__main__':
     Window.size = (1200,900)

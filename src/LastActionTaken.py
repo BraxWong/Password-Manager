@@ -2,7 +2,7 @@ from datetime import datetime
 
 FIFTEEN_MINUTES = 15 * 60
 
-class last_action_taken:
+class LastActionTaken:
     def __init__(self):
         self.last_action = datetime.now()
     

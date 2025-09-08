@@ -7,9 +7,9 @@ import os
 
 class ImportPassword:
     def __init__(self):
-        self.loginDetails = LoginDetailsDB()
-        self.selectedFile = False
-        self.selectedPath = ""
+        self.login_details = LoginDetailsDB()
+        self.selected_file = False
+        self.selected_path = ""
         path = os.path.expanduser("~")
         self.file_manager = MDFileManager(
             exit_manager = self.exit_manager,
@@ -18,47 +18,47 @@ class ImportPassword:
         self.file_manager.show(path)
 
     def exit_manager(self, *args):
-        if self.selectedPath != "":
-            self.readFile()
-            title = 'Updated' if self.selectedFile else 'Error'
-            content = "Your user details have been updated" if self.selectedFile else "The file you uploaded was invalid. Please try again"
-            popUp = Popup(title=title,
+        if self.selected_path != "":
+            self.read_file()
+            title = 'Updated' if self.selected_file else 'Error'
+            content = "Your user details have been updated" if self.selected_file else "The file you uploaded was invalid. Please try again"
+            pop_up = Popup(title=title,
                         content=Label(text=content),
                         size_hint=(None,None),
                         size=(600,600))
-            popUp.open()        
+            pop_up.open()        
         else:
-            popUp = Popup(title='Cancelled',
+            pop_up = Popup(title='Cancelled',
                         content=Label(text="You did not select a file."),
                         size_hint=(None,None),
                         size=(600,600))
-            popUp.open()
+            pop_up.open()
         self.file_manager.close()
 
     def select_path(self,path):
-        self.selectedPath = path
+        self.selected_path = path
         self.exit_manager()
 
-    def readFile(self):
-        f = open(self.selectedPath,"r")
-        lineList = f.readlines()
-        for line in lineList:
+    def read_file(self):
+        f = open(self.selected_path,"r")
+        line_list = f.readlines()
+        for line in line_list:
             line = line.replace("Website: ", '')
-            usernameIndex = [match.start() for match in re.finditer("Username: ",line)] 
-            if len(usernameIndex) == 0:
-                self.selectedFile = False
+            username_index = [match.start() for match in re.finditer("Username: ",line)] 
+            if len(username_index) == 0:
+                self.selected_file = False
                 return
-            website = line[0:usernameIndex[0]-2]
+            website = line[0:username_index[0]-2]
             line = line.replace(website+"  ",'')
             line = line.replace("Username: ",'')
-            passwordIndex = [match.start() for match in re.finditer("Password: ",line)]
-            if len(passwordIndex) == 0:
-                self.selectedFile = False
+            password_index = [match.start() for match in re.finditer("Password: ",line)]
+            if len(password_index) == 0:
+                self.selected_file = False
                 return
-            username = line[0:passwordIndex[0]-2]
+            username = line[0:password_index[0]-2]
             line = line.replace(username+"  ",'')
             line = line.replace("Password: ",'')
             password = line
-            self.loginDetails.addEntryToDB(website,username,password)
-        self.selectedFile = True
+            self.login_details.addEntryToDB(website,username,password)
+        self.selected_file = True
  

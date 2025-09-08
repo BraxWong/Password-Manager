@@ -14,7 +14,7 @@ from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 from Database.EmailSettings import *
 from Util.two_factor_authentication import *
-from LastActionTaken import last_action_taken
+from LastActionTaken import LastActionTaken
 import Util.Util as util
 import Util.UIUtil as ui_util
 import Util.passwordHasing as passwordHasing
@@ -22,7 +22,7 @@ import Util.wordSearchAlgorithm as wordSearch
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
-        self.last_action_taken = last_action_taken()
+        self.last_action_taken = LastActionTaken()
         self.paused_action = ""
         self.invalid_login_attempt = 0
 
@@ -177,7 +177,7 @@ class PasswordSearch(Screen):
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             self.passwordSearchLogin(True)
         else:
-            ui_util.create2FAPopupLayout(self.passwordSearchLogin)
+            ui_util.create_2FA_popup_layout(self.passwordSearchLogin)
              
     def passwordSearchLogin(self, result):
         if result:
@@ -232,7 +232,7 @@ class PasswordSearch(Screen):
             confirmButton.bind(on_release=lambda x:self.verifyPasswordSearchLogin(x,passwordTextInput.text,popUp))
             popUp.open()
         else:
-            show_incorrect_2FA_popup()
+            ui_util.show_incorrect_2FA_popup()
     
     def showHint(self, instance, textBox):
         hint = self.verifyUserDB.getUserPasswordAndHint()[0][1]

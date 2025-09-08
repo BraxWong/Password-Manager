@@ -16,7 +16,7 @@ class LastActionTakenTestMethods(unittest.TestCase):
 
     def test_check_login_required(self):
         try:
-            self.last_action_taken = LastActionTaken.last_action_taken()
+            self.last_action_taken = LastActionTaken.LastActionTaken()
             self.now = datetime.now()
             self.last_action_taken.last_action = self.now - timedelta(minutes=20) 
             self.assertIsInstance(self.last_action_taken.last_action, datetime)
@@ -28,7 +28,7 @@ class LastActionTakenTestMethods(unittest.TestCase):
         self.testsRan += 1
 
         try:
-            self.last_action_taken = LastActionTaken.last_action_taken()
+            self.last_action_taken = LastActionTaken.LastActionTaken()
             self.now = datetime.now()
             self.last_action_taken.last_action = self.now - timedelta(minutes=5) 
             self.assertIsInstance(self.last_action_taken.last_action, datetime)
