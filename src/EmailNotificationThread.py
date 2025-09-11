@@ -9,31 +9,31 @@ class EmailNotificationThread:
 
     def run(self):
         self.running = True
-        emailSettingsDB = TwoFactorAuthenticationSettingsDB()
-        emailSettings = emailSettingsDB.fetchAllFromDB()
-        if len(emailSettings) != 0:
-            dbDate = datetime.strptime(emailSettings[0][2], "%Y-%m-%d")
-            dateDifference = datetime.today() - dbDate
-            if int(str(dateDifference)[0]) >= 15 and emailSettings[0][1]:
-                emailHeader = "Password Manager Reminder"
-                emailBody = "Dear User,\nOne (or more) of your login details have not been changed in the past 15 days. Please generate a new password to ensure the security of your login details. Thanks, and have a wonderful day.\n\nKindest Regards,\nPassword Manager Team"
-                subprocess.run(f'cd src/Util && ./EmailSender "{emailSettings[0][0]}" "{emailHeader}" "{emailBody}"', 
+        email_settings_db = TwoFactorAuthenticationSettingsDB()
+        email_settings = email_settings_db.fetchAllFromDB()
+        if len(email_settings) != 0:
+            db_date = datetime.strptime(email_settings[0][2], "%Y-%m-%d")
+            date_difference = datetime.today() - db_date
+            if int(str(date_difference)[0]) >= 15 and email_settings[0][1]:
+                email_header = "Password Manager Reminder"
+                email_body = "Dear User,\nOne (or more) of your login details have not been changed in the past 15 days. Please generate a new password to ensure the security of your login details. Thanks, and have a wonderful day.\n\nKindest Regards,\nPassword Manager Team"
+                subprocess.run(f'cd src/Util && ./EmailSender "{email_settings[0][0]}" "{email_header}" "{email_body}"', 
                             shell=True, capture_output=True, text=True)
         self.stop()
 
     def sendLoginDetails(self):
         self.running = True 
         self.loginDetails = LoginDetailsDB()
-        userLoginDetails = self.loginDetails.fetchAllFromDB()
-        emailSettingsDB = TwoFactorAuthenticationSettingsDB()
-        emailSettings = emailSettingsDB.fetchAllFromDB()
+        user_login_details = self.loginDetails.fetchAllFromDB()
+        email_settings_db = TwoFactorAuthenticationSettingsDB()
+        email_settings = email_settings_db.fetchAllFromDB()
         file = open("password.txt","w")
-        userCredentials = ''
-        for loginCredential in userLoginDetails:
-            userCredentials += "Website: " + loginCredential[0] + "  Username: " + loginCredential[1] + "  Password: " + loginCredential[2].rstrip() + "\n"
-        emailHeader = "Password Manager User Credentials Exportation"
-        emailBody = "Dear User,\nYour user credentials have been exported to your email address as requested. It has been attached along with this email. Please do not hesitate to reach out if you have any issues with this service. Thank you for choosing our service.\nKindest Regards,\nPassword Manager Team"
-        subprocess.run(f'cd src/Util && ./EmailSender "{emailSettings[0][0]}" "{emailHeader}" "{emailBody}" "{userCredentials}"', 
+        user_credentials = ''
+        for login_credential in user_login_details:
+            user_credentials += "Website: " + login_credential[0] + "  Username: " + login_credential[1] + "  Password: " + login_credential[2].rstrip() + "\n"
+        email_header = "Password Manager User Credentials Exportation"
+        email_body = "Dear User,\nYour user credentials have been exported to your email address as requested. It has been attached along with this email. Please do not hesitate to reach out if you have any issues with this service. Thank you for choosing our service.\nKindest Regards,\nPassword Manager Team"
+        subprocess.run(f'cd src/Util && ./EmailSender "{email_settings[0][0]}" "{email_header}" "{email_body}" "{user_credentials}"', 
                             shell=True, capture_output=True, text=True)
         self.stop()
         

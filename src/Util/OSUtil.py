@@ -3,23 +3,23 @@ import os
 
 def getOSDBPath():
     OS = platform.system()
-    DBDirectory = "Database/SQLFiles"
+    db_directory = "Database/SQLFiles"
     if OS == "Darwin":
-        DBDirectory = f"/tmp/{DBDirectory}"
+        db_directory = f"/tmp/{db_directory}"
     elif OS == "Windows":
-        DBDirectory = f"C:/{DBDirectory}"
+        db_directory = f"C:/{db_directory}"
     else:
-        DBDirectory = f"/var/tmp/{DBDirectory}"
-    if not os.path.exists(DBDirectory):
-        os.makedirs(DBDirectory,exist_ok=True)
-    migrateDB(DBDirectory)
-    return DBDirectory
+        db_directory = f"/var/tmp/{db_directory}"
+    if not os.path.exists(db_directory):
+        os.makedirs(db_directory,exist_ok=True)
+    migrateDB(db_directory)
+    return db_directory
 
-def migrateDB(DBDirectory):
+def migrateDB(db_directory):
     if os.path.isfile("Database/SQLFiles/EmailSettings.db"):
-        os.rename("Database/SQLFiles/EmailSettings.db", DBDirectory + "/EmailSettings.db")
+        os.rename("Database/SQLFiles/EmailSettings.db", db_directory + "/EmailSettings.db")
     if os.path.isfile("Database/SQLFiles/LoginDetails.db"):
-        os.rename("Database/SQLFiles/LoginDetails.db", DBDirectory + "/LoginDetails.db")
+        os.rename("Database/SQLFiles/LoginDetails.db", db_directory + "/LoginDetails.db")
     if os.path.isfile("Database/SQLFiles/VerifyUser.db"):
-        os.rename("Database/SQLFiles/VerifyUser.db", DBDirectory + "/VerifyUser.db")
+        os.rename("Database/SQLFiles/VerifyUser.db", db_directory + "/VerifyUser.db")
 

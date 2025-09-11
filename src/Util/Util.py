@@ -9,7 +9,7 @@ def check_2FA_code(user_code, auth_system, popUp, callback):
     else:
         callback(False)
 
-def dateComparison(date):
+def date_comparison(date):
     todays_date = datetime.now().date()         
     date_format = '%Y-%m-%d'
     date = datetime.strptime(date,date_format).date()
@@ -21,46 +21,46 @@ def dateComparison(date):
     else:
         return ("alert-circle",[1,0,0,1],"Danger")
 
-def generatePassword(specialSymbolEnabled,passwordLength):
+def generate_password(special_symbol_enabled,password_length):
         numbers=['0','1','2','3','4','5','6','7','8','9']
-        numberExistsInPassword=False
+        number_exists_in_password=False
         letters=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-        lettersExistsInPassword=False
-        upperLetters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-        upperLettersExistsInPassword=False
+        letters_exists_in_password=False
+        upper_letters=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+        upper_letters_exists_in_password=False
         symbols=['!','@','#','$','^','&','*','?']
-        symbolExistsInPassword=False
+        symbol_exists_in_password=False
         password=''
-        for i in range(passwordLength):
-            if specialSymbolEnabled:
+        for i in range(password_length):
+            if special_symbol_enabled:
                 num=random.randrange(0,4)
             else:
                 num=random.randrange(0,3)
-                symbolExistsInPassword=True
+                symbol_exists_in_password=True
 
             match num:
                 case 0:
                     password+=random.choice(numbers)
-                    numberExistsInPassword=True
+                    number_exists_in_password=True
                 case 1:
                     password+=random.choice(letters)
-                    lettersExistsInPassword=True
+                    letters_exists_in_password=True
                 case 2:
-                    password+=random.choice(upperLetters)
-                    upperLettersExistsInPassword=True
+                    password+=random.choice(upper_letters)
+                    upper_letters_exists_in_password=True
                 case 3:
                     password+=random.choice(symbols)
-                    symbolExistsInPassword=True
+                    symbol_exists_in_password=True
 
-        if numberExistsInPassword and lettersExistsInPassword and upperLettersExistsInPassword and symbolExistsInPassword and not checkPasswordInDB(password):
+        if number_exists_in_password and letters_exists_in_password and upper_letters_exists_in_password and symbol_exists_in_password and not check_password_in_db(password):
             return password
-        return generatePassword(specialSymbolEnabled,passwordLength)
+        return generate_password(special_symbol_enabled,password_length)
 
-def checkPasswordInDB(generatedPassword):
-    passwordFoundInDB = False
-    loginDetailsDB = LoginDetailsDB()
-    allPassword = loginDetailsDB.fetchAllFromDB()
-    for password in allPassword:
-        if generatedPassword == password[2]:
-            passwordFoundInDB = True
-    return passwordFoundInDB
+def check_password_in_db(generated_password):
+    password_found_in_db = False
+    login_details_db = LoginDetailsDB()
+    all_password = login_details_db.fetchAllFromDB()
+    for password in all_password:
+        if generated_password == password[2]:
+            password_found_in_db = True
+    return password_found_in_db

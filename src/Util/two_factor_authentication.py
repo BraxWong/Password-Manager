@@ -14,7 +14,7 @@ class twoFactorAuth:
         self.send_2FA_code_by_email()
 
     def generate_2FA_code(self):
-        self.code = generatePassword(True, CODE_LENGTH)
+        self.code = generate_password(True, CODE_LENGTH)
         self.generate_timestamp = datetime.now() 
 
     def send_2FA_code_by_email(self):

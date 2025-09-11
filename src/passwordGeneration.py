@@ -16,24 +16,24 @@ class PasswordGeneration(Screen):
     def __init__(self, **kwargs):
         super(PasswordGeneration, self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
-        self.mainLayout = BoxLayout(
+        self.main_layout = BoxLayout(
             orientation='vertical',
             size_hint=(1, 1),  
             padding=0,
             spacing=50  
         )
 
-        self.topRowLayout = BoxLayout(
+        self.top_row_layout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
             height='50dp',  
             padding=(10, 0)  
         )
 
-        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
-        self.topRowLayout.add_widget(self.backButton)
+        self.back_button = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.top_row_layout.add_widget(self.back_button)
 
-        self.topRowLayout.add_widget(
+        self.top_row_layout.add_widget(
             Label(
                 text='Create a Password',
                 font_size='20sp',
@@ -42,109 +42,109 @@ class PasswordGeneration(Screen):
             )
         )
 
-        self.mainLayout.add_widget(self.topRowLayout)
+        self.main_layout.add_widget(self.top_row_layout)
 
-        self.applicationNameLayout = BoxLayout(
+        self.application_name_layout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
             height='50dp',
             spacing='10dp'
         )
-        self.applicationNameLayout.add_widget(
+        self.application_name_layout.add_widget(
             Label(
                 text='Name of application/website',
                 font_size='15sp',
                 size_hint_x=0.4
             )
         )
-        self.applicationNameTextInput = TextInput(
+        self.application_name_text_input = TextInput(
             text='', multiline=False, size_hint=(0.6, None), height='40dp'
         )
-        self.applicationNameLayout.add_widget(self.applicationNameTextInput)
-        self.mainLayout.add_widget(self.applicationNameLayout)
+        self.application_name_layout.add_widget(self.application_name_text_input)
+        self.main_layout.add_widget(self.application_name_layout)
 
                 
-        self.usernameLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
-        self.usernameLayout.add_widget(
+        self.username_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
+        self.username_layout.add_widget(
              Label(text='Username', font_size='15sp', size_hint_x=0.4)
         )
-        self.usernameTextInput = TextInput(
+        self.username_text_input = TextInput(
              text='', multiline=False, size_hint=(0.6, None), height='40dp'
         )
-        self.usernameLayout.add_widget(self.usernameTextInput)
-        self.mainLayout.add_widget(self.usernameLayout)
+        self.username_layout.add_widget(self.username_text_input)
+        self.main_layout.add_widget(self.username_layout)
 
-        self.passwordLengthLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='70dp', spacing='10dp')
-        self.passwordLengthLayout.add_widget(
+        self.password_length_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='70dp', spacing='10dp')
+        self.password_length_layout.add_widget(
             Label(text='Length of password', font_size='15sp', size_hint_x=0.4)
         )
-        self.passwordSliderLayout = BoxLayout(orientation='vertical', size_hint_x=0.6)
-        self.passwordLengthLabel = Label(text='14', font_size='20sp', halign='center')
-        self.passwordSliderLayout.add_widget(self.passwordLengthLabel)
-        self.passwordLengthSlider = Slider(
+        self.password_slider_layout = BoxLayout(orientation='vertical', size_hint_x=0.6)
+        self.password_length_label = Label(text='14', font_size='20sp', halign='center')
+        self.password_slider_layout.add_widget(self.password_length_label)
+        self.password_length_slider = Slider(
             min=1, max=64, value=14, value_track=True, value_track_color=[1, 0, 0, 1]
         )
-        self.passwordLengthSlider.bind(value=self.onSliderValueChange)
-        self.passwordSliderLayout.add_widget(self.passwordLengthSlider)
-        self.passwordLengthLayout.add_widget(self.passwordSliderLayout)
-        self.mainLayout.add_widget(self.passwordLengthLayout)
+        self.password_length_slider.bind(value=self.on_slider_value_change)
+        self.password_slider_layout.add_widget(self.password_length_slider)
+        self.password_length_layout.add_widget(self.password_slider_layout)
+        self.main_layout.add_widget(self.password_length_layout)
 
-        self.symbolLayout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
-        self.symbolLayout.add_widget(
+        self.symbol_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
+        self.symbol_layout.add_widget(
             Label(text='Include special symbol', font_size='15sp', size_hint_x=0.135)
         )
-        self.symbolEnabledCheckBox = CheckBox(size_hint_x=0.2)
-        self.symbolLayout.add_widget(self.symbolEnabledCheckBox)
-        self.mainLayout.add_widget(self.symbolLayout)
+        self.symbol_enabled_checkbox = CheckBox(size_hint_x=0.2)
+        self.symbol_layout.add_widget(self.symbol_enabled_checkbox)
+        self.main_layout.add_widget(self.symbol_layout)
 
-        self.generatePasswordButton = Button(
+        self.generate_password_button = Button(
             text='Generate a password', size_hint=(None, None), height='40dp', width='200dp', pos_hint={'center_x': 0.5}
         )
-        self.generatePasswordButton.bind(on_press=self.updateLoginDetailsToDB)
-        self.mainLayout.add_widget(self.generatePasswordButton)
+        self.generate_password_button.bind(on_press=self.update_login_details_to_db)
+        self.main_layout.add_widget(self.generate_password_button)
        
-        self.mainLayout.add_widget(Widget(size_hint_y=1))
+        self.main_layout.add_widget(Widget(size_hint_y=1))
         
-        self.add_widget(self.mainLayout)
+        self.add_widget(self.main_layout)
 
-    def onSliderValueChange(self,widget,val):
-        self.passwordLengthLabel.text=str(int(val))
+    def on_slider_value_change(self,widget,val):
+        self.password_length_label.text=str(int(val))
 
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
 
-    def updateLoginDetailsToDB(self,widget):
-        if not self.checkLoginDetails():
-            password = Util.Util.generatePassword(self.symbolEnabledCheckBox.active, int(self.passwordLengthLabel.text))
-            self.db.addEntryToDB(self.applicationNameTextInput.text,self.usernameTextInput.text,password)
+    def update_login_details_to_db(self,widget):
+        if not self.check_login_details():
+            password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
+            self.db.addEntryToDB(self.application_name_text_input.text,self.username_text_input.text,password)
             popup = Popup(title='Password Generated',
-                            content=Label(text=f'Website:{self.applicationNameTextInput.text}\nUsername:{self.usernameTextInput.text}\nPassword:{password}\nSaved in Database'),
+                            content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'),
                             size_hint=(None,None),
                             size=(400,400))
             popup.open()
-            self.resetInputWidgetValue()
+            self.reset_input_widget_value()
             return password
 
-    def checkLoginDetails(self):
-        missingInformation = False
-        errorMessage = "Please provide the following information:\n"
-        if self.applicationNameTextInput.text == "":
-            errorMessage += "Name of the Application\n"
-            missingInformation = True
-        if self.usernameTextInput.text == "":
-            errorMessage += "Your Username"
-            missingInformation = True
-        if missingInformation:
+    def check_login_details(self):
+        missing_information = False
+        error_message = "Please provide the following information:\n"
+        if self.application_name_text_input.text == "":
+            error_message += "Name of the Application\n"
+            missing_information = True
+        if self.username_text_input.text == "":
+            error_message += "Your Username"
+            missing_information = True
+        if missing_information:
             popup = Popup(title='Error',
-                        content=Label(text=errorMessage),
+                        content=Label(text=error_message),
                         size_hint=(None,None),
                         size=(400,400))
             popup.open()
-        return missingInformation
+        return missing_information
 
-    def resetInputWidgetValue(self):
-        self.applicationNameTextInput.text = ''
-        self.usernameTextInput.text = ''
-        self.passwordLengthLabel.text = '14'
-        self.symbolEnabledCheckBox.active = False
-        self.passwordLengthSlider.value = 14
+    def reset_input_widget_value(self):
+        self.application_name_text_input.text = ''
+        self.username_text_input.text = ''
+        self.password_length_label.text = '14'
+        self.symbol_enabled_checkbox.active = False
+        self.password_length_slider.value = 14

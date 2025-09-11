@@ -18,7 +18,7 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
         try:
             testOneWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
             testOneUserInput = "Google"
-            testOneResult = wordSearch.searchWebsite(testOneWebsiteList,testOneUserInput)
+            testOneResult = wordSearch.search_website(testOneWebsiteList,testOneUserInput)
             self.assertTrue(testOneResult[0],6)
             self.assertIsInstance(testOneResult,list)
             self.assertTrue(len(testOneResult))
@@ -32,7 +32,7 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
         try:
             testTwoWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
             testTwoUserInput = "gpl"
-            testTwoResult = wordSearch.searchWebsite(testTwoWebsiteList,testTwoUserInput)
+            testTwoResult = wordSearch.search_website(testTwoWebsiteList,testTwoUserInput)
             self.assertTrue(testTwoResult[3],3)
             self.assertIsInstance(testTwoResult,list)
             self.assertTrue(len(testTwoResult),5)
@@ -46,7 +46,7 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
         try:
             testThreeWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
             testThreeUserInput = "amaZoN"
-            testThreeResult = wordSearch.searchWebsite(testThreeWebsiteList,testThreeUserInput)
+            testThreeResult = wordSearch.search_website(testThreeWebsiteList,testThreeUserInput)
             self.assertTrue(testThreeResult[2],6)
             self.assertIsInstance(testThreeResult,list)
             self.assertTrue(len(testThreeResult),5)

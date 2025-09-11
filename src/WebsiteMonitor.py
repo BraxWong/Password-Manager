@@ -24,7 +24,7 @@ class WebsiteMonitor:
         self.driver.quit()
         self.driver = None
 
-    #TODO: Something weird is going on here with the database race condition. It would not run showCreateLoginDetailsPopup() even if the record of the website has been removed from the database.
+    #TODO: Something weird is going on here with the database race condition. It would not run show_create_login_details_popup() even if the record of the website has been removed from the database.
     def check_current_url(self, URL):
         if self.current_url != URL and "login" in URL.lower():
             login_details_found = False
@@ -37,7 +37,7 @@ class WebsiteMonitor:
                     login_details_found = True
                     self.openPopup(detail[0],detail[1],detail[2])
             if not login_details_found:
-                self.popup.showCreateLoginDetailsPopup()
+                self.popup.show_create_login_details_popup()
             
     def openPopup(self,websiteName,username,password):
-        self.popup.showPopup(f"{websiteName}'s login details",username,password)
+        self.popup.show_popup(f"{websiteName}'s login details",username,password)

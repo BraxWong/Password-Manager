@@ -21,7 +21,7 @@ class UtilTestMethods(unittest.TestCase):
         try:
             safeDate = datetime.datetime.today() + datetime.timedelta(days=-1)
             safeDate = safeDate.strftime('%Y-%m-%d')
-            self.assertEqual(("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe"),util.dateComparison(safeDate))
+            self.assertEqual(("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe"),util.date_comparison(safeDate))
             print("test_dateComparison TEST 1: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -32,7 +32,7 @@ class UtilTestMethods(unittest.TestCase):
         try:
             cautionDate = datetime.datetime.today() + datetime.timedelta(days=-16)
             cautionDate = cautionDate.strftime('%Y-%m-%d')
-            self.assertEqual(("alert",[255/256,165/256,0,1],"Caution"),util.dateComparison(cautionDate))
+            self.assertEqual(("alert",[255/256,165/256,0,1],"Caution"),util.date_comparison(cautionDate))
             print("test_dateComparison TEST 2: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -43,7 +43,7 @@ class UtilTestMethods(unittest.TestCase):
         try:
             dangerDate = datetime.datetime.today() + datetime.timedelta(days=-31)
             dangerDate = dangerDate.strftime('%Y-%m-%d')
-            self.assertEqual(("alert-circle",[1,0,0,1],"Danger"),util.dateComparison(dangerDate))
+            self.assertEqual(("alert-circle",[1,0,0,1],"Danger"),util.date_comparison(dangerDate))
             print("test_dateComparison TEST 3: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -54,7 +54,7 @@ class UtilTestMethods(unittest.TestCase):
 
     def test_generatePassword(self):
         try:
-            passwordOne = util.generatePassword(True,14)
+            passwordOne = util.generate_password(True,14)
             self.assertEqual(True,self.test_passwordValidity(True,14,passwordOne))
             print("test_generatePassword TEST 1: PASSED")
             self.testsPassed += 1
@@ -64,7 +64,7 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            passwordTwo = util.generatePassword(False,10)
+            passwordTwo = util.generate_password(False,10)
             self.assertEqual(True,self.test_passwordValidity(False,10,passwordTwo))
             print("test_generatePassword TEST 2: PASSED")
             self.testsPassed += 1
@@ -74,7 +74,7 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            passwordThree = util.generatePassword(False,8)
+            passwordThree = util.generate_password(False,8)
             self.assertEqual(True,self.test_passwordValidity(False,8,passwordThree))
             print("test_generatePassword TEST 3: PASSED")
             self.testsPassed += 1
@@ -99,7 +99,7 @@ class UtilTestMethods(unittest.TestCase):
         loginDetailsdb = loginDetailsDB.LoginDetailsDB()
         try:
             loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
-            self.assertEqual(True,util.checkPasswordInDB("TESTINGPASSWORD"))
+            self.assertEqual(True,util.check_password_in_db("TESTINGPASSWORD"))
             loginDetailsdb.removeEntryFromDB("TESTING1Website")
             print("test_checkPasswordInDB TEST 1: PASSED")
             self.testsPassed += 1
@@ -110,7 +110,7 @@ class UtilTestMethods(unittest.TestCase):
 
         try:
             loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
-            self.assertEqual(False,util.checkPasswordInDB("TESTINGPASSWORD1"))
+            self.assertEqual(False,util.checkPasscheck_password_in_dbwordInDB("TESTINGPASSWORD1"))
             loginDetailsdb.removeEntryFromDB("TESTING1Website")
             print("test_checkPasswordInDB TEST 2: PASSED")
             self.testsPassed += 1
@@ -121,7 +121,7 @@ class UtilTestMethods(unittest.TestCase):
 
         try:
             loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTING2PASSWORD")
-            self.assertEqual(True,util.checkPasswordInDB("TESTING2PASSWORD"))
+            self.assertEqual(True,util.check_password_in_db("TESTING2PASSWORD"))
             loginDetailsdb.removeEntryFromDB("TESTING1Website")
             print("test_checkPasswordInDB TEST 3: PASSED")
             self.testsPassed += 1

@@ -10,10 +10,10 @@ import Util.UIUtil as UIUtil
 
 class WebsiteMonitorPopup(object):
     _instance = None
-    _popupOpened = False
+    _popup_opened = False
     _popup = None
-    _createLoginDetailsPopupOpened = False
-    _createLoginDetailsPopup = None
+    _create_login_details_popup_opened = False
+    _create_login_details_popup = None
 
     def __init__(self):
         raise RuntimeError('Call instance() instead')
@@ -21,23 +21,22 @@ class WebsiteMonitorPopup(object):
     @classmethod
     def instance(cls):
         if cls._instance is None:
-            print("CREATING A NEW INSTANCE")
             cls._instance = cls.__new__(cls)
         return cls._instance
     
     @classmethod
-    def showPopup(cls,title,username,password):
+    def show_popup(cls,title,username,password):
         def create_popup(dt):
-            if cls._popupOpened:
+            if cls._popup_opened:
                 cls._popup.dismiss()
-                cls._popupOpened = False
-            mainLayout = BoxLayout(
+                cls._popup_opened = False
+            main_layout = BoxLayout(
                 orientation='vertical',
                 size_hint=(1,1),
                 padding=0,
                 spacing=50
             )
-            mainLayout.add_widget(Label(text=f'Username:{username}\nPassword:{password}'))
+            main_layout.add_widget(Label(text=f'Username:{username}\nPassword:{password}'))
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},
                 adaptive_size=True,
@@ -45,28 +44,28 @@ class WebsiteMonitorPopup(object):
                 spacing="24dp",
             )
 
-            copyUsernameButton = MDRaisedButton(text='Copy Username')
-            copyUsernameButton.bind(on_release=lambda x:Clipboard.copy(username))
-            copyPasswordButton = MDRaisedButton(text='Copy Password')
-            copyPasswordButton.bind(on_release=lambda x:Clipboard.copy(password))
-            button_box.add_widget(copyUsernameButton)
-            button_box.add_widget(copyPasswordButton)
-            mainLayout.add_widget(button_box)
+            copy_username_button = MDRaisedButton(text='Copy Username')
+            copy_username_button.bind(on_release=lambda x:Clipboard.copy(username))
+            copy_password_button = MDRaisedButton(text='Copy Password')
+            copy_password_button.bind(on_release=lambda x:Clipboard.copy(password))
+            button_box.add_widget(copy_username_button)
+            button_box.add_widget(copy_password_button)
+            main_layout.add_widget(button_box)
             cls._popup = Popup(title=title,
-                            content=mainLayout,
+                            content=main_layout,
                             size_hint=(None,None),
                             size=(400,400))
             cls._popup.open()
         Clock.schedule_once(create_popup)
 
     @classmethod
-    def showCreateLoginDetailsPopup(cls):
+    def show_create_login_details_popup(cls):
         def create_popup(dt):
-            if cls._createLoginDetailsPopupOpened:
-                cls._createLoginDetailsPopup.dismiss()
-                cls._createLoginDetailsPopupOpened = False
+            if cls._create_login_details_popup_opened:
+                cls._create_login_details_popup.dismiss()
+                cls._create_login_details_popup_opened = False
             
-            infoMap = UIUtil.createLoginDetailPopupLayout()
+            info_map = UIUtil.createLoginDetailPopupLayout()
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},
                 adaptive_size=True,
@@ -74,30 +73,30 @@ class WebsiteMonitorPopup(object):
                 spacing="24dp",
             )
 
-            confirmButton = MDRaisedButton(text='Confirm')
-            cancelButton = MDRaisedButton(text='Cancel')
-            button_box.add_widget(confirmButton)
-            button_box.add_widget(cancelButton)
-            infoMap["Layout"].add_widget(button_box)
-            cls._createLoginDetailsPopup = Popup(title='Create Login Details',
-                                            content=infoMap["Layout"],
+            confirm_button = MDRaisedButton(text='Confirm')
+            cancel_button = MDRaisedButton(text='Cancel')
+            button_box.add_widget(confirm_button)
+            button_box.add_widget(cancel_button)
+            info_map["Layout"].add_widget(button_box)
+            cls._create_login_details_popup = Popup(title='Create Login Details',
+                                            content=info_map["Layout"],
                                             size_hint=(None,None),
                                             size=(600,600))
-            cancelButton.bind(on_release=cls._createLoginDetailsPopup.dismiss)
-            confirmButton.bind(on_release=lambda x:
-                               cls.updateLoginDetailsToDB(x,
-                                                          cls._createLoginDetailsPopup,
-                                                          infoMap["ApplicationName"].text,
-                                                          infoMap["Username"].text,
-                                                          util.generatePassword(infoMap["SymbolEnabledCheckBox"].active,int(infoMap["PasswordLength"].value))))
+            cancel_button.bind(on_release=cls._create_login_details_popup.dismiss)
+            confirm_button.bind(on_release=lambda x:
+                               cls.update_login_details_to_db(x,
+                                                          cls._create_login_details_popup,
+                                                          info_map["ApplicationName"].text,
+                                                          info_map["Username"].text,
+                                                          util.generate_password(info_map["SymbolEnabledCheckBox"].active,int(info_map["PasswordLength"].value))))
 
-            cls._createLoginDetailsPopup.open()
+            cls._create_login_details_popup.open()
         Clock.schedule_once(create_popup)
 
     @classmethod
-    def updateLoginDetailsToDB(cls,instance,popup,applicationName,username,password): 
+    def update_login_details_to_db(cls,instance,popup,application_name,username,password): 
         db = LoginDetailsDB()
-        db.addEntryToDB(applicationName,username,password)
+        db.addEntryToDB(application_name,username,password)
         popup.dismiss()
         popup = Popup(title='Success',
                             content=Label(text='Your details have been stored'),

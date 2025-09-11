@@ -15,25 +15,25 @@ class TwoFactorAuthentication(Screen):
     def __init__(self, **kwargs):
         super(TwoFactorAuthentication, self).__init__(**kwargs)
         self.two_factor_authentication_db = TwoFactorAuthenticationSettingsDB()
-        self.floatLayout = FloatLayout()
+        self.float_layout = FloatLayout()
 
-        self.mainLayout = BoxLayout(
+        self.main_layout = BoxLayout(
             orientation='vertical',
             size_hint=(1, None),  
             height=300,  
             spacing=20
         )
 
-        self.topRowLayout = BoxLayout(
+        self.top_row_layout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
             height='50dp'
         )
 
-        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
-        self.topRowLayout.add_widget(self.backButton)
+        self.back_button = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.top_row_layout.add_widget(self.back_button)
 
-        self.topRowLayout.add_widget(
+        self.top_row_layout.add_widget(
             Label(
                 text='Enable Email Notification For Password Changes',
                 font_size='20sp',
@@ -42,89 +42,89 @@ class TwoFactorAuthentication(Screen):
             )
         )
 
-        self.mainLayout.add_widget(self.topRowLayout)
+        self.main_layout.add_widget(self.top_row_layout)
 
-        self.emailAddressLayout = BoxLayout(
+        self.email_address_layout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
             height='50dp',
             spacing='10dp'
         )
 
-        self.emailAddressLayout.add_widget(
+        self.email_address_layout.add_widget(
             Label(
                 text='Email Address',
                 font_size='15sp',
                 size_hint_x=0.4
             )
         )
-        self.emailAddressTextInput = TextInput(
+        self.email_address_text_input = TextInput(
             text='', multiline=False, size_hint=(0.6, None), height='40dp'
         )
-        self.emailAddressLayout.add_widget(self.emailAddressTextInput)
-        self.mainLayout.add_widget(self.emailAddressLayout)
+        self.email_address_layout.add_widget(self.email_address_text_input)
+        self.main_layout.add_widget(self.email_address_layout)
 
-        self.enableEmailNotificationLayout = BoxLayout(
+        self.enable_email_notification_layout = BoxLayout(
             orientation='horizontal',
             size_hint_y=None,
             height='50dp',
             spacing='10dp'
         )
 
-        self.enableEmailNotificationLayout.add_widget(
+        self.enable_email_notification_layout.add_widget(
             Label(text='Enable 2FA?', font_size='15sp', size_hint_x=0.135)
         )
-        self.enableEmailNotificationCheckbox = CheckBox(size_hint_x=0.2)
-        self.enableEmailNotificationLayout.add_widget(self.enableEmailNotificationCheckbox)
+        self.enable_email_notification_checkbox = CheckBox(size_hint_x=0.2)
+        self.enable_email_notification_layout.add_widget(self.enable_email_notification_checkbox)
 
         two_factor_auth_info = self.two_factor_authentication_db.fetchAllFromDB()
         if len(two_factor_auth_info) != 0:
-            self.emailAddressTextInput.text = two_factor_auth_info[0][0]
-            self.enableEmailNotificationCheckbox.active = True if two_factor_auth_info[0][1] else False
+            self.email_address_text_input.text = two_factor_auth_info[0][0]
+            self.enable_email_notification_checkbox.active = True if two_factor_auth_info[0][1] else False
 
-        self.mainLayout.add_widget(self.enableEmailNotificationLayout)
+        self.main_layout.add_widget(self.enable_email_notification_layout)
 
-        self.mainLayout.pos_hint = {'top': 1}  # Push to top of screen
-        self.floatLayout.add_widget(self.mainLayout)
+        self.main_layout.pos_hint = {'top': 1} 
+        self.float_layout.add_widget(self.main_layout)
 
-        self.saveEmailNotificationSettingsButton = Button(
+        self.save_email_notification_settings_button = Button(
             text='Save Settings',
             size_hint=(None, None),
             height='40dp',
             width='200dp',
             pos_hint={'center_x': 0.5, 'bottom':1}
         )
-        self.saveEmailNotificationSettingsButton.bind(on_press=self.saveEmailNotificationSettings)
-        self.floatLayout.add_widget(self.saveEmailNotificationSettingsButton)
+        self.save_email_notification_settings_button.bind(on_press=self.saveEmailNotificationSettings)
+        self.float_layout.add_widget(self.save_email_notification_settings_button)
 
-        self.add_widget(self.floatLayout)
+        self.add_widget(self.float_layout)
 
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
 
     def saveEmailNotificationSettings(self, widget):
         EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-        if len(self.emailAddressTextInput.text) != 0 and not EMAIL_REGEX.match(self.emailAddressTextInput.text):
-            popUp = Popup(title='Error',
+        if len(self.email_address_text_input.text) != 0 and not EMAIL_REGEX.match(self.email_address_text_input.text):
+            popup = Popup(title='Error',
                         content=Label(text="Please provide a valid email address"),
                         size_hint=(None,None),
                         size=(600,600))
-            popUp.open()
+            popup.open()
             return
         else:
             update_email_addr = True
 
-        if self.enableEmailNotificationCheckbox.active and len(self.emailAddressTextInput.text) == 0:
-            popUp = Popup(title='Error',
+        if self.enable_email_notification_checkbox.active and len(self.email_address_text_input.text) == 0:
+            popup = Popup(title='Error',
                                 content=Label(text="Please provide a valid email address"),
                                 size_hint=(None,None),
                                 size=(600,600))
-            popUp.open()
+            popup.open()
             return
              
-        self.two_factor_authentication_db.addEntryToDB(self.emailAddressTextInput.text, self.enableEmailNotificationCheckbox.active)
-        popUp = Popup(title='Success',
+        self.two_factor_authentication_db.addEntryToDB(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
+        popup = Popup(title='Success',
                     content=Label(text="Your 2FA settings have been saved."),
                     size_hint=(None,None),
                     size=(600,600))
-        popUp.open()
+        popup.open()

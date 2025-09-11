@@ -17,8 +17,8 @@ from Util.two_factor_authentication import *
 from LastActionTaken import LastActionTaken
 import Util.Util as util
 import Util.UIUtil as ui_util
-import Util.passwordHasing as passwordHasing
-import Util.wordSearchAlgorithm as wordSearch
+import Util.passwordHasing as password_hashing
+import Util.wordSearchAlgorithm as word_search
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
@@ -28,21 +28,21 @@ class PasswordSearch(Screen):
 
         super(PasswordSearch,self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
-        self.verifyUserDB = VerifyUserDB()
+        self.verify_user_db = VerifyUserDB()
         self.two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
-        self.mainLayout = BoxLayout(
+        self.main_layout = BoxLayout(
             orientation='vertical',
             size_hint=(1, 1),  
             padding=0,
             spacing=50  
         )
-        self.topRowLayout = BoxLayout(orientation='horizontal', 
+        self.top_row_layout = BoxLayout(orientation='horizontal', 
                                       size_hint_y=None, 
                                       height=50, 
                                       padding=(10, 0))
-        self.backButton = MDRaisedButton(text="Back", on_release=self.on_button_press)
-        self.topRowLayout.add_widget(self.backButton)
-        self.topRowLayout.add_widget(
+        self.back_button = MDRaisedButton(text="Back", on_release=self.on_button_press)
+        self.top_row_layout.add_widget(self.back_button)
+        self.top_row_layout.add_widget(
             Label(
                 text='Password Searching', 
                 font_size='20sp', 
@@ -50,18 +50,18 @@ class PasswordSearch(Screen):
                 size_hint_x=0.8
             )
         )        
-        self.mainLayout.add_widget(self.topRowLayout)
-        self.allLoginDetails = self.db.fetchAllFromDB()
-        self.loggedIn = False
+        self.main_layout.add_widget(self.top_row_layout)
+        self.all_login_details = self.db.fetchAllFromDB()
+        self.logged_in = False
         
-        self.searchBarLayout = AnchorLayout(
+        self.search_bar_layout = AnchorLayout(
             anchor_x='center',
             size_hint_y=None,
             height=50,
             padding=(10, 0)
         )
 
-        self.searchBar = TextInput(
+        self.search_bar = TextInput(
             text='', 
             multiline=False, 
             halign='center', 
@@ -69,9 +69,9 @@ class PasswordSearch(Screen):
             width=800,
             hint_text='Search Login Details By Website Name'
         )
-        self.searchBar.bind(text=self.onSearch)
-        self.searchBarLayout.add_widget(self.searchBar)
-        self.mainLayout.add_widget(self.searchBarLayout)
+        self.search_bar.bind(text=self.on_search)
+        self.search_bar_layout.add_widget(self.search_bar)
+        self.main_layout.add_widget(self.search_bar_layout)
 
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
@@ -88,9 +88,9 @@ class PasswordSearch(Screen):
             )
 
         table_and_buttons = BoxLayout(orientation='vertical', size_hint=(None, None), width=800)
-        self.rowChecked = []
+        self.row_checked = []
         self.data = []
-        self.allPassword = []
+        self.all_password = []
         self.table = MDDataTable(
             column_data = [
                 ("Index",dp(30)),
@@ -114,103 +114,103 @@ class PasswordSearch(Screen):
         table_and_buttons.add_widget(button_box)
         self.table_layout = AnchorLayout()
         self.table_layout.add_widget(table_and_buttons)
-        self.mainLayout.add_widget(Widget(size_hint_y=1))
-        self.mainLayout.add_widget(self.table_layout)
-        self.add_widget(self.mainLayout)
+        self.main_layout.add_widget(Widget(size_hint_y=1))
+        self.main_layout.add_widget(self.table_layout)
+        self.add_widget(self.main_layout)
 
     def on_check_press(self, instance_table, current_row):
-        if current_row[0] not in self.rowChecked:
-            self.rowChecked.append(current_row[0])
+        if current_row[0] not in self.row_checked:
+            self.row_checked.append(current_row[0])
         else:
-            self.rowChecked.remove(current_row[0])
+            self.row_checked.remove(current_row[0])
 
     def on_button_press(self, instance_button: MDRaisedButton):
         try:
             {
-                "Update": lambda:self.updateLoginDetails(),
-                "Delete": lambda:self.deleteLoginDetailsConfirmation(),
-                "Back": lambda:self.returnToMenu(),
-                "Reveal Password": lambda:self.passwordCensor(False),
-                "Hide Password": lambda:self.passwordCensor(),
-                "Copy Password": lambda:self.copyPasswordOrUsernameToClipboard(False),
-                "Copy Username": lambda:self.copyPasswordOrUsernameToClipboard(True)
+                "Update": lambda:self.update_login_details(),
+                "Delete": lambda:self.delete_login_details_confirmation(),
+                "Back": lambda:self.return_to_menu(),
+                "Reveal Password": lambda:self.password_censor(False),
+                "Hide Password": lambda:self.password_censor(),
+                "Copy Password": lambda:self.copy_password_or_username_to_clipboard(False),
+                "Copy Username": lambda:self.copy_password_or_username_to_clipboard(True)
             }[instance_button.text]()
         except KeyError:
             pass
 
     def on_pre_enter(self, *args):
-        if len(self.verifyUserDB.getUserPasswordAndHint()) > 0 and not self.loggedIn:
+        if len(self.verify_user_db.getUserPasswordAndHint()) > 0 and not self.logged_in:
             self.two_factor_auth()
-        elif len(self.verifyUserDB.getUserPasswordAndHint()) == 0:
-            self.createPasswordAndHint()
+        elif len(self.verify_user_db.getUserPasswordAndHint()) == 0:
+            self.create_password_and_hint()
         else:
             self.refresh_table_data()
 
     def refresh_table_data(self):
-        self.allLoginDetails = self.db.fetchAllFromDB()
+        self.all_login_details = self.db.fetchAllFromDB()
         self.data = []
-        self.allPassword = []
-        if len(self.allLoginDetails) > 0:
-            for i,password in enumerate(self.allLoginDetails):
-                self.allPassword.append(password[2])
+        self.all_password = []
+        if len(self.all_login_details) > 0:
+            for i,password in enumerate(self.all_login_details):
+                self.all_password.append(password[2])
                 self.password = "*" * len(password[2])
-                self.data.append((i,util.dateComparison(password[3]),password[0],password[1],self.password,password[3]))
+                self.data.append((i,util.date_comparison(password[3]),password[0],password[1],self.password,password[3]))
         self.table.update_row_data(self.table.row_data, self.data)
 
-    def onSearch(self,instance,value):
+    def on_search(self,instance,value):
         if len(value) == 0:
             self.refresh_table_data()
-        elif len(self.allLoginDetails)>0:
+        elif len(self.all_login_details)>0:
             self.data = []
-            self.allPassword = []
-            scores = wordSearch.searchWebsite(self.allLoginDetails,value)
-            tableIndex = 0
+            self.all_password = []
+            scores = word_search.search_website(self.all_login_details,value)
+            table_index = 0
             for i in range(len(scores)):
                 if scores[i]>=len(value)/2:
-                    self.allPassword.append(self.allLoginDetails[i][2])
-                    self.data.append((tableIndex,util.dateComparison(self.allLoginDetails[i][3]),self.allLoginDetails[i][0],self.allLoginDetails[i][1],self.allLoginDetails[i][2],self.allLoginDetails[i][3]))
-                    tableIndex+=1
+                    self.all_password.append(self.all_login_details[i][2])
+                    self.data.append((table_index,util.date_comparison(self.all_login_details[i][3]),self.all_login_details[i][0],self.all_login_details[i][1],self.all_login_details[i][2],self.all_login_details[i][3]))
+                    table_index+=1
             self.table.update_row_data(self.table.row_data,self.data)
 
     def two_factor_auth(self):
         self.two_factor_auth_info = self.two_factor_auth_db.fetchAllFromDB()
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
-            self.passwordSearchLogin(True)
+            self.password_search_login(True)
         else:
-            ui_util.create_2FA_popup_layout(self.passwordSearchLogin)
+            ui_util.create_2FA_popup_layout(self.password_search_login)
              
-    def passwordSearchLogin(self, result):
+    def password_search_login(self, result):
         if result:
-            mainLayout = BoxLayout(orientation='vertical')
+            main_layout = BoxLayout(orientation='vertical')
 
-            passwordLayout = BoxLayout(orientation='horizontal')
-            passwordLayout.add_widget(Label(text='Password',
+            password_layout = BoxLayout(orientation='horizontal')
+            password_layout.add_widget(Label(text='Password',
                                                     font_size='15sp',
                                                     pos_hint={'x':0.2,'y':0})
                                                 )
-            passwordTextInput = TextInput(text='', 
+            password_text_input = TextInput(text='', 
                                         multiline=False,
                                         size_hint=(None,None), 
                                         height=30, 
                                         width=250,
                                         pos_hint={'x':0.5,'y':0.45})
 
-            passwordLayout.add_widget(passwordTextInput)
-            mainLayout.add_widget(passwordLayout)
+            password_layout.add_widget(password_text_input)
+            main_layout.add_widget(password_layout)
 
 
-            hintLayout = BoxLayout(orientation='horizontal')
-            hintLayout.add_widget(Label(text='Hint',
+            hint_layout = BoxLayout(orientation='horizontal')
+            hint_layout.add_widget(Label(text='Hint',
                                             font_size='15sp',
                                             pos_hint={'x':0.2,'y':0},))
-            hintTextInput = TextInput(text='', 
+            hint_text_input = TextInput(text='', 
                                     multiline=False,
                                     size_hint=(None,None), 
                                     height=30, 
                                     width=250,
                                     pos_hint={'x':0.5,'y':0.45})
-            hintLayout.add_widget(hintTextInput)
-            mainLayout.add_widget(hintLayout)
+            hint_layout.add_widget(hint_text_input)
+            main_layout.add_widget(hint_layout)
 
             button_box = MDBoxLayout(
                 pos_hint={"center_x": 0.5},
@@ -219,73 +219,73 @@ class PasswordSearch(Screen):
                 spacing="24dp",
             )
 
-            confirmButton = MDRaisedButton(text='Confirm')
-            hintButton = MDRaisedButton(text='Hint')
-            button_box.add_widget(confirmButton)
-            button_box.add_widget(hintButton)
-            mainLayout.add_widget(button_box)
-            popUp = Popup(title='Password Search Login',
-                            content=mainLayout,
+            confirm_button = MDRaisedButton(text='Confirm')
+            hint_button = MDRaisedButton(text='Hint')
+            button_box.add_widget(confirm_button)
+            button_box.add_widget(hint_button)
+            main_layout.add_widget(button_box)
+            popup = Popup(title='Password Search Login',
+                            content=main_layout,
                             size_hint=(None,None),
                             size=(600,600))
-            hintButton.bind(on_release=lambda x:self.showHint(x,hintTextInput))
-            confirmButton.bind(on_release=lambda x:self.verifyPasswordSearchLogin(x,passwordTextInput.text,popUp))
-            popUp.open()
+            hint_button.bind(on_release=lambda x:self.show_hint(x,hint_text_input))
+            confirm_button.bind(on_release=lambda x:self.verify_password_search_login(x,password_text_input.text,popup))
+            popup.open()
         else:
             ui_util.show_incorrect_2FA_popup()
     
-    def showHint(self, instance, textBox):
-        hint = self.verifyUserDB.getUserPasswordAndHint()[0][1]
-        textBox.text = hint
+    def show_hint(self, instance, text_box):
+        hint = self.verify_user_db.getUserPasswordAndHint()[0][1]
+        text_box.text = hint
 
-    def verifyPasswordSearchLogin(self,instance,userInputPassword, passwordPopup):
-        password = self.verifyUserDB.getUserPasswordAndHint()[0][0]
-        if passwordHasing.checkPassword(userInputPassword,password):
+    def verify_password_search_login(self,instance,user_input_password, password_popup):
+        password = self.verify_user_db.getUserPasswordAndHint()[0][0]
+        if password_hashing.check_password(user_input_password,password):
             self.refresh_table_data()
-            passwordPopup.dismiss()
+            password_popup.dismiss()
             self.invalid_login_attempt = 0
-            self.loggedIn = True
+            self.logged_in = True
             self.last_action_taken.update_time()
             self.resume_paused_action()
         else:
             self.invalid_login_attempt += 1
-            incorrectPasswordPopUp = Popup(title='Incorrect Password',
+            incorrect_password_popup = Popup(title='Incorrect Password',
                                            content=Label(text='Incorrect Password'),
                                            size_hint=(None,None),
                                            size=(600,600))
-            incorrectPasswordPopUp.open()
+            incorrect_password_popup.open()
             if self.invalid_login_attempt == 3:
-                self.returnToMenu()
+                self.return_to_menu()
   
-    def createPasswordAndHint(self):
-        mainLayout = BoxLayout(orientation='vertical')
-        passwordLayout = BoxLayout(orientation='horizontal')
-        passwordLayout.add_widget(Label(text='Password',
+    def create_password_and_hint(self):
+        main_layout = BoxLayout(orientation='vertical')
+        password_layout = BoxLayout(orientation='horizontal')
+        password_layout.add_widget(Label(text='Password',
                                                 font_size='15sp',
                                                 pos_hint={'x':0.2,'y':0})
                                             )
-        passwordTextInput = TextInput(text='', 
+        password_text_input = TextInput(text='', 
                                       multiline=False,
                                       size_hint=(None,None), 
                                       height=30, 
                                       width=250,
                                       pos_hint={'x':0.5,'y':0.45})
 
-        passwordLayout.add_widget(passwordTextInput)
-        mainLayout.add_widget(passwordLayout)
+        password_layout.add_widget(password_text_input)
+        main_layout.add_widget(password_layout)
 
-        hintLayout = BoxLayout(orientation='horizontal')
-        hintLayout.add_widget(Label(text='Hint',
+        hint_layout = BoxLayout(orientation='horizontal')
+        hint_layout.add_widget(Label(text='Hint',
                                         font_size='15sp',
                                         pos_hint={'x':0.2,'y':0},))
-        hintTextInput = TextInput(text='', 
+        hint_text_input = TextInput(text='', 
                                   multiline=False,
                                   size_hint=(None,None), 
                                   height=30, 
                                   width=250,
                                   pos_hint={'x':0.5,'y':0.45})
-        hintLayout.add_widget(hintTextInput)
-        mainLayout.add_widget(hintLayout)
+        hint_layout.add_widget(hint_text_input)
+        main_layout.add_widget(hint_layout)
 
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
@@ -294,32 +294,32 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        confirmButton = MDRaisedButton(text='Confirm')
-        cancelButton = MDRaisedButton(text='Cancel')
-        button_box.add_widget(confirmButton)
-        button_box.add_widget(cancelButton)
-        mainLayout.add_widget(button_box)
-        popUp = Popup(title='Create password & hint',
-                          content=mainLayout,
+        confirm_button = MDRaisedButton(text='Confirm')
+        cancel_button = MDRaisedButton(text='Cancel')
+        button_box.add_widget(confirm_button)
+        button_box.add_widget(cancel_button)
+        main_layout.add_widget(button_box)
+        popup = Popup(title='Create password & hint',
+                          content=main_layout,
                           size_hint=(None,None),
                           size=(600,600))
-        cancelButton.bind(on_release=lambda x:self.cancelPasswordAndHint(x,popUp))
-        confirmButton.bind(on_release=lambda x:self.createPasswordSearchPassword(x,passwordTextInput.text,hintTextInput.text,popUp))
-        popUp.open()
+        cancel_button.bind(on_release=lambda x:self.cancel_password_and_hint(x,popup))
+        confirm_button.bind(on_release=lambda x:self.create_password_search_password(x,password_text_input.text,hint_text_input.text,popup))
+        popup.open()
         
-    def createPasswordSearchPassword(self,instance,password,hint,popUp):
-        self.verifyUserDB.addPasswordAndHint(passwordHasing.encodePassword(password),hint)
-        popUp.dismiss()
+    def create_password_search_password(self,instance,password,hint,popup):
+        self.verify_user_db.addPasswordAndHint(password_hashing.encode_password(password),hint)
+        popup.dismiss()
         self.refresh_table_data()
 
-    def cancelPasswordAndHint(self,instance,popUp):
-        popUp.dismiss()
-        self.returnToMenu()
+    def cancel_password_and_hint(self,instance,popup):
+        popup.dismiss()
+        self.return_to_menu()
 
-    def returnToMenu(self):
+    def return_to_menu(self):
         self.manager.current = 'Menu Screen'
 
-    def updateLoginDetails(self):
+    def update_login_details(self):
         self.paused_action = "update"
         if not self.check_timeout(): 
             if len(self.table.get_row_checks()) != 1:
@@ -329,8 +329,8 @@ class PasswordSearch(Screen):
                             size=(600,600))
                 popUp.open()
             else:
-                currentIndex = int(self.rowChecked[0])
-                infoMap = ui_util.createLoginDetailPopupLayout() 
+                current_index = int(self.row_checked[0])
+                info_map = ui_util.createLoginDetailPopupLayout() 
 
                 button_box = MDBoxLayout(
                     pos_hint={"center_x": 0.5},
@@ -338,66 +338,66 @@ class PasswordSearch(Screen):
                     padding="24dp",
                     spacing="24dp",
                 )
-                infoMap["Username"].text = self.table.row_data[currentIndex][3]
-                confirmButton = MDRaisedButton(text='Confirm')
-                cancelButton = MDRaisedButton(text='Cancel')
-                button_box.add_widget(confirmButton)
-                button_box.add_widget(cancelButton)
-                infoMap["Layout"].add_widget(button_box)
+                info_map["Username"].text = self.table.row_data[current_index][3]
+                confirm_button = MDRaisedButton(text='Confirm')
+                cancel_button = MDRaisedButton(text='Cancel')
+                button_box.add_widget(confirm_button)
+                button_box.add_widget(cancel_button)
+                info_map["Layout"].add_widget(button_box)
                 editLoginDetailsPopup = Popup(title='Edit Login Details',
-                                            content=infoMap["Layout"],
+                                            content=info_map["Layout"],
                                             size_hint=(None,None),
                                             size=(600,600))
 
-                cancelButton.bind(on_release=editLoginDetailsPopup.dismiss)
-                confirmButton.bind(on_release=lambda x:self.updateLoginDetailsToDB(x,editLoginDetailsPopup,infoMap["ApplicationName"].text,infoMap["Username"].text,util.generatePassword(infoMap["SymbolEnabledCheckBox"].active,int(infoMap["PasswordLength"].value))))
+                cancel_button.bind(on_release=editLoginDetailsPopup.dismiss)
+                confirm_button.bind(on_release=lambda x:self.update_login_details_to_db(x,editLoginDetailsPopup,info_map["ApplicationName"].text,info_map["Username"].text,util.generate_password(info_map["SymbolEnabledCheckBox"].active,int(info_map["PasswordLength"].value))))
                 editLoginDetailsPopup.open()
 
-    def updateLoginDetailsToDB(self,instance,popup,applicationName,username,password):
-        self.db.updateEntryToDB(applicationName,username,password)
+    def update_login_details_to_db(self,instance,popup,application_name,username,password):
+        self.db.updateEntryToDB(application_name,username,password)
         self.refresh_table_data()
         popup.dismiss()
-        updatePopup = Popup(title='Success',
+        update_popup = Popup(title='Success',
                             content=Label(text='Your details have been updated'),
                             size_hint=(None,None),
                             size=(600,600))
-        updatePopup.open()
+        update_popup.open()
 
-    def passwordCensor(self, hidePassword = True):
-        self.paused_action = "censor" if hidePassword else "reveal"
+    def password_censor(self, hide_password = True):
+        self.paused_action = "censor" if hide_password else "reveal"
         if not self.check_timeout():
-            for row in self.rowChecked: 
-                currentIndex = int(row)
-                newRow = list(self.table.row_data[currentIndex])
-                newRow[4] = "*" * len(self.allPassword[currentIndex])
-                if not hidePassword:
-                    newRow[4] = self.allPassword[currentIndex]
-                self.table.update_row(self.table.row_data[currentIndex],newRow)
+            for row in self.row_checked: 
+                current_index = int(row)
+                new_row = list(self.table.row_data[current_index])
+                new_row[4] = "*" * len(self.all_password[current_index])
+                if not hide_password:
+                    new_row[4] = self.all_password[current_index]
+                self.table.update_row(self.table.row_data[current_index],new_row)
 
-    def copyPasswordOrUsernameToClipboard(self, copyUsername):
-        self.paused_action = "copy username" if copyUsername else "copy password"
+    def copy_password_or_username_to_clipboard(self, copy_username):
+        self.paused_action = "copy username" if copy_username else "copy password"
         if not self.check_timeout():
-            popupText = "username" if copyUsername else "password"
-            if len(self.rowChecked) != 1:
-                popUp = Popup(title="Error",
-                            content=Label(text=f"Please select 1 {popupText} to be copied to the clipboard."),
+            popup_text = "username" if copy_username else "password"
+            if len(self.row_checked) != 1:
+                popup = Popup(title="Error",
+                            content=Label(text=f"Please select 1 {popup_text} to be copied to the clipboard."),
                             size_hint=(None,None),
                             size=(600,600))
-                popUp.open()
+                popup.open()
             else:
-                contentToCopy = self.table.row_data[int(self.rowChecked[0])][3] if copyUsername else self.allPassword[int(self.rowChecked[0])]
-                Clipboard.copy(contentToCopy)
-                popUp = Popup(title="Success",
-                            content=Label(text=f"The {popupText} has been copied to the clipboard."),
+                content_to_copy = self.table.row_data[int(self.row_checked[0])][3] if copy_username else self.all_password[int(self.row_checked[0])]
+                Clipboard.copy(content_to_copy)
+                popup = Popup(title="Success",
+                            content=Label(text=f"The {popup_text} has been copied to the clipboard."),
                             size_hint=(None,None),
                             size=(600,600))
-                popUp.open()
+                popup.open()
 
-    def deleteLoginDetailsConfirmation(self):
+    def delete_login_details_confirmation(self):
         self.paused_action = "delete"
         if not self.check_timeout():
-            if len(self.rowChecked) >= 1:
-                confirmationLayout = BoxLayout(orientation='vertical',
+            if len(self.row_checked) >= 1:
+                confirmation_layout = BoxLayout(orientation='vertical',
                                                     size_hint=(None,None),
                                                     width=500,
                                                     pos_hint={'center_x':0.5})
@@ -408,26 +408,26 @@ class PasswordSearch(Screen):
                     spacing="24dp",
                 )
 
-                confirmButton = MDRaisedButton(text='Confirm')
-                cancelButton = MDRaisedButton(text='Cancel')
-                confirmationLayout.add_widget(Label(text='Are you sure you want to remove these login details?'))
-                button_box.add_widget(confirmButton)
-                button_box.add_widget(cancelButton)
-                confirmationLayout.add_widget(button_box)
-                confirmationPopUp = Popup(title='Confirmation',
-                                        content=confirmationLayout,
+                confirm_button = MDRaisedButton(text='Confirm')
+                cancel_button = MDRaisedButton(text='Cancel')
+                confirmation_layout.add_widget(Label(text='Are you sure you want to remove these login details?'))
+                button_box.add_widget(confirm_button)
+                button_box.add_widget(cancel_button)
+                confirmation_layout.add_widget(button_box)
+                confirmation_popup = Popup(title='Confirmation',
+                                        content=confirmation_layout,
                                         size_hint=(None,None),
                                         size=(600,200))
 
-                cancelButton.bind(on_release=confirmationPopUp.dismiss)
-                confirmButton.bind(on_release=lambda x: self.deleteLoginDetails(x,confirmationPopUp))
-                confirmationPopUp.open()
+                cancel_button.bind(on_release=confirmation_popup.dismiss)
+                confirm_button.bind(on_release=lambda x: self.delete_login_details(x,confirmation_popup))
+                confirmation_popup.open()
 
-    def deleteLoginDetails(self, instance, popupWindow):
-        popupWindow.dismiss()
+    def delete_login_details(self, instance, popup_window):
+        popup_window.dismiss()
         message = "The following website login details have been removed:"
         rows_to_delete = [] 
-        for row in self.rowChecked:
+        for row in self.row_checked:
             rows_to_delete.append(self.table.row_data[int(row)])
 
         rows_to_delete.sort(key=lambda x: int(x[0]), reverse=True)
@@ -438,16 +438,16 @@ class PasswordSearch(Screen):
             self.refresh_table_data()
             message += f"\n{row[2]}"
 
-        popUp = Popup(title='Success',
+        popup = Popup(title='Success',
                       content=Label(text=message),
                       size_hint=(None,None),
                       size=(600,600))
 
-        popUp.open() 
+        popup.open() 
 
     def check_timeout(self):
         if self.last_action_taken.check_login_required():
-            self.passwordSearchLogin()
+            self.password_search_login()
             return True
         else:
             self.last_action_taken.update_time()
@@ -456,17 +456,17 @@ class PasswordSearch(Screen):
     def resume_paused_action(self):
         match self.paused_action:
             case "update":
-                self.updateLoginDetails()
+                self.update_login_details()
             case "delete":
-                self.deleteLoginDetailsConfirmation()
+                self.delete_login_details_confirmation()
             case "censor":
-                self.passwordCensor()
+                self.password_censor()
             case "reveal":
-                self.passwordCensor(False)
+                self.password_censor(False)
             case "copy username":
-                self.copyPasswordOrUsernameToClipboard(True)
+                self.copy_password_or_username_to_clipboard(True)
             case "copy password":
-                self.copyPasswordOrUsernameToClipboard(False)
+                self.copy_password_or_username_to_clipboard(False)
             case _:
                 pass
         self.paused_action = ""

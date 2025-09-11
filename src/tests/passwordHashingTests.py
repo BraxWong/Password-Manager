@@ -18,7 +18,7 @@ class PasswordHashingTestMethods(unittest.TestCase):
     def test_encodePassword(self):
         try:
             originalPassword = "12345678910"
-            encodedPassword = hashing.encodePassword(originalPassword)
+            encodedPassword = hashing.encode_password(originalPassword)
             self.assertIsInstance(encodedPassword, str)
             self.assertNotEqual(encodedPassword, originalPassword)
             self.assertTrue(bcrypt.checkpw(originalPassword.encode('utf-8'), encodedPassword.encode('utf-8')))
@@ -31,7 +31,7 @@ class PasswordHashingTestMethods(unittest.TestCase):
 
         try:
             originalPassword = "9876543210"
-            encodedPassword = hashing.encodePassword(originalPassword)
+            encodedPassword = hashing.encode_password(originalPassword)
             self.assertIsInstance(encodedPassword, str)
             self.assertNotEqual(encodedPassword, originalPassword)
             self.assertTrue(bcrypt.checkpw(originalPassword.encode('utf-8'), encodedPassword.encode('utf-8')))
@@ -44,7 +44,7 @@ class PasswordHashingTestMethods(unittest.TestCase):
 
         try:
             originalPassword = "ab!d2FGhijkl"
-            encodedPassword = hashing.encodePassword(originalPassword)
+            encodedPassword = hashing.encode_password(originalPassword)
             self.assertIsInstance(encodedPassword, str)
             self.assertNotEqual(encodedPassword, originalPassword)
             self.assertTrue(bcrypt.checkpw(originalPassword.encode('utf-8'), encodedPassword.encode('utf-8')))
@@ -58,8 +58,8 @@ class PasswordHashingTestMethods(unittest.TestCase):
     def test_checkPassword(self):
         try:
             originalPassword = "12345678"
-            hashedPassword = hashing.encodePassword(originalPassword)
-            self.assertTrue(hashing.checkPassword(originalPassword,hashedPassword))
+            hashedPassword = hashing.encode_password(originalPassword)
+            self.assertTrue(hashing.check_password(originalPassword,hashedPassword))
             print("test_checkPassword TEST 1: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -69,8 +69,8 @@ class PasswordHashingTestMethods(unittest.TestCase):
 
         try:
             originalPassword = "ab2Soi20Xn2"
-            hashedPassword = hashing.encodePassword(originalPassword)
-            self.assertTrue(hashing.checkPassword(originalPassword,hashedPassword))
+            hashedPassword = hashing.encode_password(originalPassword)
+            self.assertTrue(hashing.check_password(originalPassword,hashedPassword))
             print("test_checkPassword TEST 2: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -80,8 +80,8 @@ class PasswordHashingTestMethods(unittest.TestCase):
 
         try:
             originalPassword = "Skj93XN921x"
-            hashedPassword = hashing.encodePassword(originalPassword)
-            self.assertTrue(hashing.checkPassword(originalPassword,hashedPassword))
+            hashedPassword = hashing.encode_password(originalPassword)
+            self.assertTrue(hashing.check_password(originalPassword,hashedPassword))
             print("test_checkPassword TEST 3: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
