@@ -10,7 +10,7 @@ class EmailNotificationThread:
     def run(self):
         self.running = True
         email_settings_db = TwoFactorAuthenticationSettingsDB()
-        email_settings = email_settings_db.fetchAllFromDB()
+        email_settings = email_settings_db.fetch_all_from_db()
         if len(email_settings) != 0:
             db_date = datetime.strptime(email_settings[0][2], "%Y-%m-%d")
             date_difference = datetime.today() - db_date
@@ -24,9 +24,9 @@ class EmailNotificationThread:
     def sendLoginDetails(self):
         self.running = True 
         self.loginDetails = LoginDetailsDB()
-        user_login_details = self.loginDetails.fetchAllFromDB()
+        user_login_details = self.loginDetails.fetch_all_from_db()
         email_settings_db = TwoFactorAuthenticationSettingsDB()
-        email_settings = email_settings_db.fetchAllFromDB()
+        email_settings = email_settings_db.fetch_all_from_db()
         file = open("password.txt","w")
         user_credentials = ''
         for login_credential in user_login_details:

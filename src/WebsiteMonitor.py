@@ -30,7 +30,7 @@ class WebsiteMonitor:
             login_details_found = False
             self.current_url = URL
             login_db = LoginDetailsDB()
-            details = login_db.fetchAllFromDB()
+            details = login_db.fetch_all_from_db()
             r = requests.get(URL)
             for detail in details:
                 if detail[0].lower() in URL.lower() or detail[0].lower() in r.text.lower():

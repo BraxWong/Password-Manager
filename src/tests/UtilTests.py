@@ -98,9 +98,9 @@ class UtilTestMethods(unittest.TestCase):
     def test_checkPasswordInDB(self):
         loginDetailsdb = loginDetailsDB.LoginDetailsDB()
         try:
-            loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
             self.assertEqual(True,util.check_password_in_db("TESTINGPASSWORD"))
-            loginDetailsdb.removeEntryFromDB("TESTING1Website")
+            loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 1: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -109,9 +109,9 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD")
             self.assertEqual(False,util.checkPasscheck_password_in_dbwordInDB("TESTINGPASSWORD1"))
-            loginDetailsdb.removeEntryFromDB("TESTING1Website")
+            loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 2: PASSED")
             self.testsPassed += 1
         except AssertionError as e:
@@ -120,9 +120,9 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            loginDetailsdb.addEntryToDB("TESTING1Website","TESTING1USERNAME","TESTING2PASSWORD")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTING2PASSWORD")
             self.assertEqual(True,util.check_password_in_db("TESTING2PASSWORD"))
-            loginDetailsdb.removeEntryFromDB("TESTING1Website")
+            loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 3: PASSED")
             self.testsPassed += 1
         except AssertionError as e:

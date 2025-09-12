@@ -19,7 +19,7 @@ class Menu(Screen):
         super(Menu,self).__init__(**kwargs)
 
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
-        self.two_factor_auth_info = self.two_factor_auth.fetchAllFromDB()
+        self.two_factor_auth_info = self.two_factor_auth.fetch_all_from_db()
 
         self.website_monitor = WebsiteMonitor()
         self.website_monitor_thread = threading.Thread(target=self.website_monitor.run, daemon=True)

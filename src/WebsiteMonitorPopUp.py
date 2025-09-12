@@ -96,7 +96,7 @@ class WebsiteMonitorPopup(object):
     @classmethod
     def update_login_details_to_db(cls,instance,popup,application_name,username,password): 
         db = LoginDetailsDB()
-        db.addEntryToDB(application_name,username,password)
+        db.add_entry_to_db(application_name,username,password)
         popup.dismiss()
         popup = Popup(title='Success',
                             content=Label(text='Your details have been stored'),

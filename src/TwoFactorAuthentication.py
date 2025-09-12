@@ -77,7 +77,7 @@ class TwoFactorAuthentication(Screen):
         self.enable_email_notification_checkbox = CheckBox(size_hint_x=0.2)
         self.enable_email_notification_layout.add_widget(self.enable_email_notification_checkbox)
 
-        two_factor_auth_info = self.two_factor_authentication_db.fetchAllFromDB()
+        two_factor_auth_info = self.two_factor_authentication_db.fetch_all_from_db()
         if len(two_factor_auth_info) != 0:
             self.email_address_text_input.text = two_factor_auth_info[0][0]
             self.enable_email_notification_checkbox.active = True if two_factor_auth_info[0][1] else False
@@ -122,7 +122,7 @@ class TwoFactorAuthentication(Screen):
             popup.open()
             return
              
-        self.two_factor_authentication_db.addEntryToDB(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
+        self.two_factor_authentication_db.add_entry_to_db(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
         popup = Popup(title='Success',
                     content=Label(text="Your 2FA settings have been saved."),
                     size_hint=(None,None),

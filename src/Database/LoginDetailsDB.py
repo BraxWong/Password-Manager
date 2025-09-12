@@ -9,52 +9,52 @@ class LoginDetailsDB:
         #Creates a cursor to the database
         self.cur=self.con.cursor()
         self.todays_date = datetime.now().date()
-        self.createLoginDetailsTable()
+        self.create_login_details_table()
 
-    def createLoginDetailsTable(self):
+    def create_login_details_table(self):
         self.cur.execute(
             "CREATE TABLE if not exists login_details(website_name, username, password, date_created)"
         )
 
-    def addEntryToDB(self,websiteName,username,password):
-        if self.websitePasswordSet(websiteName):
-            self.updateEntryToDB(websiteName,username,password)
+    def add_entry_to_db(self,website_name,username,password):
+        if self.website_password_set(website_name):
+            self.update_entry_to_db(website_name,username,password)
         else:
             self.cur.execute(
-                f'INSERT INTO login_details VALUES ("{websiteName}","{username}","{password}","{self.todays_date}")'
+                f'INSERT INTO login_details VALUES ("{website_name}","{username}","{password}","{self.todays_date}")'
             )
             self.con.commit()
 
-    def updateEntryToDB(self,websiteName,username,password):
+    def update_entry_to_db(self,website_name,username,password):
         self.cur.execute('UPDATE login_details SET password = ?, username = ?, date_created = ? WHERE website_name = ?',
-            (password, username, self.todays_date, websiteName)
+            (password, username, self.todays_date, website_name)
         )
         self.con.commit()
     
-    def removeEntryFromDB(self,websiteName):
+    def remove_entry_from_db(self,website_name):
         self.cur.execute(
-            f'DELETE FROM login_details WHERE website_name = \'{websiteName}\''
+            f'DELETE FROM login_details WHERE website_name = \'{website_name}\''
         )
         self.con.commit()
 
-    def fetchAllFromDB(self):
+    def fetch_all_from_db(self):
         self.cur.execute(
             "SELECT * FROM login_details"
         )
         return self.cur.fetchall()
 
-    def fetchWebsitePassword(self,websiteName):
+    def fetch_website_password(self,website_name):
         self.cur.execute(
-            f'SELECT password FROM login_details WHERE website_name = \'{websiteName}\''
+            f'SELECT password FROM login_details WHERE website_name = \'{website_name}\''
         )
         return self.cur.fetchone()
 
-    def websitePasswordSet(self,websiteName):
-        passwordSet=False
+    def website_password_set(self,website_name):
+        password_set=False
         self.cur.execute(
-            f'SELECT * FROM login_details WHERE website_name=\'{websiteName}\''
+            f'SELECT * FROM login_details WHERE website_name=\'{website_name}\''
         )
         if len(self.cur.fetchall()) >= 1:
-            passwordSet=True
-        return passwordSet
+            password_set=True
+        return password_set
 

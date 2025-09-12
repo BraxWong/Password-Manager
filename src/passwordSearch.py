@@ -51,7 +51,7 @@ class PasswordSearch(Screen):
             )
         )        
         self.main_layout.add_widget(self.top_row_layout)
-        self.all_login_details = self.db.fetchAllFromDB()
+        self.all_login_details = self.db.fetch_all_from_db()
         self.logged_in = False
         
         self.search_bar_layout = AnchorLayout(
@@ -139,15 +139,15 @@ class PasswordSearch(Screen):
             pass
 
     def on_pre_enter(self, *args):
-        if len(self.verify_user_db.getUserPasswordAndHint()) > 0 and not self.logged_in:
+        if len(self.verify_user_db.get_user_password_and_hint()) > 0 and not self.logged_in:
             self.two_factor_auth()
-        elif len(self.verify_user_db.getUserPasswordAndHint()) == 0:
+        elif len(self.verify_user_db.get_user_password_and_hint()) == 0:
             self.create_password_and_hint()
         else:
             self.refresh_table_data()
 
     def refresh_table_data(self):
-        self.all_login_details = self.db.fetchAllFromDB()
+        self.all_login_details = self.db.fetch_all_from_db()
         self.data = []
         self.all_password = []
         if len(self.all_login_details) > 0:
@@ -173,7 +173,7 @@ class PasswordSearch(Screen):
             self.table.update_row_data(self.table.row_data,self.data)
 
     def two_factor_auth(self):
-        self.two_factor_auth_info = self.two_factor_auth_db.fetchAllFromDB()
+        self.two_factor_auth_info = self.two_factor_auth_db.fetch_all_from_db()
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             self.password_search_login(True)
         else:
@@ -235,11 +235,11 @@ class PasswordSearch(Screen):
             ui_util.show_incorrect_2FA_popup()
     
     def show_hint(self, instance, text_box):
-        hint = self.verify_user_db.getUserPasswordAndHint()[0][1]
+        hint = self.verify_user_db.get_user_password_and_hint()[0][1]
         text_box.text = hint
 
     def verify_password_search_login(self,instance,user_input_password, password_popup):
-        password = self.verify_user_db.getUserPasswordAndHint()[0][0]
+        password = self.verify_user_db.get_user_password_and_hint()[0][0]
         if password_hashing.check_password(user_input_password,password):
             self.refresh_table_data()
             password_popup.dismiss()
@@ -308,7 +308,7 @@ class PasswordSearch(Screen):
         popup.open()
         
     def create_password_search_password(self,instance,password,hint,popup):
-        self.verify_user_db.addPasswordAndHint(password_hashing.encode_password(password),hint)
+        self.verify_user_db.add_password_and_hint(password_hashing.encode_password(password),hint)
         popup.dismiss()
         self.refresh_table_data()
 
@@ -354,7 +354,7 @@ class PasswordSearch(Screen):
                 editLoginDetailsPopup.open()
 
     def update_login_details_to_db(self,instance,popup,application_name,username,password):
-        self.db.updateEntryToDB(application_name,username,password)
+        self.db.update_entry_to_db(application_name,username,password)
         self.refresh_table_data()
         popup.dismiss()
         update_popup = Popup(title='Success',
@@ -433,7 +433,7 @@ class PasswordSearch(Screen):
         rows_to_delete.sort(key=lambda x: int(x[0]), reverse=True)
 
         for row in rows_to_delete:
-            self.db.removeEntryFromDB(row[2])
+            self.db.remove_entry_from_db(row[2])
             self.table.remove_row(self.table.row_data[int(row[0])])
             self.refresh_table_data()
             message += f"\n{row[2]}"

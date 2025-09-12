@@ -6,26 +6,26 @@ class VerifyUserDB:
         self.PATHTOSQLDIR=Util.OSUtil.getOSDBPath()
         self.con=sqlite3.connect(self.PATHTOSQLDIR+'/VerifyUser.db')
         self.cur=self.con.cursor()
-        self.createVerifyUserTable()
+        self.create_verify_user_table()
 
-    def createVerifyUserTable(self):
+    def create_verify_user_table(self):
         self.cur.execute(
             "CREATE TABLE if not exists verify_user(password,hint)"
         )
     
-    def getUserPasswordAndHint(self):
+    def get_user_password_and_hint(self):
         self.cur.execute(
             "SELECT * FROM verify_user"
         )
         return self.cur.fetchall()
     
-    def addPasswordAndHint(self, password, hint):
+    def add_password_and_hint(self, password, hint):
         self.cur.execute(
             f'INSERT INTO verify_user VALUES("{password}", "{hint}")'
         )
         self.con.commit()
 
-    def removePasswordAndHint(self):
+    def remove_password_and_hint(self):
         self.cur.execute(
             f'DELETE * FROM verify_user'
         )

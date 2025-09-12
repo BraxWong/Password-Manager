@@ -13,7 +13,7 @@ from kivy.clock import Clock
 
 def create_2FA_popup_layout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
-    two_factor_auth_info = two_factor_auth_db.fetchAllFromDB()
+    two_factor_auth_info = two_factor_auth_db.fetch_all_from_db()
     contact_info = two_factor_auth_info[0][0] 
 
     main_layout = BoxLayout(

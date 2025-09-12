@@ -134,7 +134,7 @@ class LoginDetailsStorage(Screen):
     def store_login_details(self,widget): 
         if len(self.application_name_text_input.text) > 0 and len(self.username_text_input.text) > 0 and len(self.password_text_input.text) > 0:
             if not self.check_password_pwned(None,False):
-                self.db.addEntryToDB(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text) 
+                self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text) 
                 popup = Popup(title='Password Stored',
                                         content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'),
                                         size_hint=(None,None),

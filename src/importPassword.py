@@ -59,6 +59,6 @@ class ImportPassword:
             line = line.replace(username+"  ",'')
             line = line.replace("Password: ",'')
             password = line
-            self.login_details.addEntryToDB(website,username,password)
+            self.login_details.add_entry_to_db(website,username,password)
         self.selected_file = True
  

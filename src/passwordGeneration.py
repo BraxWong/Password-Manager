@@ -116,7 +116,7 @@ class PasswordGeneration(Screen):
     def update_login_details_to_db(self,widget):
         if not self.check_login_details():
             password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
-            self.db.addEntryToDB(self.application_name_text_input.text,self.username_text_input.text,password)
+            self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password)
             popup = Popup(title='Password Generated',
                             content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'),
                             size_hint=(None,None),
