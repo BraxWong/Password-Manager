@@ -19,10 +19,20 @@ class twoFactorAuth:
 
     def send_2FA_code_by_email(self):
         email_header = "Password Manager 2FA Code"
-        email_body = f"Dear User,\nYour 2FA is {self.code}. Please note that the code will only be valid for 1 minute. If you did not request this action, that means your system has been compromised. Thanks and have a great day.\n\nKindest Regards,\nPassword Manager Team"
-        subprocess.run(f'cd src/Util && ./EmailSender "{self.contact_info}" "{email_header}" "{email_body}"', 
-                            shell=True, capture_output=True, text=True)
+        email_body = (f"Dear User,\n\nYour 2FA code is {self.code}. "
+                      "Please note that the code will only be valid for 1 minute. "
+                      "If you did not request this action, that means your system has been compromised. "
+                      "Thanks and have a great day.\n\nKindest Regards,\nPassword Manager Team")
+        
+        result = subprocess.run(
+            f'cd src/Util && ./EmailSender "{self.contact_info}" "{email_header}" "{email_body}"', 
+            shell=True, capture_output=True, text=True
+        )
+
+        if result.returncode != 0:
+            print("Error sending email:", result.stderr)
 
     def auth_expired(self):
         time_difference = datetime.now() - self.generate_timestamp
         return time_difference.seconds >= ONE_MINUTE 
+
