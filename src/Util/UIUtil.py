@@ -116,6 +116,24 @@ def createLoginDetailPopupLayout():
     application_name_layout.add_widget(application_name_text_input)
     main_layout.add_widget(application_name_layout)
 
+    update_url_layout = BoxLayout(
+        orientation='horizontal',
+        size_hint_y=None,
+        height='50dp',
+        spacing='10dp'
+    )
+    update_url_layout.add_widget(
+        Label(
+            text='Update Password URL',
+            font_size='15sp',
+            size_hint_x=0.4
+        )
+    )
+    update_url_text_input = TextInput(
+        text='', multiline=False, size_hint=(0.6, None), height='40dp'
+    )
+    update_url_layout.add_widget(update_url_text_input)
+    main_layout.add_widget(update_url_layout)
             
     username_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
     username_layout.add_widget(
@@ -149,7 +167,7 @@ def createLoginDetailPopupLayout():
     symbol_enabled_check_box = CheckBox(size_hint_x=0.2)
     symbol_layout.add_widget(symbol_enabled_check_box)
     main_layout.add_widget(symbol_layout)
-    return {"Layout": main_layout, "ApplicationName": application_name_text_input, "Username": username_text_input, "SymbolEnabledCheckBox": symbol_enabled_check_box, "PasswordLength": password_length_slider}
+    return {"Layout": main_layout, "ApplicationName": application_name_text_input,"UpdatePasswordURL": update_url_text_input, "Username": username_text_input, "SymbolEnabledCheckBox": symbol_enabled_check_box, "PasswordLength": password_length_slider}
 
 def on_slider_value_change(val,password_length_label):
     password_length_label.text = str(int(val))

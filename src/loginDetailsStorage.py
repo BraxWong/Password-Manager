@@ -53,6 +53,22 @@ class LoginDetailsStorage(Screen):
         self.application_name_layout.add_widget(self.application_name_text_input)
         self.main_layout.add_widget(self.application_name_layout)
 
+        self.update_url_layout = BoxLayout(
+                orientation='horizontal',
+                size_hint_y=None,
+                height='50dp',
+                spacing='10dp'
+            )
+
+        self.update_url_layout.add_widget(Label(text='Update Password URL',
+                                          font_size='15sp',
+                                          size_hint_x=0.4))
+        self.update_url_text_input = TextInput(text='',
+                                               multiline=False,
+                                               size_hint=(0.6,None),
+                                               height='40dp')
+        self.update_url_layout.add_widget(self.update_url_text_input)
+        self.main_layout.add_widget(self.update_url_layout)
 
         self.username_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
         self.username_layout.add_widget(
@@ -134,13 +150,14 @@ class LoginDetailsStorage(Screen):
     def store_login_details(self,widget): 
         if len(self.application_name_text_input.text) > 0 and len(self.username_text_input.text) > 0 and len(self.password_text_input.text) > 0:
             if not self.check_password_pwned(None,False):
-                self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text) 
+                self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text,self.update_url_text_input.text) 
                 popup = Popup(title='Password Stored',
                                         content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'),
                                         size_hint=(None,None),
                                         size=(400,400))
                 popup.open()
                 self.application_name_text_input.text = ""
+                self.update_url_text_input.text = ""
                 self.username_text_input.text = ""
                 self.password_text_input.text = ""
         else:

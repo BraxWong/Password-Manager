@@ -10,6 +10,7 @@ from kivy.uix.textinput import TextInput
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
+import webbrowser
 from Database.LoginDetailsDB import *
 from Database.VerifyUserDB import *
 from Database.EmailSettings import *
@@ -80,7 +81,7 @@ class PasswordSearch(Screen):
             spacing="24dp",
         )
 
-        for button_text in ["Delete", "Update", "Reveal Password", "Hide Password", "Copy Username", "Copy Password"]:
+        for button_text in ["Delete", "Update", "Update Password On Site", "Reveal Password", "Hide Password", "Copy Username", "Copy Password"]:
             button_box.add_widget(
                 MDRaisedButton(
                     text=button_text, on_release=self.on_button_press
@@ -128,6 +129,7 @@ class PasswordSearch(Screen):
         try:
             {
                 "Update": lambda:self.update_login_details(),
+                "Update Password On Site": lambda:self.redirect_to_website(),
                 "Delete": lambda:self.delete_login_details_confirmation(),
                 "Back": lambda:self.return_to_menu(),
                 "Reveal Password": lambda:self.password_censor(False),
@@ -172,6 +174,7 @@ class PasswordSearch(Screen):
                     table_index+=1
             self.table.update_row_data(self.table.row_data,self.data)
 
+    
     def two_factor_auth(self):
         self.two_factor_auth_info = self.two_factor_auth_db.fetch_all_from_db()
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
@@ -319,6 +322,28 @@ class PasswordSearch(Screen):
     def return_to_menu(self):
         self.manager.current = 'Menu Screen'
 
+    def redirect_to_website(self):
+        self.paused_action = "update to website"
+        if not self.check_timeout():
+            if len(self.table.get_row_checks()) != 1:
+                popup = Popup(title='Error',
+                            content=Label(text="Please select 1 row at a time when updating your login details"),
+                            size_hint=(None,None),
+                            size=(600,600))
+                popup.open()
+            else:
+                current_index = int(self.row_checked[0])
+                url = self.db.fetch_password_update_website(self.table.row_data[current_index][2])[0]
+                if url is None:
+                    popup = Popup(title='Error',
+                                  content=Label(text="Please provide the URL to update the password"),
+                                  size_hint=(None,None),
+                                  size=(600,600))
+                    popup.open()
+                else:
+                    print(f'Update Website URL: {self.db.fetch_password_update_website(self.table.row_data[current_index][2])}') 
+                    webbrowser.open(url)
+
     def update_login_details(self):
         self.paused_action = "update"
         if not self.check_timeout(): 
@@ -328,6 +353,7 @@ class PasswordSearch(Screen):
                             size_hint=(None,None),
                             size=(600,600))
                 popUp.open()
+
             else:
                 current_index = int(self.row_checked[0])
                 info_map = ui_util.createLoginDetailPopupLayout() 
@@ -339,6 +365,7 @@ class PasswordSearch(Screen):
                     spacing="24dp",
                 )
                 info_map["Username"].text = self.table.row_data[current_index][3]
+                info_map["ApplicationName"].text = self.table.row_data[current_index][0]
                 confirm_button = MDRaisedButton(text='Confirm')
                 cancel_button = MDRaisedButton(text='Cancel')
                 button_box.add_widget(confirm_button)
@@ -350,10 +377,10 @@ class PasswordSearch(Screen):
                                             size=(600,600))
 
                 cancel_button.bind(on_release=editLoginDetailsPopup.dismiss)
-                confirm_button.bind(on_release=lambda x:self.update_login_details_to_db(x,editLoginDetailsPopup,info_map["ApplicationName"].text,info_map["Username"].text,util.generate_password(info_map["SymbolEnabledCheckBox"].active,int(info_map["PasswordLength"].value))))
+                confirm_button.bind(on_release=lambda x:self.update_login_details_to_db(x,editLoginDetailsPopup,info_map["ApplicationName"].text,info_map["Username"].text,util.generate_password(info_map["SymbolEnabledCheckBox"].active,int(info_map["PasswordLength"].value),info_map["UpdatePasswordURL"].text)))
                 editLoginDetailsPopup.open()
 
-    def update_login_details_to_db(self,instance,popup,application_name,username,password):
+    def update_login_details_to_db(self,instance,popup,application_name,username,password,update_password_url):
         self.db.update_entry_to_db(application_name,username,password)
         self.refresh_table_data()
         popup.dismiss()
@@ -457,6 +484,8 @@ class PasswordSearch(Screen):
         match self.paused_action:
             case "update":
                 self.update_login_details()
+            case "update to website":
+                self.redirect_to_website()
             case "delete":
                 self.delete_login_details_confirmation()
             case "censor":
