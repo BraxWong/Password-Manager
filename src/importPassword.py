@@ -50,6 +50,7 @@ class ImportPassword:
                 return
             website = line[0:username_index[0]-2]
             line = line.replace(website+"  ",'')
+            
             line = line.replace("Username: ",'')
             password_index = [match.start() for match in re.finditer("Password: ",line)]
             if len(password_index) == 0:
@@ -57,8 +58,17 @@ class ImportPassword:
                 return
             username = line[0:password_index[0]-2]
             line = line.replace(username+"  ",'')
-            line = line.replace("Password: ",'')
-            password = line
-            self.login_details.add_entry_to_db(website,username,password)
+
+            line = line.replace("Password: ",'') 
+            url_index = [match.start() for match in re.finditer("URL: ",line)]
+            if len(url_index) == 0:
+                self.selected_file = False
+                return
+            password = line[0:url_index[0]-1]
+            line = line.replace(password + " ",'')
+
+            line = line.replace("URL: ",'')
+            url = line if line else ""
+            self.login_details.add_entry_to_db(website,username,password,url)
         self.selected_file = True
  

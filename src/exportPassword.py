@@ -12,10 +12,10 @@ class ExportPassword:
     def __init__(self):
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetch_all_from_db()
-        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
-            self.run(True)
-        else:
+        if self.two_factor_auth_info and self.two_factor_auth_info.enable_2FA:
             create_2FA_popup_layout(self.run)
+        else:
+            self.run(True)
 
     def run(self, result):
         if result:
@@ -33,7 +33,8 @@ class ExportPassword:
         user_login_details = self.login_details.fetch_all_from_db()
         file = open(self.export_dir + "/password.txt","w")
         for password in user_login_details:
-            file.write("Website: " + password[0] + "  Username: " + password[1] + "  Password: " + password[2].rstrip() + "\n")
+            url = password[4] if password[4] else ""
+            file.write("Website: " + password[0] + "  Username: " + password[1] + "  Password: " + password[2].rstrip() + " URL: " + url + "\n")
         file.close()
 
     def exit_manager(self, *args):

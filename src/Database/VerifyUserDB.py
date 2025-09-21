@@ -1,6 +1,11 @@
 import sqlite3
 import Util.Util
 
+class VerifyUser:
+    def __init__(self, password, hint):
+        self.password = password
+        self.hint = hint
+
 class VerifyUserDB:
     def __init__(self):
         self.PATHTOSQLDIR=Util.OSUtil.getOSDBPath()
@@ -17,7 +22,9 @@ class VerifyUserDB:
         self.cur.execute(
             "SELECT * FROM verify_user"
         )
-        return self.cur.fetchall()
+        info = self.cur.fetchall()
+        verify_user = VerifyUser(info[0][0], info[0][1])
+        return verify_user
     
     def add_password_and_hint(self, password, hint):
         self.cur.execute(

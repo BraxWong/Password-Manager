@@ -63,7 +63,25 @@ class PasswordGeneration(Screen):
         self.application_name_layout.add_widget(self.application_name_text_input)
         self.main_layout.add_widget(self.application_name_layout)
 
-                
+        self.update_url_layout = BoxLayout(
+            orientation='horizontal',
+            size_hint_y=None,
+            height='50dp',
+            spacing='10dp'
+        )
+        self.update_url_layout.add_widget(
+            Label(
+                text='Update Password URL',
+                font_size='15sp',
+                size_hint_x=0.4
+            )
+        )
+        self.update_url_text_input = TextInput(
+            text='', multiline=False, size_hint=(0.6, None), height='40dp'
+        )
+        self.update_url_layout.add_widget(self.update_url_text_input)
+        self.main_layout.add_widget(self.update_url_layout)
+
         self.username_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp', spacing='10dp')
         self.username_layout.add_widget(
              Label(text='Username', font_size='15sp', size_hint_x=0.4)
@@ -116,9 +134,9 @@ class PasswordGeneration(Screen):
     def update_login_details_to_db(self,widget):
         if not self.check_login_details():
             password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
-            self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password)
+            self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password,self.update_url_text_input.text)
             popup = Popup(title='Password Generated',
-                            content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'),
+                          content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nUpdate Password URL:{self.update_url_text_input.text}\nSaved in Database'),
                             size_hint=(None,None),
                             size=(400,400))
             popup.open()
@@ -144,6 +162,7 @@ class PasswordGeneration(Screen):
 
     def reset_input_widget_value(self):
         self.application_name_text_input.text = ''
+        self.update_url_text_input.test = ''
         self.username_text_input.text = ''
         self.password_length_label.text = '14'
         self.symbol_enabled_checkbox.active = False

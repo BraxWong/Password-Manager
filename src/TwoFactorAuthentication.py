@@ -78,9 +78,9 @@ class TwoFactorAuthentication(Screen):
         self.enable_email_notification_layout.add_widget(self.enable_email_notification_checkbox)
 
         two_factor_auth_info = self.two_factor_authentication_db.fetch_all_from_db()
-        if len(two_factor_auth_info) != 0:
-            self.email_address_text_input.text = two_factor_auth_info[0][0]
-            self.enable_email_notification_checkbox.active = True if two_factor_auth_info[0][1] else False
+        if two_factor_auth_info:
+            self.email_address_text_input.text = two_factor_auth_info.email_address
+            self.enable_email_notification_checkbox.active = two_factor_auth_info.enable_2FA 
 
         self.main_layout.add_widget(self.enable_email_notification_layout)
 

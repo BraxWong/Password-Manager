@@ -141,9 +141,9 @@ class PasswordSearch(Screen):
             pass
 
     def on_pre_enter(self, *args):
-        if len(self.verify_user_db.get_user_password_and_hint()) > 0 and not self.logged_in:
+        if self.verify_user_db.get_user_password_and_hint() and not self.logged_in:
             self.two_factor_auth()
-        elif len(self.verify_user_db.get_user_password_and_hint()) == 0:
+        elif not self.verify_user_db.get_user_password_and_hint():
             self.create_password_and_hint()
         else:
             self.refresh_table_data()
@@ -177,11 +177,11 @@ class PasswordSearch(Screen):
     
     def two_factor_auth(self):
         self.two_factor_auth_info = self.two_factor_auth_db.fetch_all_from_db()
-        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
-            self.password_search_login(True)
-        else:
+        if self.two_factor_auth_info and self.two_factor_auth_info.enable_2FA:
             ui_util.create_2FA_popup_layout(self.password_search_login)
-             
+        else:
+            self.password_search_login(True)
+
     def password_search_login(self, result):
         if result:
             main_layout = BoxLayout(orientation='vertical')
@@ -238,12 +238,12 @@ class PasswordSearch(Screen):
             ui_util.show_incorrect_2FA_popup()
     
     def show_hint(self, instance, text_box):
-        hint = self.verify_user_db.get_user_password_and_hint()[0][1]
-        text_box.text = hint
+        user_sys_credentials = self.verify_user_db.get_user_password_and_hint()
+        text_box.text = user_sys_credentials.hint 
 
     def verify_password_search_login(self,instance,user_input_password, password_popup):
-        password = self.verify_user_db.get_user_password_and_hint()[0][0]
-        if password_hashing.check_password(user_input_password,password):
+        user_sys_credentials = self.verify_user_db.get_user_password_and_hint()
+        if password_hashing.check_password(user_input_password,user_sys_credentials.password):
             self.refresh_table_data()
             password_popup.dismiss()
             self.invalid_login_attempt = 0
@@ -341,7 +341,6 @@ class PasswordSearch(Screen):
                                   size=(600,600))
                     popup.open()
                 else:
-                    print(f'Update Website URL: {self.db.fetch_password_update_website(self.table.row_data[current_index][2])}') 
                     webbrowser.open(url)
 
     def update_login_details(self):

@@ -14,7 +14,7 @@ from kivy.clock import Clock
 def create_2FA_popup_layout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
     two_factor_auth_info = two_factor_auth_db.fetch_all_from_db()
-    contact_info = two_factor_auth_info[0][0] 
+    
 
     main_layout = BoxLayout(
         orientation='vertical',
@@ -65,7 +65,7 @@ def create_2FA_popup_layout(callback):
 
     def send_2fa_code():
         nonlocal auth_system  
-        auth_system = twoFactorAuth(contact_info)  
+        auth_system = twoFactorAuth(two_factor_auth_info.email_address)  
         Clock.schedule_once(lambda dt: print("2FA code sent!"), 0)  
 
     threading.Thread(target=send_2fa_code).start()
