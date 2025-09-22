@@ -153,10 +153,10 @@ class PasswordSearch(Screen):
         self.data = []
         self.all_password = []
         if len(self.all_login_details) > 0:
-            for i,password in enumerate(self.all_login_details):
-                self.all_password.append(password[2])
-                self.password = "*" * len(password[2])
-                self.data.append((i,util.date_comparison(password[3]),password[0],password[1],self.password,password[3]))
+            for i,user_credentials in enumerate(self.all_login_details):
+                self.all_password.append(user_credentials.password)
+                self.password = "*" * len(user_credentials.password)
+                self.data.append((i,util.date_comparison(user_credentials.date_created),user_credentials.website_name,user_credentials.username,self.password,user_credentials.date_created))
         self.table.update_row_data(self.table.row_data, self.data)
 
     def on_search(self,instance,value):
@@ -169,8 +169,8 @@ class PasswordSearch(Screen):
             table_index = 0
             for i in range(len(scores)):
                 if scores[i]>=len(value)/2:
-                    self.all_password.append(self.all_login_details[i][2])
-                    self.data.append((table_index,util.date_comparison(self.all_login_details[i][3]),self.all_login_details[i][0],self.all_login_details[i][1],self.all_login_details[i][2],self.all_login_details[i][3]))
+                    self.all_password.append(self.all_login_details[i].password)
+                    self.data.append((table_index,util.date_comparison(self.all_login_details[i].date_created),self.all_login_details[i].website_name,self.all_login_details[i].username,self.all_login_details[i].password,self.all_login_details[i].date_created))
                     table_index+=1
             self.table.update_row_data(self.table.row_data,self.data)
 
@@ -209,6 +209,7 @@ class PasswordSearch(Screen):
             hint_text_input = TextInput(text='', 
                                     multiline=False,
                                     size_hint=(None,None), 
+                                    readonly=True,
                                     height=30, 
                                     width=250,
                                     pos_hint={'x':0.5,'y':0.45})
@@ -235,7 +236,7 @@ class PasswordSearch(Screen):
             confirm_button.bind(on_release=lambda x:self.verify_password_search_login(x,password_text_input.text,popup))
             popup.open()
         else:
-            ui_util.show_incorrect_2FA_popup()
+            ui_util.show_popup('Error', Label(text="The 2FA code you provided is incorrect.Please try again."), (None, None), (600,600))
     
     def show_hint(self, instance, text_box):
         user_sys_credentials = self.verify_user_db.get_user_password_and_hint()
@@ -326,20 +327,12 @@ class PasswordSearch(Screen):
         self.paused_action = "update to website"
         if not self.check_timeout():
             if len(self.table.get_row_checks()) != 1:
-                popup = Popup(title='Error',
-                            content=Label(text="Please select 1 row at a time when updating your login details"),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popup.open()
+                ui_util.show_popup('Error',Label(text="Please select 1 row at a time when updating your login details"), (None,None), (600,600))
             else:
                 current_index = int(self.row_checked[0])
                 url = self.db.fetch_password_update_website(self.table.row_data[current_index][2])[0]
                 if url is None:
-                    popup = Popup(title='Error',
-                                  content=Label(text="Please provide the URL to update the password"),
-                                  size_hint=(None,None),
-                                  size=(600,600))
-                    popup.open()
+                    ui_util.show_popup('Error',Label(text="Please provide the URL to update the password"), (None,None), (600,600))
                 else:
                     webbrowser.open(url)
 
@@ -347,12 +340,8 @@ class PasswordSearch(Screen):
         self.paused_action = "update"
         if not self.check_timeout(): 
             if len(self.table.get_row_checks()) != 1:
-                popUp = Popup(title='Error',
-                            content=Label(text="Please select 1 row at a time when updating your login details"),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popUp.open()
-
+                print("Hello")
+                ui_util.show_popup('Error',Label(text="Please select 1 row at a time when updating your login details"), (None,None), (600,600))
             else:
                 current_index = int(self.row_checked[0])
                 info_map = ui_util.createLoginDetailPopupLayout() 
@@ -383,11 +372,7 @@ class PasswordSearch(Screen):
         self.db.update_entry_to_db(application_name,username,password)
         self.refresh_table_data()
         popup.dismiss()
-        update_popup = Popup(title='Success',
-                            content=Label(text='Your details have been updated'),
-                            size_hint=(None,None),
-                            size=(600,600))
-        update_popup.open()
+        ui_util.show_popup('Success',Label(text='Your details have been updated'),(None,None),(600,600))
 
     def password_censor(self, hide_password = True):
         self.paused_action = "censor" if hide_password else "reveal"
@@ -405,19 +390,11 @@ class PasswordSearch(Screen):
         if not self.check_timeout():
             popup_text = "username" if copy_username else "password"
             if len(self.row_checked) != 1:
-                popup = Popup(title="Error",
-                            content=Label(text=f"Please select 1 {popup_text} to be copied to the clipboard."),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popup.open()
+                ui_util.show_popup('Error',Label(text=f"Please select 1 {popup_text} to be copied to the clipboard."),(None,None),(600,600))
             else:
                 content_to_copy = self.table.row_data[int(self.row_checked[0])][3] if copy_username else self.all_password[int(self.row_checked[0])]
                 Clipboard.copy(content_to_copy)
-                popup = Popup(title="Success",
-                            content=Label(text=f"The {popup_text} has been copied to the clipboard."),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popup.open()
+                ui_util.show_popup('Success',Label(text=f"The {popup_text} has been copied to the clipboard."),(None,None),(600,600))
 
     def delete_login_details_confirmation(self):
         self.paused_action = "delete"
@@ -463,13 +440,7 @@ class PasswordSearch(Screen):
             self.table.remove_row(self.table.row_data[int(row[0])])
             self.refresh_table_data()
             message += f"\n{row[2]}"
-
-        popup = Popup(title='Success',
-                      content=Label(text=message),
-                      size_hint=(None,None),
-                      size=(600,600))
-
-        popup.open() 
+        ui_util.show_popup('Success',Label(text=message),(None,None),(600,600))
 
     def check_timeout(self):
         if self.last_action_taken.check_login_required():

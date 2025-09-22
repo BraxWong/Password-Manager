@@ -32,25 +32,17 @@ class ExportPassword:
     def write_password_to_file(self):
         user_login_details = self.login_details.fetch_all_from_db()
         file = open(self.export_dir + "/password.txt","w")
-        for password in user_login_details:
-            url = password[4] if password[4] else ""
-            file.write("Website: " + password[0] + "  Username: " + password[1] + "  Password: " + password[2].rstrip() + " URL: " + url + "\n")
+        for credentials in user_login_details:
+            url = credentials.update_url if credentials.update_url else ""
+            file.write("Website: " + credentials.website_name + "  Username: " + credentials.username + "  Password: " + credentials.password.rstrip() + " URL: " + url + "\n")
         file.close()
 
     def exit_manager(self, *args):
         if self.export_dir != "":
             self.write_password_to_file()
-            popup = Popup(title='Password Exported',
-                          content=Label(text=f'All your password have been exported to \n{self.export_dir}'),
-                          size_hint=(None,None),
-                          size=(400,400))
-            popup.open()
+            show_popup('Password Exported',Label(text=f'All your password have been exported to \n{self.export_dir}'))
         else:
-            popUp = Popup(title='Cancelled',
-                          content=Label(text="You did not select a directory."),
-                          size_hint=(None,None),
-                          size=(600,600))
-            popUp.open()
+            show_popup('Cancelled',Label(text="You did not select a directory"))
         self.file_manager.close()
 
     def select_path(self, path):

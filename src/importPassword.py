@@ -2,6 +2,7 @@ from kivymd.uix.filemanager import MDFileManager
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from Database.LoginDetailsDB import LoginDetailsDB
+from Util.UIUtil import *
 import re
 import os
 
@@ -22,17 +23,9 @@ class ImportPassword:
             self.read_file()
             title = 'Updated' if self.selected_file else 'Error'
             content = "Your user details have been updated" if self.selected_file else "The file you uploaded was invalid. Please try again"
-            pop_up = Popup(title=title,
-                        content=Label(text=content),
-                        size_hint=(None,None),
-                        size=(600,600))
-            pop_up.open()        
+            show_popup(title,Label(text=content),(None,None),(600,600))
         else:
-            pop_up = Popup(title='Cancelled',
-                        content=Label(text="You did not select a file."),
-                        size_hint=(None,None),
-                        size=(600,600))
-            pop_up.open()
+            show_popup('Cancelled',Label(text="You did not select a file"),(None,None),(600,600))
         self.file_manager.close()
 
     def select_path(self,path):
@@ -71,4 +64,3 @@ class ImportPassword:
             url = line if line else ""
             self.login_details.add_entry_to_db(website,username,password,url)
         self.selected_file = True
- 

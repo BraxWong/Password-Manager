@@ -83,24 +83,13 @@ class Menu(Screen):
     def export_password_to_txt(self,widget):
         self.exportPassword = ExportPassword()
 
-
-#                              ╭━━━━━━━━━━━━━━━━━━━╮
-#                              ┃                   ┃
-#                              ┃ FIX:Does not work ┃
-#                              ┃                   ┃
-#                              ╰━━━━━━━━━━━━━━━━━━━╯
-
     def export_password_to_email(self, widget):
         def send_credentials(result):
             if result:
                 if not self.email_notification.running:
                     self.email_notification_thread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
                     self.email_notification_thread.start()                     
-                    popUp = Popup(title='Success',
-                                content=Label(text="Your user credentials have been sent to your email address."),
-                                size_hint=(None, None),
-                                size=(400, 400))
-                    popUp.open()
+                    show_popup('Success',Label(text="Your user credentials have been sent to your email address."))
                 else:
                     self.email_notification.stop()
                     if self.email_notification_thread.is_alive():

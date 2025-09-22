@@ -83,6 +83,13 @@ def create_2FA_popup_layout(callback):
     main_layout.add_widget(submit_button)
     pop_up.open()
 
+def show_popup(title, content, size_hint=(None,None), size=(400,400)):
+    popup = Popup(title=title,
+                  content=content,
+                  size_hint=size_hint,
+                  size=size)
+    popup.open()
+
 def show_incorrect_2FA_popup():
     pop_up = Popup(title='Error',
                   content=Label(text="The 2FA code you provided is incorrect.Please try again."),

@@ -10,6 +10,7 @@ from kivy.uix.textinput import TextInput
 from kivymd.uix.button import MDRaisedButton
 from Database.EmailSettings import *
 import re
+import Util.UIUtil as UIUtil
 
 class TwoFactorAuthentication(Screen):
     def __init__(self, **kwargs):
@@ -105,26 +106,14 @@ class TwoFactorAuthentication(Screen):
     def saveEmailNotificationSettings(self, widget):
         EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
         if len(self.email_address_text_input.text) != 0 and not EMAIL_REGEX.match(self.email_address_text_input.text):
-            popup = Popup(title='Error',
-                        content=Label(text="Please provide a valid email address"),
-                        size_hint=(None,None),
-                        size=(600,600))
-            popup.open()
+            UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
             return
         else:
             update_email_addr = True
 
         if self.enable_email_notification_checkbox.active and len(self.email_address_text_input.text) == 0:
-            popup = Popup(title='Error',
-                                content=Label(text="Please provide a valid email address"),
-                                size_hint=(None,None),
-                                size=(600,600))
-            popup.open()
+            UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
             return
              
         self.two_factor_authentication_db.add_entry_to_db(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
-        popup = Popup(title='Success',
-                    content=Label(text="Your 2FA settings have been saved."),
-                    size_hint=(None,None),
-                    size=(600,600))
-        popup.open()
+        UIUtil.show_popup('Success',Label(text="Your 2FA settings have been saved"))

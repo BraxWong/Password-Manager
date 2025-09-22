@@ -2,6 +2,14 @@ import sqlite3
 from datetime import datetime
 import Util.OSUtil
 
+class LoginDetails:
+    def __init__(self, website_name, username, password, date_created, update_url):
+        self.website_name = website_name
+        self.username = username
+        self.password = password
+        self.date_created = date_created
+        self.update_url = update_url
+
 class LoginDetailsDB:
     def __init__(self):
         self.PATHTOSQLDIR=Util.OSUtil.getOSDBPath()
@@ -54,7 +62,12 @@ class LoginDetailsDB:
         self.cur.execute(
             "SELECT * FROM login_details"
         )
-        return self.cur.fetchall()
+        user_data = self.cur.fetchall()
+        credentials = [
+            LoginDetails(website_name, username, password, date_created, update_url) 
+            for website_name, username, password, date_created, update_url in user_data
+        ]
+        return credentials
 
     def fetch_website_password(self,website_name):
         self.cur.execute(

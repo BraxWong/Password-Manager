@@ -9,6 +9,7 @@ from kivymd.uix.button import MDRaisedButton
 from Database.LoginDetailsDB import LoginDetailsDB  
 import requests
 import hashlib
+from Util.UIUtil import *
 
 class LoginDetailsStorage(Screen):
 
@@ -127,35 +128,19 @@ class LoginDetailsStorage(Screen):
             for h, count in hashes:
                 if h == password_hash[5:]:
                     password_pwned = True
-                    pop_up = Popup(title="WARNING",
-                                  content=Label(text=f"WARNING!!!\nYOUR PASSWORD HAS BEEN FOUND {count} TIMES!!!\nCHANGE YOUR PASSWORD NOW!!!!"),
-                                  size_hint=(None,None),
-                                  size=(600,600))
-                    pop_up.open()
+                    show_popup('WARNING',Label(text=f"WARNING!!!\nYOUR PASSWORD HAS BEEN FOUND {count} TIMES!!!\nCHANGE YOUR PASSWORD NOW!!!!"),(None,None),(600,600))
             if not password_pwned and show_popup:
-                popup = Popup(title="Safe",
-                            content=Label(text="Your password is safe."),
-                            size_hint=(None,None),
-                            size=(600,600))
-                popup.open()
+                show_popup('Safe',Label(text="Your password is safe"),(None,None),(600,600))
         else:
             password_pwned = True
-            popup = Popup(title="Error",
-                          content=Label(text="Please provide a password before checking for leaks."),
-                          size_hint=(None,None),
-                          size=(600,600))
-            popup.open()
+            show_popup('Error',Label(text="Please provide a password before checking for leaks"),(None,None),(600,600))
         return password_pwned
 
     def store_login_details(self,widget): 
         if len(self.application_name_text_input.text) > 0 and len(self.username_text_input.text) > 0 and len(self.password_text_input.text) > 0:
             if not self.check_password_pwned(None,False):
                 self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text,self.update_url_text_input.text) 
-                popup = Popup(title='Password Stored',
-                                        content=Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'),
-                                        size_hint=(None,None),
-                                        size=(400,400))
-                popup.open()
+                show_popup('Password Stored',Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'))
                 self.application_name_text_input.text = ""
                 self.update_url_text_input.text = ""
                 self.username_text_input.text = ""
@@ -168,9 +153,4 @@ class LoginDetailsStorage(Screen):
                 error_message += "\nUsername"
             if len(self.password_text_input.text) <= 0:
                 error_message += "\nPassword"
-            popUp = Popup(title='Error',
-                            content=Label(text=error_message),
-                            size_hint=(None,None),
-                            size=(400,400))
-            popUp.open()
-
+            show_popup('Error',Label(text=error_message))

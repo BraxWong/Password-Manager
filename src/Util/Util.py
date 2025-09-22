@@ -60,7 +60,7 @@ def check_password_in_db(generated_password):
     password_found_in_db = False
     login_details_db = LoginDetailsDB()
     all_password = login_details_db.fetch_all_from_db()
-    for password in all_password:
-        if generated_password == password[2]:
+    for user_credentials in all_password:
+        if generated_password == user_credentials.password:
             password_found_in_db = True
     return password_found_in_db
