@@ -78,10 +78,10 @@ class TwoFactorAuthentication(Screen):
         self.enable_email_notification_checkbox = CheckBox(size_hint_x=0.2)
         self.enable_email_notification_layout.add_widget(self.enable_email_notification_checkbox)
 
-        two_factor_auth_info = self.two_factor_authentication_db.fetch_all_from_db()
-        if two_factor_auth_info:
-            self.email_address_text_input.text = two_factor_auth_info.email_address
-            self.enable_email_notification_checkbox.active = two_factor_auth_info.enable_2FA 
+        self.two_factor_auth_info = self.two_factor_authentication_db.fetch_all_from_db()
+        if self.two_factor_auth_info:
+            self.email_address_text_input.text = self.two_factor_auth_info.email_address
+            self.enable_email_notification_checkbox.active = self.two_factor_auth_info.enable_2FA 
 
         self.main_layout.add_widget(self.enable_email_notification_layout)
 
@@ -104,16 +104,25 @@ class TwoFactorAuthentication(Screen):
         self.manager.current = 'Menu Screen'
 
     def saveEmailNotificationSettings(self, widget):
-        EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-        if len(self.email_address_text_input.text) != 0 and not EMAIL_REGEX.match(self.email_address_text_input.text):
-            UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
-            return
-        else:
-            update_email_addr = True
+        def run(result):
+            if result:
+                EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+                if len(self.email_address_text_input.text) != 0 and not EMAIL_REGEX.match(self.email_address_text_input.text):
+                    UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
+                    return
+                else:
+                    update_email_addr = True
 
-        if self.enable_email_notification_checkbox.active and len(self.email_address_text_input.text) == 0:
-            UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
-            return
-             
-        self.two_factor_authentication_db.add_entry_to_db(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
-        UIUtil.show_popup('Success',Label(text="Your 2FA settings have been saved"))
+                if self.enable_email_notification_checkbox.active and len(self.email_address_text_input.text) == 0:
+                    UIUtil.show_popup('Error',Label(text="Please provide a valid email address"))
+                    return
+                    
+                self.two_factor_authentication_db.add_entry_to_db(self.email_address_text_input.text, self.enable_email_notification_checkbox.active)
+                UIUtil.show_popup('Success',Label(text="Your 2FA settings have been saved"))
+            else:
+                UIUtil.show_popup('Error',Label(text="The 2FA code you provided is incorrect. Please try again."))
+        if self.two_factor_auth_info.enable_2FA and not self.enable_email_notification_checkbox.active:
+            UIUtil.create_2FA_popup_layout(run)
+        else:
+            run(True)
+       

@@ -95,7 +95,7 @@ class Menu(Screen):
                     if self.email_notification_thread.is_alive():
                         self.email_notification_thread.join()  
             else:
-                show_incorrect_2FA_popup()
+                show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
 
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             send_credentials(True)
@@ -130,7 +130,7 @@ class Menu(Screen):
                     self.website_monitor_thread.join(timeout=1)            
                     self.start_stop_website_monitor.text = 'Start website monitor'
             else:
-                show_incorrect_2FA_popup()
+                show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
             run(True)
         else:

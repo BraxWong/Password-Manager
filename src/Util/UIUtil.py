@@ -90,13 +90,6 @@ def show_popup(title, content, size_hint=(None,None), size=(400,400)):
                   size=size)
     popup.open()
 
-def show_incorrect_2FA_popup():
-    pop_up = Popup(title='Error',
-                  content=Label(text="The 2FA code you provided is incorrect.Please try again."),
-                  size_hint=(None,None),
-                  size=(400,400))
-    pop_up.open() 
-
 def createLoginDetailPopupLayout():
     main_layout = BoxLayout(
                 orientation='vertical',

@@ -28,7 +28,8 @@ class ExportPassword:
             )
             self.file_manager.show(path)
         else:
-            show_incorrect_2FA_popup()
+            show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
+            
     def write_password_to_file(self):
         user_login_details = self.login_details.fetch_all_from_db()
         file = open(self.export_dir + "/password.txt","w")
