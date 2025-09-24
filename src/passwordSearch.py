@@ -312,9 +312,12 @@ class PasswordSearch(Screen):
         popup.open()
         
     def create_password_search_password(self,instance,password,hint,popup):
-        self.verify_user_db.add_password_and_hint(password_hashing.encode_password(password),hint)
-        popup.dismiss()
-        self.refresh_table_data()
+        if password in hint:
+            UIUtil.show_popup("Error",Label(text="Your hint cannot contain your password. Please try again."))
+        else:
+            self.verify_user_db.add_password_and_hint(password_hashing.encode_password(password),hint)
+            popup.dismiss()
+            self.refresh_table_data()
 
     def cancel_password_and_hint(self,instance,popup):
         popup.dismiss()
