@@ -8,6 +8,7 @@ from kivy.uix.slider import Slider
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.menu import MDDropdownMenu
 from Database.LoginDetailsDB import LoginDetailsDB  
 import Util.Util
 from Util.UIUtil import *
@@ -63,6 +64,24 @@ class PasswordGeneration(Screen):
         )
         self.application_name_layout.add_widget(self.application_name_text_input)
         self.main_layout.add_widget(self.application_name_layout)
+
+        self.software_type_layout = BoxLayout(
+            orientation = 'horizontal',
+            size_hint_y=None,
+            height='50dp',
+            spacing='10dp'
+        )
+
+        self.software_type_layout.add_widget(Label(text='Type of Application/Website',
+                                             font_size='15sp',
+                                             size_hint_x=0.4)
+                                            )
+        self.software_type_dropdown_menu = Button(text='Select Type',
+                                            size_hint=(0.6,None),
+                                            height='40dp',      
+                                            on_release=lambda x: display_software_type_dropdown_menu(self.software_type_dropdown_menu))
+        self.software_type_layout.add_widget(self.software_type_dropdown_menu)
+        self.main_layout.add_widget(self.software_type_layout)
 
         self.update_url_layout = BoxLayout(
             orientation='horizontal',
@@ -135,8 +154,8 @@ class PasswordGeneration(Screen):
     def update_login_details_to_db(self,widget):
         if not self.check_login_details():
             password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
-            self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password,self.update_url_text_input.text)
-            show_popup('Password Generated',Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nUpdate Password URL:{self.update_url_text_input.text}\nSaved in Database'))
+            self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password,self.update_url_text_input.text,self.software_type_dropdown_menu.text)
+            show_popup('Password Generated',Label(text=f'Website:{self.application_name_text_input.text}\nSoftware Type:{self.software_type_dropdown_menu.text}\nUpdate Password URL:{self.update_url_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'))
             self.reset_input_widget_value()
             return password
 
@@ -145,6 +164,9 @@ class PasswordGeneration(Screen):
         error_message = "Please provide the following information:\n"
         if self.application_name_text_input.text == "":
             error_message += "Name of the Application\n"
+            missing_information = True
+        if self.software_type_dropdown_menu.text == "Select Type":
+            error_message += "Software Type"
             missing_information = True
         if self.username_text_input.text == "":
             error_message += "Your Username"
@@ -155,6 +177,7 @@ class PasswordGeneration(Screen):
 
     def reset_input_widget_value(self):
         self.application_name_text_input.text = ''
+        self.software_type_dropdown_menu.text = "Select Type"
         self.update_url_text_input.test = ''
         self.username_text_input.text = ''
         self.password_length_label.text = '14'

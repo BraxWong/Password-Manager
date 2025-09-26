@@ -97,6 +97,7 @@ class PasswordSearch(Screen):
                 ("Index",dp(30)),
                 ("Password Safety",dp(30)),
                 ("Application Name",dp(30)),
+                ("Application Type",dp(30)),
                 ("Username",dp(30)),
                 ("Password",dp(30)),
                 ("Date Created",dp(30))
@@ -156,7 +157,7 @@ class PasswordSearch(Screen):
             for i,user_credentials in enumerate(self.all_login_details):
                 self.all_password.append(user_credentials.password)
                 self.password = "*" * len(user_credentials.password)
-                self.data.append((i,util.date_comparison(user_credentials.date_created),user_credentials.website_name,user_credentials.username,self.password,user_credentials.date_created))
+                self.data.append((i,util.date_comparison(user_credentials.date_created),user_credentials.website_name,user_credentials.software_type,user_credentials.username,self.password,user_credentials.date_created))
         self.table.update_row_data(self.table.row_data, self.data)
 
     def on_search(self,instance,value):

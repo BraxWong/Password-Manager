@@ -3,12 +3,13 @@ from datetime import datetime
 import Util.OSUtil
 
 class LoginDetails:
-    def __init__(self, website_name, username, password, date_created, update_url):
+    def __init__(self, website_name, username, password, date_created, update_url, software_type):
         self.website_name = website_name
         self.username = username
         self.password = password
         self.date_created = date_created
         self.update_url = update_url
+        self.software_type = software_type
 
 class LoginDetailsDB:
     def __init__(self):
@@ -25,6 +26,14 @@ class LoginDetailsDB:
             "CREATE TABLE if not exists login_details(website_name, username, password, date_created)"
         )
 
+
+
+#                ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
+#                ┃                                              ┃
+#                ┃ TODO: Add a new column for types of software ┃
+#                ┃                                              ┃
+#                ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
+
     def update_login_details_table(self):
         #Retrieves table schema info
         self.cur.execute(
@@ -36,19 +45,24 @@ class LoginDetailsDB:
                 "ALTER TABLE login_details ADD COLUMN update_url"
             )
             self.con.commit()
-
-    def add_entry_to_db(self,website_name,username,password,update_url):
-        if self.website_password_set(website_name):
-            self.update_entry_to_db(website_name,username,password,update_url)
-        else:
+        if 'software_type' not in columns:
             self.cur.execute(
-                f'INSERT INTO login_details VALUES ("{website_name}","{username}","{password}","{self.todays_date}","{update_url}")'
+                'ALTER TABLE login_details ADD COLUMN software_type'
             )
             self.con.commit()
 
-    def update_entry_to_db(self,website_name,username,password,update_url):
-        self.cur.execute('UPDATE login_details SET password = ?, username = ?, date_created = ?, update_url = ? WHERE website_name = ?',
-            (password, username, self.todays_date, update_url, website_name)
+    def add_entry_to_db(self,website_name,username,password,update_url,software_type):
+        if self.website_password_set(website_name):
+            self.update_entry_to_db(website_name,username,password,update_url,software_type)
+        else:
+            self.cur.execute(
+                f'INSERT INTO login_details VALUES ("{website_name}","{username}","{password}","{self.todays_date}","{update_url}","{software_type}")'
+            )
+            self.con.commit()
+
+    def update_entry_to_db(self,website_name,username,password,update_url,software_type):
+        self.cur.execute('UPDATE login_details SET password = ?, username = ?, date_created = ?, update_url = ?, software_type = ? WHERE website_name = ?',
+            (password, username, self.todays_date, update_url, software_type, website_name)
         )
         self.con.commit()
     
@@ -64,8 +78,8 @@ class LoginDetailsDB:
         )
         user_data = self.cur.fetchall()
         credentials = [
-            LoginDetails(website_name, username, password, date_created, update_url) 
-            for website_name, username, password, date_created, update_url in user_data
+            LoginDetails(website_name, username, password, date_created, update_url, software_type) 
+            for website_name, username, password, date_created, update_url, software_type in user_data
         ]
         return credentials
 

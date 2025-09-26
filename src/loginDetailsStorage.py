@@ -6,6 +6,7 @@ from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.menu import MDDropdownMenu
 from Database.LoginDetailsDB import LoginDetailsDB  
 import requests
 import hashlib
@@ -53,6 +54,25 @@ class LoginDetailsStorage(Screen):
                                                   height='40dp')
         self.application_name_layout.add_widget(self.application_name_text_input)
         self.main_layout.add_widget(self.application_name_layout)
+
+        self.software_type_layout = BoxLayout(
+            orientation = 'horizontal',
+            size_hint_y=None,
+            height='50dp',
+            spacing='10dp'
+        )
+
+        self.software_type_layout.add_widget(Label(text='Type of Application/Website',
+                                             font_size='15sp',
+                                             size_hint_x=0.4)
+                                            )
+        self.software_type_dropdown_menu = Button(text='Select Type',
+                                            size_hint=(0.6,None),
+                                            height='40dp',      
+                                            on_release=lambda x: display_software_type_dropdown_menu(self.software_type_dropdown_menu))
+
+        self.software_type_layout.add_widget(self.software_type_dropdown_menu)
+        self.main_layout.add_widget(self.software_type_layout)
 
         self.update_url_layout = BoxLayout(
                 orientation='horizontal',
@@ -117,7 +137,7 @@ class LoginDetailsStorage(Screen):
     def on_button_press(self, instance_button: MDRaisedButton):
         self.manager.current = 'Menu Screen'
 
-    def check_password_pwned(self,widget,show_popup=True):
+    def check_password_pwned(self,widget,display_popup=True):
         password_pwned = False
         if len(self.password_text_input.text) > 0:
             password_hash = hashlib.sha1(self.password_text_input.text.encode()).hexdigest().upper()
@@ -129,7 +149,7 @@ class LoginDetailsStorage(Screen):
                 if h == password_hash[5:]:
                     password_pwned = True
                     show_popup('WARNING',Label(text=f"WARNING!!!\nYOUR PASSWORD HAS BEEN FOUND {count} TIMES!!!\nCHANGE YOUR PASSWORD NOW!!!!"),(None,None),(600,600))
-            if not password_pwned and show_popup:
+            if not password_pwned and display_popup:
                 show_popup('Safe',Label(text="Your password is safe"),(None,None),(600,600))
         else:
             password_pwned = True
@@ -137,11 +157,12 @@ class LoginDetailsStorage(Screen):
         return password_pwned
 
     def store_login_details(self,widget): 
-        if len(self.application_name_text_input.text) > 0 and len(self.username_text_input.text) > 0 and len(self.password_text_input.text) > 0:
+        if len(self.application_name_text_input.text) > 0 and len(self.username_text_input.text) > 0 and len(self.password_text_input.text) > 0 and self.software_type_dropdown_menu.text != "Select Type":
             if not self.check_password_pwned(None,False):
-                self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text,self.update_url_text_input.text) 
+                self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text,self.update_url_text_input.text,self.software_type_dropdown_menu.text) 
                 show_popup('Password Stored',Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'))
                 self.application_name_text_input.text = ""
+                self.software_type_dropdown_menu.text = "Select Type"
                 self.update_url_text_input.text = ""
                 self.username_text_input.text = ""
                 self.password_text_input.text = ""

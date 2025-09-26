@@ -5,11 +5,36 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.menu import MDDropdownMenu
 from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
 from Util.two_factor_authentication import *
 from Util.Util import *
 import threading
 from kivy.clock import Clock
+
+def display_software_type_dropdown_menu(button):
+    dropdown_menu = MDDropdownMenu(caller = button)
+    menu_items = [
+        {
+            "text": "Select Type",
+            "on_release": lambda x= "Select Type": set_dropdown_menu_text(x) 
+        },
+        {
+            "text": "Business",
+            "on_release": lambda x= "Business": set_dropdown_menu_text(x) 
+        },
+        {
+            "text": "Entertainment",
+            "on_release": lambda x= "Entertainment": set_dropdown_menu_text(x) 
+        }
+    ]
+    dropdown_menu.items = menu_items
+    dropdown_menu.open()
+
+    def set_dropdown_menu_text(text):
+        button.text = text
+        dropdown_menu.dismiss()
+
 
 def create_2FA_popup_layout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()
