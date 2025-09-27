@@ -7,6 +7,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.screenmanager import Screen
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
 from kivymd.uix.datatables import MDDataTable
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -74,6 +75,13 @@ class PasswordSearch(Screen):
         self.search_bar_layout.add_widget(self.search_bar)
         self.main_layout.add_widget(self.search_bar_layout)
 
+        self.software_type_dropdown_menu = Button(text='Select Type',
+                                            size_hint=(0.3,None),
+                                            height='40dp',      
+                                            on_release=lambda x: ui_util.display_software_type_dropdown_menu(self.software_type_dropdown_menu,self.testing),
+                                            pos_hint={'center_x': 0.5})
+        self.main_layout.add_widget(self.software_type_dropdown_menu)
+
         button_box = MDBoxLayout(
             pos_hint={"center_x": 0.5},
             adaptive_size=True,
@@ -119,6 +127,19 @@ class PasswordSearch(Screen):
         self.main_layout.add_widget(Widget(size_hint_y=1))
         self.main_layout.add_widget(self.table_layout)
         self.add_widget(self.main_layout)
+
+    def testing(self):
+        if self.software_type_dropdown_menu.text == "Select Type":
+            self.refresh_table_data()
+        else:
+            self.data = []
+            user_credentials = self.db.fetch_all_from_db()
+            table_index = 0
+            for credential in user_credentials:
+                if credential.software_type == self.software_type_dropdown_menu.text:
+                    self.data.append((table_index,util.date_comparison(credential.date_created),credential.website_name, credential.software_type, credential.username, credential.password, credential.date_created))
+                    table_index+=1
+            self.table.update_row_data(self.table.row_data,self.data)
 
     def on_check_press(self, instance_table, current_row):
         if current_row[0] not in self.row_checked:
@@ -171,7 +192,7 @@ class PasswordSearch(Screen):
             for i in range(len(scores)):
                 if scores[i]>=len(value)/2:
                     self.all_password.append(self.all_login_details[i].password)
-                    self.data.append((table_index,util.date_comparison(self.all_login_details[i].date_created),self.all_login_details[i].website_name,self.all_login_details[i].username,self.all_login_details[i].password,self.all_login_details[i].date_created))
+                    self.data.append((table_index,util.date_comparison(self.all_login_details[i].date_created),self.all_login_details[i].website_name,self.all_login_details[i].software_type,self.all_login_details[i].username,self.all_login_details[i].password,self.all_login_details[i].date_created))
                     table_index+=1
             self.table.update_row_data(self.table.row_data,self.data)
 

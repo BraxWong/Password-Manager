@@ -12,29 +12,30 @@ from Util.Util import *
 import threading
 from kivy.clock import Clock
 
-def display_software_type_dropdown_menu(button):
+def display_software_type_dropdown_menu(button,callback=None):
     dropdown_menu = MDDropdownMenu(caller = button)
     menu_items = [
         {
             "text": "Select Type",
-            "on_release": lambda x= "Select Type": set_dropdown_menu_text(x) 
+            "on_release": lambda x= "Select Type": set_dropdown_menu_text(x,callback) 
         },
         {
             "text": "Business",
-            "on_release": lambda x= "Business": set_dropdown_menu_text(x) 
+            "on_release": lambda x= "Business": set_dropdown_menu_text(x,callback) 
         },
         {
             "text": "Entertainment",
-            "on_release": lambda x= "Entertainment": set_dropdown_menu_text(x) 
+            "on_release": lambda x= "Entertainment": set_dropdown_menu_text(x,callback) 
         }
     ]
     dropdown_menu.items = menu_items
     dropdown_menu.open()
 
-    def set_dropdown_menu_text(text):
+    def set_dropdown_menu_text(text,callback=None):
         button.text = text
         dropdown_menu.dismiss()
-
+        if callback is not None:
+            callback()
 
 def create_2FA_popup_layout(callback):
     two_factor_auth_db = TwoFactorAuthenticationSettingsDB()

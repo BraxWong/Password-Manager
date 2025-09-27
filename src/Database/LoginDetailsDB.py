@@ -26,14 +26,6 @@ class LoginDetailsDB:
             "CREATE TABLE if not exists login_details(website_name, username, password, date_created)"
         )
 
-
-
-#                ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-#                ┃                                              ┃
-#                ┃ TODO: Add a new column for types of software ┃
-#                ┃                                              ┃
-#                ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
-
     def update_login_details_table(self):
         #Retrieves table schema info
         self.cur.execute(

@@ -35,7 +35,8 @@ class ExportPassword:
         file = open(self.export_dir + "/password.txt","w")
         for credentials in user_login_details:
             url = credentials.update_url if credentials.update_url else ""
-            file.write("Website: " + credentials.website_name + "  Username: " + credentials.username + "  Password: " + credentials.password.rstrip() + " URL: " + url + "\n")
+            software_type = credentials.software_type if credentials.software_type else ""
+            file.write("Website: " + credentials.website_name + "  Software Type: " + software_type + "  Username: " + credentials.username + "  Password: " + credentials.password.rstrip() + " URL: " + url + "\n")
         file.close()
 
     def exit_manager(self, *args):

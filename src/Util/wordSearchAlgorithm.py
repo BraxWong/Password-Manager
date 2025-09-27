@@ -2,7 +2,7 @@ def search_website(website_list,user_input):
     user_input = user_input.lower().strip()
     scores = [] 
     for website in website_list:
-        website = website[0].lower().split()
+        website = website.website_name.lower().split()
         current_website_score = 0
         user_input_iter = 0
         for w in website:
