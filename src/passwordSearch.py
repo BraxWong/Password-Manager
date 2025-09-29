@@ -78,7 +78,7 @@ class PasswordSearch(Screen):
         self.software_type_dropdown_menu = Button(text='Select Type',
                                             size_hint=(0.3,None),
                                             height='40dp',      
-                                            on_release=lambda x: ui_util.display_software_type_dropdown_menu(self.software_type_dropdown_menu,self.testing),
+                                            on_release=lambda x: ui_util.display_software_type_dropdown_menu(self.software_type_dropdown_menu,self.show_credentials_based_on_software_type),
                                             pos_hint={'center_x': 0.5})
         self.main_layout.add_widget(self.software_type_dropdown_menu)
 
@@ -128,7 +128,7 @@ class PasswordSearch(Screen):
         self.main_layout.add_widget(self.table_layout)
         self.add_widget(self.main_layout)
 
-    def testing(self):
+    def show_credentials_based_on_software_type(self):
         if self.software_type_dropdown_menu.text == "Select Type":
             self.refresh_table_data()
         else:
@@ -405,9 +405,9 @@ class PasswordSearch(Screen):
             for row in self.row_checked: 
                 current_index = int(row)
                 new_row = list(self.table.row_data[current_index])
-                new_row[4] = "*" * len(self.all_password[current_index])
+                new_row[5] = "*" * len(self.all_password[current_index])
                 if not hide_password:
-                    new_row[4] = self.all_password[current_index]
+                    new_row[5] = self.all_password[current_index]
                 self.table.update_row(self.table.row_data[current_index],new_row)
 
     def copy_password_or_username_to_clipboard(self, copy_username):

@@ -51,22 +51,22 @@ python src/main.py
 
 #### Import file format
 
-Website: WEBSITENAME1 Username: USERNAME1 Password: Password1
+Website: WEBSITENAME1  Username: USERNAME1  Password: Password1  URL: UPDATE_URL  Software Type: Business/Entertainment
 
-Website: WEBSITENAME2 Username: USERNAME2 Password: Password2
+Website: WEBSITENAME2  Username: USERNAME2  Password: Password2  URL: UPDATE_URL  Software Type: Business/Entertainment
 
-Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
+Website: WEBSITENAME3  Username: USERNAME3  Password: Password3  URL: UPDATE_URL  Software Type: Business/Entertainment
 
 ### Login Details Export
 
 <p>If the user desired to export their login details, the software would be able to convert all the login details stored(locally) to a text file.
 The login details will be exported in the format shown below</p>
 
-Website: WEBSITENAME1 Username: USERNAME1 Password: Password1
+Website: WEBSITENAME1 Username: USERNAME1 Password: Password1  URL: UPDATE_URL  Software Type: Business/Entertainment
 
-Website: WEBSITENAME2 Username: USERNAME2 Password: Password2
+Website: WEBSITENAME2 Username: USERNAME2 Password: Password2  URL: UPDATE_URL  Software Type: Business/Entertainment
 
-Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
+Website: WEBSITENAME3 Username: USERNAME3 Password: Password3  URL: UPDATE_URL  Software Type: Business/Entertainment
 
 ## TODO
 
@@ -74,4 +74,4 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3
 - [X] Enable users to copy login details to the clipboard when login details popup is opened. (Completed: 2/7/2025)
 - [X] Use a hash function to encode stored passwords and when validating user logins. (Completed: 2/8/2025)
 - [X] Implement 2FA in forms Emails (Completed: 9/8/2025) 
-- [ ] Categorize user credentials (Work, Entertainment, Others...)
+- [X] Categorize user credentials (Work, Entertainment) (Completed: 9/29/2025)
