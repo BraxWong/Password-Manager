@@ -155,7 +155,7 @@ class PasswordGeneration(Screen):
         if not self.check_login_details():
             password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
             self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password,self.update_url_text_input.text,self.software_type_dropdown_menu.text)
-            show_popup('Password Generated',Label(text=f'Website:{self.application_name_text_input.text}\nSoftware Type:{self.software_type_dropdown_menu.text}\nUpdate Password URL:{self.update_url_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'))
+            show_popup('Password Generated',Label(text=f'Website:{self.application_name_text_input.text}\nSoftware Type:{self.software_type_dropdown_menu.text}\nUpdate Password URL:{self.update_url_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'), (None, None), (1000, 400) )
             self.reset_input_widget_value()
             return password
 
@@ -178,7 +178,7 @@ class PasswordGeneration(Screen):
     def reset_input_widget_value(self):
         self.application_name_text_input.text = ''
         self.software_type_dropdown_menu.text = "Select Type"
-        self.update_url_text_input.test = ''
+        self.update_url_text_input.text = ''
         self.username_text_input.text = ''
         self.password_length_label.text = '14'
         self.symbol_enabled_checkbox.active = False
