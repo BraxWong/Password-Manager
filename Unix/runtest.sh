@@ -1,3 +1,3 @@
 python -m venv ~/myenv
 source ~/myenv/bin/activate
-python src/startTests.py
+python ../src/startTests.py

@@ -98,7 +98,7 @@ class UtilTestMethods(unittest.TestCase):
     def test_checkPasswordInDB(self):
         loginDetailsdb = loginDetailsDB.LoginDetailsDB()
         try:
-            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD","https://testingpassword.com")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD","https://testingpassword.com","Testing")
             self.assertEqual(True,util.check_password_in_db("TESTINGPASSWORD"))
             loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 1: PASSED")
@@ -109,7 +109,7 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD","https://testingpassword.com")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTINGPASSWORD","https://testingpassword.com","Testing")
             self.assertEqual(False,util.check_password_in_db("TESTINGPASSWORD1"))
             loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 2: PASSED")
@@ -120,7 +120,7 @@ class UtilTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTING2PASSWORD","https://testing2password.com")
+            loginDetailsdb.add_entry_to_db("TESTING1Website","TESTING1USERNAME","TESTING2PASSWORD","https://testing2password.com","Testing")
             self.assertEqual(True,util.check_password_in_db("TESTING2PASSWORD"))
             loginDetailsdb.remove_entry_from_db("TESTING1Website")
             print("test_checkPasswordInDB TEST 3: PASSED")

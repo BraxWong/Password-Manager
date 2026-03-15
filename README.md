@@ -10,7 +10,7 @@ Introducing a password management solution designed to simplify and secure your 
 - Display login details needed 🖥️
 - Automated logout after 15 minutes of inactivity to improve security ➜]
 - 2FA enabled to further strengthen the security of the system 🔐
-  
+
 ## Installation Guide
 
 1. Run install.bat(Windows) / install.sh(Unix)
@@ -73,5 +73,6 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3  URL: UPDATE_URL  
 - [ ] Enable users to restart website monitor if it was terminated
 - [X] Enable users to copy login details to the clipboard when login details popup is opened. (Completed: 2/7/2025)
 - [X] Use a hash function to encode stored passwords and when validating user logins. (Completed: 2/8/2025)
-- [X] Implement 2FA in forms Emails (Completed: 9/8/2025) 
+- [X] Implement 2FA in forms Emails (Completed: 9/8/2025)
 - [X] Categorize user credentials (Work, Entertainment) (Completed: 9/29/2025)
+- [ ] Encrypt the password file when being outputted to the user's local machine

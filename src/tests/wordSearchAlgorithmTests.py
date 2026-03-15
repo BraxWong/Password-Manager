@@ -1,5 +1,6 @@
 import unittest
 import Util.wordSearchAlgorithm as wordSearch
+import Database.LoginDetailsDB as loginDetails
 import time
 
 class WordSearchAlgorithmTestMethods(unittest.TestCase):
@@ -16,7 +17,11 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
 
     def test_searchWebsite(self):
         try:
-            testOneWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
+            testOneWebsiteList = [loginDetails.LoginDetails("Google", None, None, None, None, None),
+                                  loginDetails.LoginDetails("Netflix",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Amazon",None,None,None,None,None),
+                                  loginDetails.LoginDetails("GPL",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Yahoo",None,None,None,None,None)]
             testOneUserInput = "Google"
             testOneResult = wordSearch.search_website(testOneWebsiteList,testOneUserInput)
             self.assertTrue(testOneResult[0],6)
@@ -30,7 +35,11 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
         self.testsRan+=1
    
         try:
-            testTwoWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
+            testTwoWebsiteList = [loginDetails.LoginDetails("Google", None, None, None, None, None),
+                                  loginDetails.LoginDetails("Netflix",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Amazon",None,None,None,None,None),
+                                  loginDetails.LoginDetails("GPL",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Yahoo",None,None,None,None,None)]
             testTwoUserInput = "gpl"
             testTwoResult = wordSearch.search_website(testTwoWebsiteList,testTwoUserInput)
             self.assertTrue(testTwoResult[3],3)
@@ -44,7 +53,11 @@ class WordSearchAlgorithmTestMethods(unittest.TestCase):
         self.testsRan+=1
 
         try:
-            testThreeWebsiteList = ["Google","Netflix","Amazon","GPL","Yahoo"]
+            testThreeWebsiteList = [loginDetails.LoginDetails("Google", None, None, None, None, None),
+                                  loginDetails.LoginDetails("Netflix",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Amazon",None,None,None,None,None),
+                                  loginDetails.LoginDetails("GPL",None,None,None,None,None),
+                                  loginDetails.LoginDetails("Yahoo",None,None,None,None,None)]
             testThreeUserInput = "amaZoN"
             testThreeResult = wordSearch.search_website(testThreeWebsiteList,testThreeUserInput)
             self.assertTrue(testThreeResult[2],6)
