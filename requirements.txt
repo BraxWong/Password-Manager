@@ -1,5 +1,6 @@
 kivy[base]
 kivymd
+cryptography
 pyobjus
 selenium
 bcrypt

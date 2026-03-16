@@ -75,4 +75,5 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3  URL: UPDATE_URL  
 - [X] Use a hash function to encode stored passwords and when validating user logins. (Completed: 2/8/2025)
 - [X] Implement 2FA in forms Emails (Completed: 9/8/2025)
 - [X] Categorize user credentials (Work, Entertainment) (Completed: 9/29/2025)
-- [ ] Encrypt the password file when being outputted to the user's local machine
+- [X] Encrypts the password file when being outputted to the user's local machine (Completed: 3/16/2026)
+- [ ] Decrypts the password file after the user has provided the password
