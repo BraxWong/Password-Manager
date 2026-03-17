@@ -14,13 +14,13 @@ import os
 class ExportPassword:
     def __init__(self):
         self.encrypt_file_password = ""
-        self.enable_encryption = False
+        self.enable_encryption = False 
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetch_all_from_db()
         if self.two_factor_auth_info and self.two_factor_auth_info.enable_2FA:
-            create_2FA_popup_layout(self.run)
+            create_2FA_popup_layout(self.createEncryptFilePopUp)
         else:
-            self.run(True)
+            self.createEncryptFilePopUp()
 
     def createEncryptFilePopUp(self):
         main_layout = BoxLayout(
@@ -28,24 +28,35 @@ class ExportPassword:
             padding=10,
             spacing=10
         )
+        pop_up = Popup(title='File Encryption',
+                       content=main_layout,
+                       size_hint=(None,None),
+                       size=(600,600))
+
         main_layout.add_widget(Label(text='Would you like to encrypt the file?', size_hint_y=None, height='50dp'))
 
         button_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp')
         
         yes_button = Button(text='Yes', size_hint_x=0.5)
-        yes_button.bind(on_press=lambda instance: (self.enable_encryption(True), self.parent.parent.dismiss()))
+        yes_button.bind(on_press=lambda instance: (self.encryptionFileButton(True,pop_up)))
 
         no_button = Button(text='No', size_hint_x=0.5)
-        no_button.bind(on_press=lambda instance: (self.enable_encryption(False), self.parent.parent.dismiss()))
+        no_button.bind(on_press=lambda instance: (self.encryptionFileButton(False,pop_up)))
 
         button_layout.add_widget(yes_button)
         button_layout.add_widget(no_button)
         
         main_layout.add_widget(button_layout)
+        
+        pop_up.open()
+
+    def encryptionFileButton(self,enable_encryption,pop_up):
+        self.enable_encryption = enable_encryption
+        pop_up.dismiss()
+        self.run(True)
 
     def run(self, result):
         if result:
-            self.createEncryptFilePopUp()
             self.login_details = LoginDetailsDB()
             self.export_dir = ""
             path = os.path.expanduser("~")
