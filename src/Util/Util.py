@@ -14,9 +14,9 @@ def date_comparison(date):
     date_format = '%Y-%m-%d'
     date = datetime.strptime(date,date_format).date()
     difference = (todays_date - date).days
-    if difference < 15:
+    if difference < 60 :
         return ("checkbox-marked-circle",[39/256,174/256,96/256,1],"Safe")
-    elif difference > 15 and difference < 30:
+    elif difference > 60 and difference < 90:
         return ("alert",[255/256,165/256,0,1],"Caution")
     else:
         return ("alert-circle",[1,0,0,1],"Danger")

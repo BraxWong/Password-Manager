@@ -10,6 +10,7 @@ from exportPassword import ExportPassword
 from passwordGeneration import *
 from loginDetailsStorage import * 
 from TwoFactorAuthentication import *
+from decryptPasswordFiles import *
 from WebsiteMonitor import *
 from Util.UIUtil import *
 import threading
@@ -51,6 +52,10 @@ class Menu(Screen):
         self.import_password.bind(on_press=self.import_password_to_system)
         self.layout.add_widget(self.import_password)
 
+        self.decrypt_password_file = Button(text='Decrypt password files')
+        self.decrypt_password_file.bind(on_press=self.decrypt_password)
+        self.layout.add_widget(self.decrypt_password_file)
+
         self.output_password = Button(text='Output password to file')
         self.output_password.bind(on_press=self.export_password_to_txt)
         self.layout.add_widget(self.output_password)
@@ -82,6 +87,9 @@ class Menu(Screen):
 
     def export_password_to_txt(self,widget):
         self.exportPassword = ExportPassword()
+
+    def decrypt_password(self,widget):
+        self.decryptPassword = DecryptPasswordFiles()
 
     def export_password_to_email(self, widget):
         def send_credentials(result):

@@ -3,6 +3,7 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.core.clipboard import Clipboard 
 from kivymd.uix.filemanager import MDFileManager
 from Database.LoginDetailsDB import LoginDetailsDB
 from Database.EmailSettings import TwoFactorAuthenticationSettingsDB
@@ -94,7 +95,8 @@ class ExportPassword:
             self.write_password_to_file()
             message = f'All your password have been exported to \n{self.export_dir}'
             if self.enable_encryption:
-                message += f"\nYour password file has been encrypted!\nPassword:{self.encrypt_file_password}"
+                Clipboard.copy(self.encrypt_file_password.decode("utf-8"))
+                message += f"\nYour password file has been encrypted!\nPassword:{self.encrypt_file_password}\nPassword has been stored in your clipboard"
             show_popup('Password Exported',Label(text=message),(None,None),(500,500))
         else:
             show_popup('Cancelled',Label(text="You did not select a directory"))
