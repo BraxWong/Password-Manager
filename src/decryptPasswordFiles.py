@@ -2,6 +2,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.widget import Widget
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivymd.uix.filemanager import MDFileManager
@@ -40,41 +41,55 @@ class DecryptPasswordFiles:
 
     def display_password_encryption_input(self):
         main_layout = BoxLayout(
-            orientation = 'vertical',
+            orientation='vertical',
             padding=10,
             spacing=10
         )
         pop_up = Popup(title='Password',
-                       content=main_layout,
-                       size_hint=(None,None),
-                       size=(600,600))
+                content=main_layout,
+                size_hint=(None, None),
+                size=(600, 600))
 
-        main_layout.add_widget(Label(text='Please provide the password to decrypt this file', size_hint_y=None, height='50dp'))
+        main_layout.add_widget(Label(text='Please provide the password to decrypt this file',
+                                    size_hint_y=None, height='50dp'))
 
+        center_box = BoxLayout(orientation='horizontal', size_hint_y=None, height='40dp', padding=[0,0,0,0])
         
-        self.decrypt_password = TextInput(
-            text='', multiline=False, size_hint=(0.6, None), height='40dp'
-        )
+        self.decrypt_password = TextInput(text='', multiline=False, size_hint=(None, None),
+                                        size=('360dp', '40dp'))  
 
-        main_layout.add_widget(self.decrypt_password)
+        center_box.add_widget(Widget(size_hint_x=1))
+        center_box.add_widget(self.decrypt_password)
+        center_box.add_widget(Widget(size_hint_x=1))
+
+        main_layout.add_widget(center_box)
 
         button_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='50dp')
         submit_button = Button(text='Submit', size_hint_x=0.5)
-        submit_button.bind(on_press=lambda instance: (self.decrypt_password_file(self.decrypt_password.text,pop_up)))
+        submit_button.bind(on_press=lambda instance: self.decrypt_password_file(self.decrypt_password.text, pop_up))
         button_layout.add_widget(submit_button)
 
         main_layout.add_widget(button_layout)
-        
+
         pop_up.open()
 
     def decrypt_password_file(self,password,pop_up):
-        fernet = Fernet(password.encode("utf-8"))
-
+        try:
+            fernet = Fernet(password.encode("utf-8"))
+        except:
+            show_popup('Error',Label(text="Your password is incorrect. Please try again."),(None,None),(500,500))
+            return
+       
         with open(self.import_path, 'rb') as f:
             encrypted = f.read()
         
         decrypted = fernet.decrypt(encrypted)
         decrypted = decrypted.decode('utf-8')
+        for word in decrypted.split():
+            if word != 'Website:':
+                show_popup('Error',Label(text="Your password is incorrect. Please try again."),(None,None),(500,500))
+                return
+            break
         file = open(self.import_path,"w")
         file.write(decrypted)
         show_popup('Password Decrypted',Label(text="Your password file has been decrypted."),(None,None),(500,500))
