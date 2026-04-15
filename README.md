@@ -77,3 +77,4 @@ Website: WEBSITENAME3 Username: USERNAME3 Password: Password3  URL: UPDATE_URL  
 - [X] Categorize user credentials (Work, Entertainment) (Completed: 9/29/2025)
 - [X] Encrypts the password file when being outputted to the user's local machine (Completed: 3/16/2026)
 - [X] Decrypts the password file after the user has provided the password (Completed: 3/28/2026)
+- [ ] Displays a list of operations users have completed for auditing purposes
