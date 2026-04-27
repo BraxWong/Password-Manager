@@ -8,6 +8,7 @@ from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.menu import MDDropdownMenu
 from Database.LoginDetailsDB import LoginDetailsDB  
+from Util.SecurityModule import *
 import requests
 import hashlib
 from Util.UIUtil import *
@@ -15,6 +16,7 @@ from Util.UIUtil import *
 class LoginDetailsStorage(Screen):
 
     def __init__(self, **kwargs):
+        self.security_module = SecurityModule()
         super(LoginDetailsStorage,self).__init__(**kwargs)
 
         self.db = LoginDetailsDB()
@@ -161,6 +163,7 @@ class LoginDetailsStorage(Screen):
             if not self.check_password_pwned(None,False):
                 self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,self.password_text_input.text,self.update_url_text_input.text,self.software_type_dropdown_menu.text) 
                 show_popup('Password Stored',Label(text=f'Website:{self.application_name_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{self.password_text_input.text}\nSaved in Database'))
+                self.security_module.audit_action('STORE_CREDENTIAL', 'User has stored user credentials to the system.',True)
                 self.application_name_text_input.text = ""
                 self.software_type_dropdown_menu.text = "Select Type"
                 self.update_url_text_input.text = ""

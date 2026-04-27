@@ -95,4 +95,3 @@ class LoginDetailsDB:
             f'SELECT update_url FROM login_details WHERE website_name = \'{website_name}\''
         )
         return self.cur.fetchone()
-

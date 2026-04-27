@@ -7,8 +7,9 @@ import re
 import os
 
 class ImportPassword:
-    def __init__(self):
+    def __init__(self, security_module):
         self.login_details = LoginDetailsDB()
+        self.security_module = security_module
         self.selected_file = False
         self.selected_path = ""
         path = os.path.expanduser("~")
@@ -22,10 +23,12 @@ class ImportPassword:
         if self.selected_path != "":
             self.read_file()
             title = 'Updated' if self.selected_file else 'Error'
-            content = "Your user details have been updated" if self.selected_file else "The file you uploaded was invalid. Please try again"
+            content = "Your user details have been updated" 
             show_popup(title,Label(text=content),(None,None),(600,600))
+            self.security_module.audit_action('IMPORT_PASSWORD', 'User has imported password to the system.',True)
         else:
             show_popup('Cancelled',Label(text="You did not select a file"),(None,None),(600,600))
+            self.security_module.audit_action('IMPORT_PASSWORD', 'User did not select a file.',False)
         self.file_manager.close()
 
     def select_path(self,path):

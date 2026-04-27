@@ -3,10 +3,11 @@ from datetime import datetime
 import Util.OSUtil
 
 class UserAudit:
-    def __init__(self, username, action, date, action_completion, machine_name, ip_address):
+    def __init__(self, username, action, date, description, action_completion, machine_name, ip_address):
         self.username = username
         self.action = action
         self.date = date 
+        self.description = description
         self.action_completion = action_completion
         self.machine_name = machine_name
         self.ip_address = ip_address
@@ -22,12 +23,12 @@ class UserAuditDB:
 
     def create_user_audit_table(self):
         self.cur.execute(
-            "CREATE TABLE if not exists user_audit(username, action, date, action_completion, machine_name, ip_address)"
+            "CREATE TABLE if not exists user_audit(username, action, date, description, action_completion, machine_name, ip_address)"
         )
 
-    def add_entry_to_db(self, username, action, date, action_completion, machine_name, ip_address):
+    def add_entry_to_db(self, username, action, date, description, action_completion, machine_name, ip_address):
         self.cur.execute(
-            f'INSERT INTO user_audit VALUES ("{username}","{action}","{date}","{action_completion}","{machine_name}","{ip_address}")'
+            f'INSERT INTO user_audit VALUES ("{username}","{action}","{date}","{description}","{action_completion}","{machine_name}","{ip_address}")'
         )
         self.con.commit()
 
@@ -37,7 +38,7 @@ class UserAuditDB:
         )
         audit = self.cur.fetchall()
         user_audit = [
-            UserAudit(username, action, date, action_completion, machine_name, ip_address) 
-            for username, action, date, action_completion, machine_name, ip_address in user_audit 
+            UserAudit(username, action, date, description, action_completion, machine_name, ip_address) 
+            for username, action, date, description, action_completion, machine_name, ip_address in audit 
         ]
         return user_audit

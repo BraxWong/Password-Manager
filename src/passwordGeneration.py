@@ -10,12 +10,14 @@ from kivy.uix.popup import Popup
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.menu import MDDropdownMenu
 from Database.LoginDetailsDB import LoginDetailsDB  
+from Util.SecurityModule import SecurityModule
 import Util.Util
 from Util.UIUtil import *
 
 class PasswordGeneration(Screen):
 
     def __init__(self, **kwargs):
+        self.security_module = SecurityModule()
         super(PasswordGeneration, self).__init__(**kwargs)
         self.db = LoginDetailsDB() 
         self.main_layout = BoxLayout(
@@ -156,6 +158,7 @@ class PasswordGeneration(Screen):
             password = Util.Util.generate_password(self.symbol_enabled_checkbox.active, int(self.password_length_label.text))
             self.db.add_entry_to_db(self.application_name_text_input.text,self.username_text_input.text,password,self.update_url_text_input.text,self.software_type_dropdown_menu.text)
             show_popup('Password Generated',Label(text=f'Website:{self.application_name_text_input.text}\nSoftware Type:{self.software_type_dropdown_menu.text}\nUpdate Password URL:{self.update_url_text_input.text}\nUsername:{self.username_text_input.text}\nPassword:{password}\nSaved in Database'), (None, None), (1000, 400) )
+            self.security_module.audit_action('PASSWORD_GENERATION', 'User has generated password for ' + self.application_name_text_input.text, True)
             self.reset_input_widget_value()
             return password
 
@@ -173,6 +176,7 @@ class PasswordGeneration(Screen):
             missing_information = True
         if missing_information:
             show_popup('Error',Label(text=error_message))
+            self.security_module.audit_action('PASSWORD_GENERATION', 'Error when generating password: ' + error_message,False)
         return missing_information
 
     def reset_input_widget_value(self):

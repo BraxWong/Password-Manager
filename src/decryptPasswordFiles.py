@@ -14,7 +14,8 @@ from cryptography.fernet import Fernet
 import os
 
 class DecryptPasswordFiles:
-    def __init__(self):
+    def __init__(self, security_module):
+        self.security_module = security_module
         self.import_path = ""
         self.encrypt_file_password = ""
         self.enable_encryption = False 
@@ -37,6 +38,7 @@ class DecryptPasswordFiles:
             self.file_manager.show(path)
         else:
             show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
+            self.security_module.audit_action('2FA_AUTH', 'User has failed 2FA.',False)
 
 
     def display_password_encryption_input(self):
@@ -78,6 +80,7 @@ class DecryptPasswordFiles:
             fernet = Fernet(password.encode("utf-8"))
         except:
             show_popup('Error',Label(text="Your password is incorrect. Please try again."),(None,None),(500,500))
+            self.security_module.audit_action('DECRYPT_PASSWORD_FILE', 'User provided the wrong password for the password file', False)
             return
        
         with open(self.import_path, 'rb') as f:
@@ -88,6 +91,7 @@ class DecryptPasswordFiles:
         for word in decrypted.split():
             if word != 'Website:':
                 show_popup('Error',Label(text="Your password is incorrect. Please try again."),(None,None),(500,500))
+                self.security_module.audit_action('DECRYPT_PASSWORD_FILE', 'User provided the wrong password for the password file', False)
                 return
             break
         file = open(self.import_path,"w")
@@ -95,6 +99,7 @@ class DecryptPasswordFiles:
         show_popup('Password Decrypted',Label(text="Your password file has been decrypted."),(None,None),(500,500))
         pop_up.dismiss()
         self.file_manager.close()
+        self.security_module.audit_action('DECRYPT_PASSWORD_FILE', 'User has decripted their password file', True)
 
     def exit_manager(self, *args):
         show_popup('Cancelled',Label(text="You did not select a file"))

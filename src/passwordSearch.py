@@ -21,9 +21,11 @@ import Util.Util as util
 import Util.UIUtil as ui_util
 import Util.passwordHasing as password_hashing
 import Util.wordSearchAlgorithm as word_search
+from Util.SecurityModule import *
 
 class PasswordSearch(Screen):
     def __init__(self, **kwargs):
+        self.security_module = SecurityModule()
         self.last_action_taken = LastActionTaken()
         self.paused_action = ""
         self.invalid_login_attempt = 0
@@ -259,6 +261,7 @@ class PasswordSearch(Screen):
             popup.open()
         else:
             ui_util.show_popup('Error', Label(text="The 2FA code you provided is incorrect.Please try again."), (None, None), (600,600))
+            self.security_module.audit_action('2FA_AUTH', 'User has failed 2FA.',False)
     
     def show_hint(self, instance, text_box):
         user_sys_credentials = self.verify_user_db.get_user_password_and_hint()
@@ -273,6 +276,7 @@ class PasswordSearch(Screen):
             self.logged_in = True
             self.last_action_taken.update_time()
             self.resume_paused_action()
+            self.security_module.audit_action('PASSWORD_SEARCH', 'User has successfully logged into the system.',True)
         else:
             self.invalid_login_attempt += 1
             incorrect_password_popup = Popup(title='Incorrect Password',
@@ -280,6 +284,7 @@ class PasswordSearch(Screen):
                                            size_hint=(None,None),
                                            size=(600,600))
             incorrect_password_popup.open()
+            self.security_module.audit_action('PASSWORD_SEARCH', 'User provided the wrong password when logging into the system.',False)
             if self.invalid_login_attempt == 3:
                 self.return_to_menu()
   
@@ -335,11 +340,12 @@ class PasswordSearch(Screen):
         
     def create_password_search_password(self,instance,password,hint,popup):
         if password in hint:
-            UIUtil.show_popup("Error",Label(text="Your hint cannot contain your password. Please try again."))
+            ui_util.show_popup("Error",Label(text="Your hint cannot contain your password. Please try again."))
         else:
             self.verify_user_db.add_password_and_hint(password_hashing.encode_password(password),hint)
             popup.dismiss()
             self.refresh_table_data()
+            self.security_module.audit_action('PASSWORD_SEARCH','User has created a password and hint for the system.',True)
 
     def cancel_password_and_hint(self,instance,popup):
         popup.dismiss()
@@ -398,6 +404,7 @@ class PasswordSearch(Screen):
         self.refresh_table_data()
         popup.dismiss()
         ui_util.show_popup('Success',Label(text='Your details have been updated'),(None,None),(600,600))
+        self.security_module.audit_action('UPDATE_CREDENTIALS','User has updated their credentials for ' + application_name + '.', True)
 
     def password_censor(self, hide_password = True):
         self.paused_action = "censor" if hide_password else "reveal"
@@ -420,6 +427,7 @@ class PasswordSearch(Screen):
                 content_to_copy = self.table.row_data[int(self.row_checked[0])][3] if copy_username else self.all_password[int(self.row_checked[0])]
                 Clipboard.copy(content_to_copy)
                 ui_util.show_popup('Success',Label(text=f"The {popup_text} has been copied to the clipboard."),(None,None),(600,600))
+                self.security_module.audit_action('COPY_CREDENTIALS', 'User has copied their credentials.',True)
 
     def delete_login_details_confirmation(self):
         self.paused_action = "delete"
@@ -466,6 +474,7 @@ class PasswordSearch(Screen):
             self.refresh_table_data()
             message += f"\n{row[2]}"
         ui_util.show_popup('Success',Label(text=message),(None,None),(600,600))
+        self.security_module.audit_action('DELETE_CREDENTIALS', 'User has deleted user crendetials.',True)
 
     def check_timeout(self):
         if self.last_action_taken.check_login_required():

@@ -13,11 +13,14 @@ from TwoFactorAuthentication import *
 from decryptPasswordFiles import *
 from WebsiteMonitor import *
 from Util.UIUtil import *
+from Util.SecurityModule import *
 import threading
 
 class Menu(Screen):
     def __init__(self, **kwargs):
         super(Menu,self).__init__(**kwargs)
+
+        self.security_module = SecurityModule()
 
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetch_all_from_db()
@@ -83,13 +86,13 @@ class Menu(Screen):
         self.manager.current = '2FA Screen'
 
     def import_password_to_system(self,widget):
-        self.import_password = ImportPassword()
+        self.import_password = ImportPassword(self.security_module)
 
     def export_password_to_txt(self,widget):
-        self.exportPassword = ExportPassword()
+        self.exportPassword = ExportPassword(self.security_module)
 
     def decrypt_password(self,widget):
-        self.decryptPassword = DecryptPasswordFiles()
+        self.decryptPassword = DecryptPasswordFiles(self.security_module)
 
     def export_password_to_email(self, widget):
         def send_credentials(result):
@@ -98,12 +101,14 @@ class Menu(Screen):
                     self.email_notification_thread = threading.Thread(target=self.emailNotification.sendLoginDetails, daemon=True)
                     self.email_notification_thread.start()                     
                     show_popup('Success',Label(text="Your user credentials have been sent to your email address."))
+                    self.security_module.audit_action('EXPORT_EMAIL', 'User\'\s credentials have been export to their email address.')
                 else:
                     self.email_notification.stop()
                     if self.email_notification_thread.is_alive():
                         self.email_notification_thread.join()  
             else:
                 show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
+                self.security_module.audit_action('2FA_AUTH', 'User has failed 2FA.')
 
         if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][1]:
             send_credentials(True)

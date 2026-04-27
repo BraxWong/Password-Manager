@@ -13,8 +13,9 @@ from cryptography.fernet import Fernet
 import os
 
 class ExportPassword:
-    def __init__(self):
+    def __init__(self, security_module):
         self.encrypt_file_password = ""
+        self.security_module = security_module
         self.enable_encryption = False 
         self.two_factor_auth = TwoFactorAuthenticationSettingsDB()
         self.two_factor_auth_info = self.two_factor_auth.fetch_all_from_db()
@@ -68,6 +69,7 @@ class ExportPassword:
             self.file_manager.show(path)
         else:
             show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
+            self.security_module.audit_action('2FA_AUTH', 'User has failed 2FA.')
             
     def write_password_to_file(self):
         user_login_details = self.login_details.fetch_all_from_db() 
@@ -89,6 +91,7 @@ class ExportPassword:
         encrypted = fernet.encrypt(file)
         with open(self.export_dir + "/password.txt",'wb') as f:
             f.write(encrypted)
+        self.security_module.audit_action('PASSWORD_ENCRYPTION', 'User has encrypted their password.')
 
     def exit_manager(self, *args):
         if self.export_dir != "":
@@ -98,6 +101,7 @@ class ExportPassword:
                 Clipboard.copy(self.encrypt_file_password.decode("utf-8"))
                 message += f"\nYour password file has been encrypted!\nPassword:{self.encrypt_file_password}\nPassword has been stored in your clipboard"
             show_popup('Password Exported',Label(text=message),(None,None),(500,500))
+            self.security_module.audit_action('EXPORT_PASSWORD', 'User has exported their password to a file.')
         else:
             show_popup('Cancelled',Label(text="You did not select a directory"))
         self.file_manager.close()
