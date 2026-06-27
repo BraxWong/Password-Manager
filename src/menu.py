@@ -71,6 +71,10 @@ class Menu(Screen):
         self.start_stop_website_monitor.bind(on_press=self.start_stop_monitor_thread)
         self.layout.add_widget(self.start_stop_website_monitor)
 
+        self.user_audit = Button(text='User Audit')
+        self.user_audit.bind(on_press=self.user_audit_screen)
+        self.layout.add_widget(self.user_audit)
+
         self.add_widget(self.layout)
 
         self.start_send_email_notification_thread()
@@ -118,6 +122,9 @@ class Menu(Screen):
     def store_login_details(self,widget):
         self.manager.current = 'Login Details Storage Screen'
 
+    def user_audit_screen(self, widget):
+        self.manager.current = 'User Audit Screen'
+
     def start_send_email_notification_thread(self):
         if not self.email_notification.running:
             def initializeEmailNotificationThread(dt):
@@ -144,7 +151,8 @@ class Menu(Screen):
                     self.start_stop_website_monitor.text = 'Start website monitor'
             else:
                 show_popup('Error',Label(text="The 2FA code you provided is incorrect.Please try again"))
-        if not len(self.two_factor_auth_info) or not self.two_factor_auth_info[0][2]:
+        print(self.two_factor_auth_info)
+        if isinstance(self.two_factor_auth_info, int) or not self.two_factor_auth_info[0][2]:
             run(True)
         else:
             create_2FA_popup_layout(run)

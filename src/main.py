@@ -6,6 +6,7 @@ from menu import *
 from passwordGeneration import *
 from passwordSearch import *
 from TwoFactorAuthentication import *
+from UserAudit import *
 
 class Main(MDApp):
     def build(self):
@@ -16,6 +17,7 @@ class Main(MDApp):
         self.screen_manager.add_widget(PasswordGeneration(name='Password Generation Screen'))
         self.screen_manager.add_widget(PasswordSearch(name='Password Search Screen'))
         self.screen_manager.add_widget(TwoFactorAuthentication(name='2FA Screen'))
+        self.screen_manager.add_widget(UserAudit(name='User Audit Screen'))
         self.screen_manager.current = 'Menu Screen' 
         return self.screen_manager
 
